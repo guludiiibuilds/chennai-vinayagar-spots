@@ -4,15 +4,13 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { uploadSpotPhoto, submitSpot } from "@/lib/spots";
 import { extractLatLngFromMapsLink } from "@/lib/geo";
-import { applyFormatting } from "@/lib/richtext";
 import { useToast } from "@/components/ToastProvider";
-import { BackIcon, CompassIcon, CheckIcon, ListIcon } from "@/components/icons";
+import { BackIcon, CompassIcon, CheckIcon } from "@/components/icons";
 
 export default function SubmitPage() {
   const router = useRouter();
   const showToast = useToast();
   const fileInputRef = useRef(null);
-  const descRef = useRef(null);
 
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -24,7 +22,11 @@ export default function SubmitPage() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null); // submitted spot name
 
-  const canSubmit = !!(photoFile && name.trim() && (loc || mapsLink.trim())) && !submitting;
+  // Photo is optional for now — TODO: once photos are required again, the
+  // Supabase storage upload path needs to compress/resize images before
+  // upload instead of storing the original file as-is (uploadSpotPhoto in
+  // lib/spots.js). Flagged per user request on 2026-09-05.
+  const canSubmit = !!(name.trim() && (loc || mapsLink.trim())) && !submitting;
 
   const pickPhoto = () => fileInputRef.current?.click();
 
@@ -54,25 +56,14 @@ export default function SubmitPage() {
     );
   };
 
-  const format = (kind) => {
-    const el = descRef.current;
-    if (!el) return;
-    const { next, selectionStart, selectionEnd } = applyFormatting(el, kind);
-    setAbout(next);
-    requestAnimationFrame(() => {
-      el.focus();
-      el.setSelectionRange(selectionStart, selectionEnd);
-    });
-  };
-
   const submit = async () => {
     if (!canSubmit) {
-      showToast("Please add a photo, a name and a location");
+      showToast("Please add a name and a location");
       return;
     }
     setSubmitting(true);
     try {
-      const photoUrl = await uploadSpotPhoto(photoFile);
+      const photoUrl = photoFile ? await uploadSpotPhoto(photoFile) : null;
       const link = mapsLink.trim();
       const derived = loc || extractLatLngFromMapsLink(link);
       const spot = await submitSpot({
@@ -81,6 +72,7 @@ export default function SubmitPage() {
         lat: derived?.lat ?? null,
         lng: derived?.lng ?? null,
         mapsLink: link || null,
+        photoUrl,
       });
       setDone(spot.name);
     } catch (err) {
@@ -155,7 +147,9 @@ export default function SubmitPage() {
           </div>
 
           <div>
-            <FieldLabel>1 · Photo</FieldLabel>
+            <FieldLabel>
+              1 · Photo <span style={{ textTransform: "none", color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
+            </FieldLabel>
             <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={onPhotoChange} style={{ display: "none" }} />
             <button
               onClick={pickPhoto}
@@ -264,29 +258,7 @@ export default function SubmitPage() {
             <FieldLabel>
               4 · Describe the pandal <span style={{ textTransform: "none", color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
             </FieldLabel>
-            <div
-              style={{
-                borderRadius: "var(--radius-md) var(--radius-md) 0 0",
-                border: "1px solid var(--line-strong)",
-                borderBottom: "none",
-                background: "var(--paper)",
-                display: "flex",
-                gap: 4,
-                padding: 6,
-              }}
-            >
-              <button onClick={() => format("bold")} style={toolbarBtnStyle} aria-label="Bold">
-                <span style={{ font: "700 13px var(--font-body)", color: "var(--ink-soft)" }}>B</span>
-              </button>
-              <button onClick={() => format("italic")} style={toolbarBtnStyle} aria-label="Italic">
-                <span style={{ font: "italic 700 13px var(--font-body)", color: "var(--ink-soft)" }}>I</span>
-              </button>
-              <button onClick={() => format("list")} style={toolbarBtnStyle} aria-label="Bullet list">
-                <ListIcon />
-              </button>
-            </div>
             <textarea
-              ref={descRef}
               value={about}
               onChange={(e) => setAbout(e.target.value)}
               placeholder="Theme, idol height, timings, anything visitors should know"
@@ -294,7 +266,7 @@ export default function SubmitPage() {
               style={{
                 width: "100%",
                 minHeight: 90,
-                borderRadius: "0 0 var(--radius-md) var(--radius-md)",
+                borderRadius: "var(--radius-md)",
                 border: "1px solid var(--line-strong)",
                 background: "var(--card)",
                 padding: "12px 14px",
@@ -321,7 +293,7 @@ export default function SubmitPage() {
               ...(canSubmit ? { background: "var(--accent)", color: "#ffffff" } : { background: "var(--paper)", color: "var(--muted)", cursor: "not-allowed" }),
             }}
           >
-            {submitting ? "Submitting…" : canSubmit ? "Submit for review" : "Add photo, name and location"}
+            {submitting ? "Submitting…" : "Submit for review"}
           </button>
         </div>
       </div>
@@ -336,14 +308,6 @@ function FieldLabel({ children }) {
     </div>
   );
 }
-
-const toolbarBtnStyle = {
-  width: 30,
-  height: 30,
-  borderRadius: "var(--radius-xs)",
-  display: "grid",
-  placeItems: "center",
-};
 
 const successFrameStyle = {
   display: "flex",
