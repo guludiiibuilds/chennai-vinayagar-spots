@@ -144,7 +144,7 @@ export default function SubmitPage() {
         <div style={{ flex: 1, overflowY: "auto", padding: "18px 18px 110px", display: "flex", flexDirection: "column", gap: 18 }}>
           <div>
             <FieldLabel>
-              1 · Photo <span style={{ textTransform: "none", color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
+              Vinayagar Photo <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
             </FieldLabel>
             <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={onPhotoChange} style={{ display: "none" }} />
             <button
@@ -181,7 +181,7 @@ export default function SubmitPage() {
           </div>
 
           <div>
-            <FieldLabel>2 · Name of the pandal</FieldLabel>
+            <FieldLabel>Vinayagar Name</FieldLabel>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -201,7 +201,7 @@ export default function SubmitPage() {
           </div>
 
           <div>
-            <FieldLabel>3 · Where is it?</FieldLabel>
+            <FieldLabel>Location</FieldLabel>
             <button
               onClick={useGps}
               style={{
@@ -252,7 +252,7 @@ export default function SubmitPage() {
 
           <div>
             <FieldLabel>
-              4 · Describe the pandal <span style={{ textTransform: "none", color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
+              Describe Vinayagar <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
             </FieldLabel>
             <textarea
               value={about}
@@ -299,7 +299,7 @@ export default function SubmitPage() {
 
 function FieldLabel({ children }) {
   return (
-    <div style={{ font: "600 11px/1 var(--font-body)", letterSpacing: ".06em", textTransform: "uppercase", color: "var(--muted)", marginBottom: 9 }}>
+    <div style={{ font: "700 14px/1.3 var(--font-body)", letterSpacing: "-.2px", color: "var(--ink-soft)", marginBottom: 9 }}>
       {children}
     </div>
   );
