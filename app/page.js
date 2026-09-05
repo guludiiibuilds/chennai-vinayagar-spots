@@ -105,7 +105,7 @@ function Home() {
           style={{
             position: "relative",
             zIndex: 6,
-            padding: "16px 18px 12px",
+            padding: selectedSpot ? "16px 18px" : "16px 18px 12px",
             background: "linear-gradient(180deg,#C77E0A,#B0670A)",
             color: "#FFF6E6",
             flex: "none",
@@ -114,9 +114,11 @@ function Home() {
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
             <div>
               <div style={{ font: "800 21px/1.15 var(--font-body)", letterSpacing: "-.02em" }}>Spot Vinayagar in Chennai</div>
-              <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "rgba(255,246,230,.82)", marginTop: 2 }}>
-                {spots.length} active pandal{spots.length === 1 ? "" : "s"}
-              </div>
+              {!selectedSpot ? (
+                <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "rgba(255,246,230,.82)", marginTop: 2 }}>
+                  {spots.length} active pandal{spots.length === 1 ? "" : "s"}
+                </div>
+              ) : null}
             </div>
             <button
               aria-label="Menu"
@@ -136,42 +138,44 @@ function Home() {
             </button>
           </div>
 
-          <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                background: "rgba(255,252,246,.95)",
-                borderRadius: 12,
-                padding: "9px 12px",
-              }}
-            >
-              <SearchIcon />
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search area or pandal name"
+          {!selectedSpot ? (
+            <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+              <div
                 style={{
-                  border: 0,
-                  outline: 0,
-                  background: "transparent",
-                  font: "400 13.5px var(--font-body)",
-                  color: "var(--ink)",
-                  width: "100%",
+                  flex: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  background: "rgba(255,252,246,.95)",
+                  borderRadius: 12,
+                  padding: "9px 12px",
                 }}
-              />
+              >
+                <SearchIcon />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search area or pandal name"
+                  style={{
+                    border: 0,
+                    outline: 0,
+                    background: "transparent",
+                    font: "400 13.5px var(--font-body)",
+                    color: "var(--ink)",
+                    width: "100%",
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", background: "rgba(42,27,16,.22)", borderRadius: 12, padding: 3, flex: "none" }}>
+                <button onClick={() => setMode("map")} style={tabStyle(mode === "map")}>
+                  Map
+                </button>
+                <button onClick={() => setMode("list")} style={tabStyle(mode === "list")}>
+                  List
+                </button>
+              </div>
             </div>
-            <div style={{ display: "flex", background: "rgba(42,27,16,.22)", borderRadius: 12, padding: 3, flex: "none" }}>
-              <button onClick={() => setMode("map")} style={tabStyle(mode === "map")}>
-                Map
-              </button>
-              <button onClick={() => setMode("list")} style={tabStyle(mode === "list")}>
-                List
-              </button>
-            </div>
-          </div>
+          ) : null}
         </header>
 
         {mode === "map" ? (

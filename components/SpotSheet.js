@@ -61,7 +61,8 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
       <div style={{ flex: 1, overflowY: "auto", padding: "6px 18px 14px" }}>
         <div
           style={{
-            height: 96,
+            position: "relative",
+            height: 168,
             borderRadius: 14,
             background: spot.photo_url
               ? `center / cover no-repeat url(${spot.photo_url})`
@@ -70,16 +71,32 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
             placeItems: "center",
           }}
         >
-          {!spot.photo_url ? <PhotoIcon stroke="#B08F58" width={24} height={24} /> : null}
+          {!spot.photo_url ? <PhotoIcon stroke="#B08F58" width={26} height={26} /> : null}
+          <div
+            style={{
+              position: "absolute",
+              right: 10,
+              bottom: 10,
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              background: "rgba(255,252,246,.94)",
+              borderRadius: 999,
+              padding: "6px 10px",
+              boxShadow: "0 3px 10px rgba(42,27,16,.18)",
+              font: "500 11.5px/1.2 var(--font-body)",
+              color: "var(--ink-soft)",
+            }}
+          >
+            <PinPlaceIcon width={12} height={12} />
+            {spot.area}
+            {distanceLabel ? ` · ${distanceLabel} km` : ""}
+          </div>
         </div>
 
         <h2 style={{ font: "400 24px/1.15 var(--font-display)", color: "var(--ink)", margin: "14px 0 0", letterSpacing: "-.01em" }}>
           {spot.name}
         </h2>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, font: "400 13px/1.4 var(--font-body)", color: "var(--muted)" }}>
-          <PinPlaceIcon />
-          {spot.area}, Chennai{distanceLabel ? ` · ${distanceLabel} km away` : ""}
-        </div>
 
         {spot.about ? (
           <div style={{ font: "400 14px/1.6 var(--font-body)", color: "var(--ink-soft)", marginTop: 14 }}>
