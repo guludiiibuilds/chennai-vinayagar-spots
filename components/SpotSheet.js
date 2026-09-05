@@ -3,11 +3,9 @@
 import { Fragment } from "react";
 import { renderRichText } from "@/lib/richtext";
 import { googleMapsUrl } from "@/lib/geo";
-import { useToast } from "./ToastProvider";
 import { CloseIcon, ShareIcon, NavigateIcon, PhotoIcon, PinPlaceIcon } from "./icons";
 
-export default function SpotSheet({ spot, distanceLabel, onClose }) {
-  const showToast = useToast();
+export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto }) {
   if (!spot) return null;
 
   const share = () => {
@@ -17,7 +15,6 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
     } else if (navigator.clipboard) {
       navigator.clipboard.writeText(url).catch(() => {});
     }
-    showToast("Link copied — share it on WhatsApp");
   };
 
   return (
@@ -71,6 +68,7 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
         <div style={{ flex: 1, overflowY: "auto", padding: "6px 18px 14px" }}>
           <div
             className={spot.photo_url ? "photo-shadow" : undefined}
+            onClick={spot.photo_url ? onOpenPhoto : undefined}
             style={{
               position: "relative",
               height: 168,
@@ -78,6 +76,7 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
               background: spot.photo_url ? `center / cover no-repeat url(${spot.photo_url})` : "var(--paper)",
               display: spot.photo_url ? "block" : "grid",
               placeItems: "center",
+              cursor: spot.photo_url ? "pointer" : "default",
             }}
           >
             {!spot.photo_url ? <PhotoIcon width={26} height={26} /> : null}

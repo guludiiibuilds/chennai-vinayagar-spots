@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
@@ -9,6 +9,7 @@ import { SearchIcon, MenuIcon } from "@/components/icons";
 import { SpotListCard, SpotCarouselCard } from "@/components/SpotCard";
 import MenuSheet from "@/components/MenuSheet";
 import SpotSheet from "@/components/SpotSheet";
+import PhotoViewer from "@/components/PhotoViewer";
 
 const MapCanvas = dynamic(() => import("@/components/MapCanvas"), {
   ssr: false,
@@ -34,6 +35,8 @@ function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userPos, setUserPos] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
+  const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
+  const modeBeforeSheetRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -93,10 +96,18 @@ function Home() {
   const selectedSpot = selectedId ? spotsWithDist.find((s) => s.id === selectedId) : null;
 
   const openSpot = (spot) => {
+    if (!selectedId) modeBeforeSheetRef.current = mode;
     setMode("map");
     setSelectedId(spot.id);
   };
-  const closeSheet = () => setSelectedId(null);
+  const closeSheet = () => {
+    setSelectedId(null);
+    setPhotoViewerOpen(false);
+    if (modeBeforeSheetRef.current) {
+      setMode(modeBeforeSheetRef.current);
+      modeBeforeSheetRef.current = null;
+    }
+  };
 
   return (
     <div className="app-shell">
@@ -201,7 +212,15 @@ function Home() {
               </div>
             ) : null}
             {selectedSpot ? (
-              <SpotSheet spot={selectedSpot} distanceLabel={formatDistance(selectedSpot.distKm)} onClose={closeSheet} />
+              <div onClick={closeSheet} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: "60%", zIndex: 3 }} />
+            ) : null}
+            {selectedSpot ? (
+              <SpotSheet
+                spot={selectedSpot}
+                distanceLabel={formatDistance(selectedSpot.distKm)}
+                onClose={closeSheet}
+                onOpenPhoto={() => setPhotoViewerOpen(true)}
+              />
             ) : null}
           </div>
         ) : (
@@ -268,6 +287,10 @@ function Home() {
         ) : null}
 
         <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />
+
+        {photoViewerOpen && selectedSpot ? (
+          <PhotoViewer spot={selectedSpot} onClose={() => setPhotoViewerOpen(false)} />
+        ) : null}
       </div>
     </div>
   );
