@@ -112,9 +112,6 @@ export default function SpotDetailClient({ id }) {
           <button onClick={() => router.push("/")} aria-label="Back" style={roundBtnStyle("left")}>
             <BackIcon />
           </button>
-          <button onClick={share} aria-label="Share" style={roundBtnStyle("right")}>
-            <ShareIcon />
-          </button>
         </div>
 
         <div style={{ flex: 1, overflowY: "auto", padding: "18px 18px 108px" }}>
@@ -198,7 +195,7 @@ export default function SpotDetailClient({ id }) {
             }}
           >
             <NavigateIcon />
-            Open in Google Maps
+            Take Me There
           </a>
         </div>
       </div>
