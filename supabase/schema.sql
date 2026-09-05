@@ -28,6 +28,12 @@ create index if not exists spots_created_at_idx on public.spots (created_at desc
 
 alter table public.spots enable row level security;
 
+-- RLS policies below only take effect once these roles already have the
+-- underlying table grant — without this, PostgREST fails with
+-- "permission denied for table spots" before RLS is even evaluated.
+grant usage on schema public to anon, authenticated;
+grant select, insert on public.spots to anon, authenticated;
+
 -- Anyone (including anonymous visitors) can read approved spots.
 create policy "Public can read approved spots"
   on public.spots for select
