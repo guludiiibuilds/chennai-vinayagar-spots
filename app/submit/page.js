@@ -137,15 +137,11 @@ export default function SubmitPage() {
           </button>
           <div>
             <div style={{ font: "600 17px/1.2 var(--font-body)", letterSpacing: "-.374px", color: "var(--ink)" }}>Spot a Vinayagar</div>
-            <div style={{ font: "400 11.5px/1.3 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>Three things. No login needed.</div>
+            <div style={{ font: "400 11.5px/1.3 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>Fill correct data for others to view.</div>
           </div>
         </div>
 
         <div style={{ flex: 1, overflowY: "auto", padding: "18px 18px 110px", display: "flex", flexDirection: "column", gap: 18 }}>
-          <div style={{ padding: "13px 14px", borderRadius: "var(--radius-md)", background: "var(--accent-tint)", font: "400 12px/1.6 var(--font-body)", color: "var(--ink-soft)" }}>
-            Please be mindful when you are uploading details as this would help others to view Vinayagar pandals.
-          </div>
-
           <div>
             <FieldLabel>
               1 · Photo <span style={{ textTransform: "none", color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
