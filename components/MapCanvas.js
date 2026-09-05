@@ -6,15 +6,30 @@ import L from "leaflet";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
 
-function pinIcon(active) {
+function pinIcon(active, centered = false) {
   const size = active ? 36 : 30;
+  const badge = `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${active ? "#8E1B15" : "#A8231C"};border:2.5px solid #FFF6E6;display:grid;place-items:center;box-shadow:0 5px 12px rgba(42,27,16,.35)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v3"></path><path d="M7.5 20h9"></path><path d="M6 20c0-4 2.7-7 6-7s6 3 6 7"></path><circle cx="12" cy="8.5" r="2.2"></circle></svg>
+        </div>`;
+
+  // The default pin has a descender tail pointing at its geo-coordinate
+  // (map-pin convention), so the round badge sits above the anchor point.
+  // On a small decorative mini-map that reads as "off-center" — there the
+  // badge itself should sit exactly at the map's visual center instead.
+  if (centered) {
+    return L.divIcon({
+      className: "",
+      html: `<div style="animation:pinDrop .5s cubic-bezier(.2,.9,.3,1.2) both">${badge}</div>`,
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size / 2],
+    });
+  }
+
   return L.divIcon({
     className: "",
     html: `
       <div style="display:flex;flex-direction:column;align-items:center;animation:pinDrop .5s cubic-bezier(.2,.9,.3,1.2) both">
-        <div style="width:${size}px;height:${size}px;border-radius:50%;background:${active ? "#8E1B15" : "#A8231C"};border:2.5px solid #FFF6E6;display:grid;place-items:center;box-shadow:0 5px 12px rgba(42,27,16,.35)">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v3"></path><path d="M7.5 20h9"></path><path d="M6 20c0-4 2.7-7 6-7s6 3 6 7"></path><circle cx="12" cy="8.5" r="2.2"></circle></svg>
-        </div>
+        ${badge}
         <div style="width:2px;height:8px;background:#8E3A12;border-radius:0 0 2px 2px"></div>
       </div>`,
     iconSize: [size, size + 8],
@@ -96,7 +111,7 @@ export default function MapCanvas({ spots, selectedId, onSelect, userPos, center
           <Marker
             key={s.id}
             position={[s.lat, s.lng]}
-            icon={pinIcon(s.id === selectedId)}
+            icon={pinIcon(s.id === selectedId, minimal)}
             eventHandlers={onSelect ? { click: () => onSelect(s) } : undefined}
           />
         ))}
