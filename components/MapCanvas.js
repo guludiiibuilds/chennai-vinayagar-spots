@@ -110,7 +110,7 @@ export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusS
           />
         ))}
       {userPos ? <Marker position={[userPos.lat, userPos.lng]} icon={meIcon} interactive={false} /> : null}
-      <MapControls userPos={userPos} />
+      {focusSpot ? null : <MapControls userPos={userPos} />}
       {focusSpot ? <FlyToSelection target={focusSpot} zoom={focusZoom} /> : null}
     </MapContainer>
   );
