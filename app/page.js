@@ -144,9 +144,9 @@ export default function HomePage() {
         </header>
 
         {mode === "map" ? (
-          <div style={{ position: "relative", flex: 1, overflow: "hidden", background: "#F4EADA" }}>
+          <div style={{ position: "relative", zIndex: 1, flex: 1, overflow: "hidden", background: "#F4EADA" }}>
             <MapCanvas spots={filtered} userPos={userPos} onSelect={goToSpot} />
-            <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "0 0 84px", zIndex: 700, pointerEvents: "none" }}>
+            <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "0 0 84px", zIndex: 2, pointerEvents: "none" }}>
               <div
                 style={{
                   display: "flex",
