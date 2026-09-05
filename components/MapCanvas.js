@@ -88,7 +88,13 @@ export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusS
   const initialCenter = spots[0]?.lat != null ? [spots[0].lat, spots[0].lng] : CHENNAI_CENTER;
 
   return (
-    <MapContainer center={initialCenter} zoom={12} zoomControl={false} style={{ position: "absolute", inset: 0, background: "#F4EADA" }} ref={mapRef}>
+    <MapContainer
+      center={initialCenter}
+      zoom={12}
+      zoomControl={false}
+      style={{ position: "absolute", inset: 0, zIndex: 0, background: "#F4EADA" }}
+      ref={mapRef}
+    >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

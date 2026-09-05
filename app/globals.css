@@ -124,8 +124,8 @@ textarea {
 .app-frame {
   width: 100%;
   max-width: 460px;
-  min-height: 100vh;
-  min-height: 100svh;
+  height: 100vh;
+  height: 100svh;
   background: var(--card);
   display: flex;
   flex-direction: column;
@@ -138,7 +138,7 @@ textarea {
     padding: 28px 12px;
   }
   .app-frame {
-    min-height: min(844px, 92vh);
+    height: min(844px, 92vh);
     border-radius: 34px;
     overflow: hidden;
     box-shadow: 0 26px 60px -18px rgba(42, 27, 16, 0.4), 0 0 0 1px rgba(42, 27, 16, 0.1);
