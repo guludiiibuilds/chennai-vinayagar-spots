@@ -6,30 +6,15 @@ import L from "leaflet";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
 
-function pinIcon(active, centered = false) {
+function pinIcon(active) {
   const size = active ? 36 : 30;
-  const badge = `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${active ? "#8E1B15" : "#A8231C"};border:2.5px solid #FFF6E6;display:grid;place-items:center;box-shadow:0 5px 12px rgba(42,27,16,.35)">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v3"></path><path d="M7.5 20h9"></path><path d="M6 20c0-4 2.7-7 6-7s6 3 6 7"></path><circle cx="12" cy="8.5" r="2.2"></circle></svg>
-        </div>`;
-
-  // The default pin has a descender tail pointing at its geo-coordinate
-  // (map-pin convention), so the round badge sits above the anchor point.
-  // On a small decorative mini-map that reads as "off-center" — there the
-  // badge itself should sit exactly at the map's visual center instead.
-  if (centered) {
-    return L.divIcon({
-      className: "",
-      html: `<div style="animation:pinDrop .5s cubic-bezier(.2,.9,.3,1.2) both">${badge}</div>`,
-      iconSize: [size, size],
-      iconAnchor: [size / 2, size / 2],
-    });
-  }
-
   return L.divIcon({
     className: "",
     html: `
       <div style="display:flex;flex-direction:column;align-items:center;animation:pinDrop .5s cubic-bezier(.2,.9,.3,1.2) both">
-        ${badge}
+        <div style="width:${size}px;height:${size}px;border-radius:50%;background:${active ? "#8E1B15" : "#A8231C"};border:2.5px solid #FFF6E6;display:grid;place-items:center;box-shadow:0 5px 12px rgba(42,27,16,.35)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v3"></path><path d="M7.5 20h9"></path><path d="M6 20c0-4 2.7-7 6-7s6 3 6 7"></path><circle cx="12" cy="8.5" r="2.2"></circle></svg>
+        </div>
         <div style="width:2px;height:8px;background:#8E3A12;border-radius:0 0 2px 2px"></div>
       </div>`,
     iconSize: [size, size + 8],
@@ -84,23 +69,26 @@ const ctrlBtnStyle = {
   cursor: "pointer",
 };
 
-export default function MapCanvas({ spots, selectedId, onSelect, userPos, center, zoom = 12, minimal = false }) {
+// react-leaflet's `center`/`zoom` on MapContainer are only the initial view —
+// changing them after mount doesn't move an already-live map. This flies the
+// map to the selected spot imperatively whenever the selection changes.
+function FlyToSelection({ target, zoom }) {
+  const map = useMap();
+  useEffect(() => {
+    if (target && target.lat != null && target.lng != null) {
+      map.flyTo([target.lat, target.lng], zoom, { duration: 0.6 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [target?.id]);
+  return null;
+}
+
+export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusSpot, focusZoom = 15 }) {
   const mapRef = useRef(null);
-  const focus = center || (spots[0]?.lat != null ? [spots[0].lat, spots[0].lng] : CHENNAI_CENTER);
+  const initialCenter = spots[0]?.lat != null ? [spots[0].lat, spots[0].lng] : CHENNAI_CENTER;
 
   return (
-    <MapContainer
-      center={focus}
-      zoom={zoom}
-      zoomControl={false}
-      dragging={!minimal}
-      scrollWheelZoom={!minimal}
-      doubleClickZoom={!minimal}
-      touchZoom={!minimal}
-      attributionControl={!minimal}
-      style={{ position: "absolute", inset: 0, background: "#F4EADA" }}
-      ref={mapRef}
-    >
+    <MapContainer center={initialCenter} zoom={12} zoomControl={false} style={{ position: "absolute", inset: 0, background: "#F4EADA" }} ref={mapRef}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -111,12 +99,13 @@ export default function MapCanvas({ spots, selectedId, onSelect, userPos, center
           <Marker
             key={s.id}
             position={[s.lat, s.lng]}
-            icon={pinIcon(s.id === selectedId, minimal)}
+            icon={pinIcon(s.id === selectedId)}
             eventHandlers={onSelect ? { click: () => onSelect(s) } : undefined}
           />
         ))}
       {userPos ? <Marker position={[userPos.lat, userPos.lng]} icon={meIcon} interactive={false} /> : null}
-      {minimal ? null : <MapControls userPos={userPos} />}
+      <MapControls userPos={userPos} />
+      {focusSpot ? <FlyToSelection target={focusSpot} zoom={focusZoom} /> : null}
     </MapContainer>
   );
 }

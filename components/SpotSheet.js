@@ -1,0 +1,148 @@
+"use client";
+
+import { renderRichText } from "@/lib/richtext";
+import { googleMapsUrl } from "@/lib/geo";
+import { useToast } from "./ToastProvider";
+import { CloseIcon, ShareIcon, NavigateIcon, PhotoIcon, PinPlaceIcon } from "./icons";
+
+export default function SpotSheet({ spot, distanceLabel, onClose }) {
+  const showToast = useToast();
+  if (!spot) return null;
+
+  const share = () => {
+    const url = typeof window !== "undefined" ? `${window.location.origin}/?spot=${spot.id}` : "";
+    if (navigator.share) {
+      navigator.share({ title: spot.name, url }).catch(() => {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).catch(() => {});
+    }
+    showToast("Link copied — share it on WhatsApp");
+  };
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: "60%",
+        zIndex: 5,
+        background: "var(--card)",
+        borderRadius: "20px 20px 0 0",
+        boxShadow: "0 -14px 34px -12px rgba(42,27,16,.4)",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        animation: "fadeUp .22s ease both",
+      }}
+    >
+      <div style={{ flex: "none", position: "relative", padding: "10px 14px 4px" }}>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(42,27,16,.18)", margin: "0 auto" }} />
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          style={{
+            position: "absolute",
+            right: 10,
+            top: 8,
+            width: 32,
+            height: 32,
+            borderRadius: 10,
+            display: "grid",
+            placeItems: "center",
+            background: "#F5EADB",
+          }}
+        >
+          <CloseIcon width={14} height={14} />
+        </button>
+      </div>
+
+      <div style={{ flex: 1, overflowY: "auto", padding: "6px 18px 14px" }}>
+        <div
+          style={{
+            height: 96,
+            borderRadius: 14,
+            background: spot.photo_url
+              ? `center / cover no-repeat url(${spot.photo_url})`
+              : "repeating-linear-gradient(135deg,#EFDFC4 0 9px,#E7D4B2 9px 18px)",
+            display: spot.photo_url ? "block" : "grid",
+            placeItems: "center",
+          }}
+        >
+          {!spot.photo_url ? <PhotoIcon stroke="#B08F58" width={24} height={24} /> : null}
+        </div>
+
+        <h2 style={{ font: "400 24px/1.15 var(--font-display)", color: "var(--ink)", margin: "14px 0 0", letterSpacing: "-.01em" }}>
+          {spot.name}
+        </h2>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, font: "400 13px/1.4 var(--font-body)", color: "var(--muted)" }}>
+          <PinPlaceIcon />
+          {spot.area}, Chennai{distanceLabel ? ` · ${distanceLabel} km away` : ""}
+        </div>
+
+        {spot.about ? (
+          <div style={{ font: "400 14px/1.6 var(--font-body)", color: "var(--ink-soft)", marginTop: 14 }}>
+            {renderRichText(spot.about)}
+          </div>
+        ) : null}
+
+        {spot.landmark || spot.submitted_by ? (
+          <div style={{ marginTop: 16, borderTop: "1px solid var(--line)", paddingTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+            {spot.landmark ? (
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
+                <span style={{ font: "400 12.5px var(--font-body)", color: "var(--muted)" }}>Landmark</span>
+                <span style={{ font: "500 12.5px var(--font-body)", color: "var(--ink)", textAlign: "right" }}>{spot.landmark}</span>
+              </div>
+            ) : null}
+            {spot.submitted_by ? (
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
+                <span style={{ font: "400 12.5px var(--font-body)", color: "var(--muted)" }}>Added by</span>
+                <span style={{ font: "500 12.5px var(--font-body)", color: "var(--ink)", textAlign: "right" }}>{spot.submitted_by}</span>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
+      <div style={{ flex: "none", padding: "12px 14px 16px", borderTop: "1px solid var(--line)", display: "flex", gap: 9, background: "var(--card)" }}>
+        <button
+          onClick={share}
+          aria-label="Share"
+          style={{
+            flex: "none",
+            width: 54,
+            height: 54,
+            borderRadius: 16,
+            border: "1.5px solid rgba(42,27,16,.16)",
+            display: "grid",
+            placeItems: "center",
+            background: "var(--card)",
+          }}
+        >
+          <ShareIcon />
+        </button>
+        <a
+          href={googleMapsUrl(spot)}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            flex: 1,
+            height: 54,
+            borderRadius: 16,
+            color: "#FFF6E6",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 9,
+            font: "600 15px var(--font-body)",
+            background: "var(--ochre)",
+          }}
+        >
+          <NavigateIcon />
+          Take Me There
+        </a>
+      </div>
+    </div>
+  );
+}

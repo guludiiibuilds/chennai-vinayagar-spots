@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
 import { distanceKm, formatDistance } from "@/lib/geo";
 import { SearchIcon, MenuIcon } from "@/components/icons";
 import { SpotListCard, SpotCarouselCard } from "@/components/SpotCard";
 import MenuSheet from "@/components/MenuSheet";
+import SpotSheet from "@/components/SpotSheet";
 
 const MapCanvas = dynamic(() => import("@/components/MapCanvas"), {
   ssr: false,
@@ -15,7 +16,16 @@ const MapCanvas = dynamic(() => import("@/components/MapCanvas"), {
 });
 
 export default function HomePage() {
+  return (
+    <Suspense fallback={null}>
+      <Home />
+    </Suspense>
+  );
+}
+
+function Home() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [spots, setSpots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
@@ -23,12 +33,21 @@ export default function HomePage() {
   const [mode, setMode] = useState("map");
   const [menuOpen, setMenuOpen] = useState(false);
   const [userPos, setUserPos] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
     fetchApprovedSpots()
       .then((data) => {
-        if (!cancelled) setSpots(data);
+        if (cancelled) return;
+        setSpots(data);
+        // Deep link support: a shared "/?spot=<id>" link opens straight
+        // into that spot's sheet once the list has loaded.
+        const wanted = searchParams.get("spot");
+        if (wanted && data.some((s) => s.id === wanted)) {
+          setMode("map");
+          setSelectedId(wanted);
+        }
       })
       .catch((err) => {
         if (!cancelled) setLoadError(err.message || "Could not load spots");
@@ -39,6 +58,7 @@ export default function HomePage() {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -50,22 +70,33 @@ export default function HomePage() {
     );
   }, []);
 
+  const spotsWithDist = useMemo(
+    () =>
+      spots.map((s) => ({
+        ...s,
+        distKm: userPos ? distanceKm(userPos, { lat: s.lat, lng: s.lng }) : null,
+      })),
+    [spots, userPos]
+  );
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const withDist = spots.map((s) => ({
-      ...s,
-      distKm: userPos ? distanceKm(userPos, { lat: s.lat, lng: s.lng }) : null,
-    }));
-    if (!q) return withDist;
-    return withDist.filter(
+    if (!q) return spotsWithDist;
+    return spotsWithDist.filter(
       (s) =>
         s.name.toLowerCase().includes(q) ||
         s.area.toLowerCase().includes(q) ||
         s.theme.toLowerCase().includes(q)
     );
-  }, [spots, query, userPos]);
+  }, [spotsWithDist, query]);
 
-  const goToSpot = (spot) => router.push(`/spot/${spot.id}`);
+  const selectedSpot = selectedId ? spotsWithDist.find((s) => s.id === selectedId) : null;
+
+  const openSpot = (spot) => {
+    setMode("map");
+    setSelectedId(spot.id);
+  };
+  const closeSheet = () => setSelectedId(null);
 
   return (
     <div className="app-shell">
@@ -145,28 +176,33 @@ export default function HomePage() {
 
         {mode === "map" ? (
           <div style={{ position: "relative", zIndex: 1, flex: 1, overflow: "hidden", background: "#F4EADA" }}>
-            <MapCanvas spots={filtered} userPos={userPos} onSelect={goToSpot} />
-            <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "0 0 84px", zIndex: 2, pointerEvents: "none" }}>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 10,
-                  overflowX: "auto",
-                  scrollSnapType: "x mandatory",
-                  padding: "10px 20px",
-                  pointerEvents: "auto",
-                }}
-              >
-                {filtered.map((s) => (
-                  <SpotCarouselCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} />
-                ))}
+            <MapCanvas spots={filtered} userPos={userPos} onSelect={openSpot} selectedId={selectedId} focusSpot={selectedSpot} />
+            {!selectedSpot ? (
+              <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "0 0 84px", zIndex: 2, pointerEvents: "none" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                    overflowX: "auto",
+                    scrollSnapType: "x mandatory",
+                    padding: "10px 20px",
+                    pointerEvents: "auto",
+                  }}
+                >
+                  {filtered.map((s) => (
+                    <SpotCarouselCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : null}
+            {selectedSpot ? (
+              <SpotSheet spot={selectedSpot} distanceLabel={formatDistance(selectedSpot.distKm)} onClose={closeSheet} />
+            ) : null}
           </div>
         ) : (
           <div style={{ flex: 1, overflowY: "auto", background: "var(--card)", padding: "14px 14px 100px", display: "flex", flexDirection: "column", gap: 10 }}>
             {filtered.map((s) => (
-              <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} />
+              <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
             ))}
             {!loading && filtered.length === 0 ? (
               <div style={{ padding: "38px 20px", textAlign: "center", font: "400 13px/1.6 var(--font-body)", color: "var(--muted)" }}>
@@ -197,31 +233,33 @@ export default function HomePage() {
           </div>
         ) : null}
 
-        <button
-          onClick={() => router.push("/submit")}
-          style={{
-            position: "absolute",
-            left: 14,
-            right: 14,
-            bottom: 16,
-            zIndex: 8,
-            height: 54,
-            borderRadius: 16,
-            color: "#FFF6E6",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 9,
-            font: "600 15px var(--font-body)",
-            background: "var(--ochre)",
-            boxShadow: "0 10px 26px -8px rgba(199,126,10,.7)",
-          }}
-        >
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" strokeWidth="2.4" strokeLinecap="round">
-            <path d="M12 5v14M5 12h14"></path>
-          </svg>
-          Spot a Vinayagar
-        </button>
+        {!selectedSpot ? (
+          <button
+            onClick={() => router.push("/submit")}
+            style={{
+              position: "absolute",
+              left: 14,
+              right: 14,
+              bottom: 16,
+              zIndex: 8,
+              height: 54,
+              borderRadius: 16,
+              color: "#FFF6E6",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 9,
+              font: "600 15px var(--font-body)",
+              background: "var(--ochre)",
+              boxShadow: "0 10px 26px -8px rgba(199,126,10,.7)",
+            }}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" strokeWidth="2.4" strokeLinecap="round">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            Spot a Vinayagar
+          </button>
+        ) : null}
 
         <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />
       </div>

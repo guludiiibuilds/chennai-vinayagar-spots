@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { PhotoIcon } from "./icons";
 
-export function SpotListCard({ spot, distanceLabel }) {
+export function SpotListCard({ spot, distanceLabel, onOpen }) {
   return (
-    <Link
-      href={`/spot/${spot.id}`}
+    <button
+      onClick={() => onOpen(spot)}
       style={{
         display: "flex",
         gap: 12,
@@ -15,6 +14,8 @@ export function SpotListCard({ spot, distanceLabel }) {
         background: "#FFF",
         border: "1px solid var(--line)",
         flex: "none",
+        textAlign: "left",
+        width: "100%",
       }}
     >
       <Thumb url={spot.photo_url} size={78} />
@@ -28,14 +29,14 @@ export function SpotListCard({ spot, distanceLabel }) {
           <span className="tag">{spot.theme}</span>
         </div>
       </div>
-    </Link>
+    </button>
   );
 }
 
-export function SpotCarouselCard({ spot, distanceLabel }) {
+export function SpotCarouselCard({ spot, distanceLabel, onOpen }) {
   return (
-    <Link
-      href={`/spot/${spot.id}`}
+    <button
+      onClick={() => onOpen(spot)}
       style={{
         flex: "none",
         width: 236,
@@ -47,6 +48,7 @@ export function SpotCarouselCard({ spot, distanceLabel }) {
         gap: 10,
         boxShadow: "0 6px 18px -6px rgba(42,27,16,.32)",
         border: "1px solid rgba(42,27,16,.07)",
+        textAlign: "left",
       }}
     >
       <Thumb url={spot.photo_url} size={56} />
@@ -70,7 +72,7 @@ export function SpotCarouselCard({ spot, distanceLabel }) {
           {spot.theme}
         </div>
       </div>
-    </Link>
+    </button>
   );
 }
 
