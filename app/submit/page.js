@@ -1,0 +1,348 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { uploadSpotPhoto, submitSpot } from "@/lib/spots";
+import { extractLatLngFromMapsLink } from "@/lib/geo";
+import { applyFormatting } from "@/lib/richtext";
+import { useToast } from "@/components/ToastProvider";
+import { BackIcon, CompassIcon, CheckIcon, ListIcon } from "@/components/icons";
+
+export default function SubmitPage() {
+  const router = useRouter();
+  const showToast = useToast();
+  const fileInputRef = useRef(null);
+  const descRef = useRef(null);
+
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [name, setName] = useState("");
+  const [loc, setLoc] = useState(null); // { lat, lng }
+  const [locating, setLocating] = useState(false);
+  const [mapsLink, setMapsLink] = useState("");
+  const [about, setAbout] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(null); // submitted spot name
+
+  const canSubmit = !!(photoFile && name.trim() && (loc || mapsLink.trim())) && !submitting;
+
+  const pickPhoto = () => fileInputRef.current?.click();
+
+  const onPhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const useGps = () => {
+    if (!navigator.geolocation) {
+      showToast("Location isn't available on this device");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocating(false);
+      },
+      () => {
+        setLocating(false);
+        showToast("Couldn't get your location — try pasting a Maps link instead");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  const format = (kind) => {
+    const el = descRef.current;
+    if (!el) return;
+    const { next, selectionStart, selectionEnd } = applyFormatting(el, kind);
+    setAbout(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      el.setSelectionRange(selectionStart, selectionEnd);
+    });
+  };
+
+  const submit = async () => {
+    if (!canSubmit) {
+      showToast("Please add a photo, a name and a location");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const photoUrl = await uploadSpotPhoto(photoFile);
+      const link = mapsLink.trim();
+      const derived = loc || extractLatLngFromMapsLink(link);
+      const spot = await submitSpot({
+        name: name.trim(),
+        about: about.trim(),
+        lat: derived?.lat ?? null,
+        lng: derived?.lng ?? null,
+        mapsLink: link || null,
+      });
+      setDone(spot.name);
+    } catch (err) {
+      showToast(err.message || "Something went wrong — please try again");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="app-shell">
+        <div className="app-frame" style={successFrameStyle}>
+          <div
+            style={{
+              width: 78,
+              height: 78,
+              borderRadius: "50%",
+              background: "var(--green)",
+              display: "grid",
+              placeItems: "center",
+              boxShadow: "0 12px 30px -10px rgba(31,92,58,.7)",
+            }}
+          >
+            <CheckIcon stroke="#FFF6E6" width={34} height={34} strokeWidth={2.6} />
+          </div>
+          <h2 style={{ font: "400 30px/1.15 var(--font-display)", color: "var(--ink)", margin: "22px 0 0" }}>Sent for review</h2>
+          <p style={{ font: "400 14px/1.65 var(--font-body)", color: "#6B5137", margin: "12px 0 0", maxWidth: 270 }}>
+            Thank you for adding <strong style={{ color: "var(--ink)" }}>{done}</strong>. A volunteer will approve it shortly and it will show up on
+            the map for everyone.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 9, marginTop: 28, width: "100%", maxWidth: 280 }}>
+            <button
+              onClick={() => router.push("/")}
+              style={{
+                height: 52,
+                borderRadius: 16,
+                background: "var(--ochre)",
+                color: "#FFF6E6",
+                font: "600 15px var(--font-body)",
+              }}
+            >
+              Go to Map View
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app-shell">
+      <div className="app-frame" style={{ animation: "fadeUp .28s ease both" }}>
+        <div style={{ flex: "none", padding: "16px 18px 14px", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            onClick={() => router.push("/")}
+            aria-label="Cancel"
+            style={{ width: 36, height: 36, borderRadius: 12, background: "#F5EADB", display: "grid", placeItems: "center" }}
+          >
+            <BackIcon />
+          </button>
+          <div>
+            <div style={{ font: "700 17px/1.2 var(--font-body)", color: "var(--ink)" }}>Spot a Vinayagar</div>
+            <div style={{ font: "400 11.5px/1.3 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>Three things. No login needed.</div>
+          </div>
+        </div>
+
+        <div style={{ flex: 1, overflowY: "auto", padding: "18px 18px 110px", display: "flex", flexDirection: "column", gap: 18 }}>
+          <div style={{ padding: "13px 14px", borderRadius: 14, background: "var(--ochre-tint)", font: "400 12px/1.6 var(--font-body)", color: "#6B5137" }}>
+            Please be mindful when you are uploading details as this would help others to view Vinayagar pandals.
+          </div>
+
+          <div>
+            <FieldLabel>1 · Photo</FieldLabel>
+            <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={onPhotoChange} style={{ display: "none" }} />
+            <button
+              onClick={pickPhoto}
+              style={{
+                width: "100%",
+                borderRadius: 16,
+                border: `1.5px solid ${photoFile ? "var(--green)" : "var(--line-strong)"}`,
+                background: photoFile ? "rgba(31,92,58,.07)" : "#FFF",
+                padding: photoFile ? 14 : "26px 16px",
+                display: "grid",
+                placeItems: "center",
+              }}
+            >
+              {photoFile ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 11, width: "100%" }}>
+                  <img src={photoPreview} alt="" style={{ width: 52, height: 52, borderRadius: 11, objectFit: "cover" }} />
+                  <div style={{ textAlign: "left" }}>
+                    <div style={{ font: "600 13px var(--font-body)", color: "var(--ink)" }}>{photoFile.name}</div>
+                    <div style={{ font: "400 11.5px var(--font-body)", color: "var(--green)", marginTop: 3 }}>Attached · tap to change</div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ textAlign: "center" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B9955F" strokeWidth="1.9" strokeLinecap="round">
+                    <path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.1-2h6.4l1.1 2h1.2A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5Z"></path>
+                    <circle cx="12" cy="12.5" r="3.4"></circle>
+                  </svg>
+                  <div style={{ font: "600 13.5px var(--font-body)", color: "#5B4530", marginTop: 8 }}>Take or upload a photo</div>
+                  <div style={{ font: "400 11.5px var(--font-body)", color: "var(--muted-2)", marginTop: 3 }}>One clear shot of the idol or pandal</div>
+                </div>
+              )}
+            </button>
+          </div>
+
+          <div>
+            <FieldLabel>2 · Name of the pandal</FieldLabel>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Kapaleeshwarar Street Pandal"
+              style={{
+                width: "100%",
+                height: 50,
+                borderRadius: 14,
+                border: "1.5px solid var(--line-strong)",
+                background: "#FFF",
+                padding: "0 14px",
+                font: "400 14px var(--font-body)",
+                color: "var(--ink)",
+                outline: 0,
+              }}
+            />
+          </div>
+
+          <div>
+            <FieldLabel>3 · Where is it?</FieldLabel>
+            <button
+              onClick={useGps}
+              style={{
+                width: "100%",
+                textAlign: "left",
+                borderRadius: 16,
+                border: `1.5px solid ${loc ? "var(--green)" : "var(--line-strong)"}`,
+                background: loc ? "rgba(31,92,58,.07)" : "#FFF",
+                padding: "12px 13px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
+                <div style={{ flex: "none", width: 38, height: 38, borderRadius: 12, background: "rgba(46,108,214,.12)", display: "grid", placeItems: "center" }}>
+                  <CompassIcon />
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ font: "600 13.5px var(--font-body)", color: "var(--ink)" }}>
+                    {locating ? "Locating…" : loc ? "Location captured" : "Use my current location"}
+                  </div>
+                  <div style={{ font: "400 11.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 3 }}>
+                    {loc ? `${loc.lat.toFixed(4)}° N, ${loc.lng.toFixed(4)}° E` : "Pin drops where you're standing — adjust after"}
+                  </div>
+                </div>
+                {loc ? <CheckIcon width={18} height={18} strokeWidth={3} /> : null}
+              </div>
+            </button>
+            <div style={{ font: "400 11.5px/1.5 var(--font-body)", color: "var(--muted-2)", marginTop: 8, padding: "0 2px" }}>
+              Or paste a Google Maps link instead
+            </div>
+            <input
+              value={mapsLink}
+              onChange={(e) => setMapsLink(e.target.value)}
+              placeholder="https://maps.app.goo.gl/…"
+              style={{
+                width: "100%",
+                height: 46,
+                marginTop: 7,
+                borderRadius: 13,
+                border: "1.5px solid var(--line)",
+                background: "#FFF",
+                padding: "0 13px",
+                font: "400 13px var(--font-body)",
+                color: "var(--ink)",
+                outline: 0,
+              }}
+            />
+          </div>
+
+          <div>
+            <FieldLabel>
+              4 · Describe the pandal <span style={{ textTransform: "none", color: "var(--muted-2)", fontWeight: 400 }}>(optional)</span>
+            </FieldLabel>
+            <div style={{ borderRadius: "14px 14px 0 0", border: "1.5px solid var(--line-strong)", borderBottom: "none", background: "#F7F0E4", display: "flex", gap: 4, padding: 6 }}>
+              <button onClick={() => format("bold")} style={toolbarBtnStyle} aria-label="Bold">
+                <span style={{ font: "700 13px var(--font-body)", color: "var(--ink-soft)" }}>B</span>
+              </button>
+              <button onClick={() => format("italic")} style={toolbarBtnStyle} aria-label="Italic">
+                <span style={{ font: "italic 700 13px var(--font-body)", color: "var(--ink-soft)" }}>I</span>
+              </button>
+              <button onClick={() => format("list")} style={toolbarBtnStyle} aria-label="Bullet list">
+                <ListIcon />
+              </button>
+            </div>
+            <textarea
+              ref={descRef}
+              value={about}
+              onChange={(e) => setAbout(e.target.value)}
+              placeholder="Theme, idol height, timings, anything visitors should know"
+              rows={4}
+              style={{
+                width: "100%",
+                minHeight: 90,
+                borderRadius: "0 0 14px 14px",
+                border: "1.5px solid var(--line-strong)",
+                background: "#FFF",
+                padding: "12px 14px",
+                font: "400 13.5px/1.5 var(--font-body)",
+                color: "var(--ink)",
+                outline: 0,
+                resize: "vertical",
+              }}
+            />
+          </div>
+        </div>
+
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "12px 14px 16px", background: "linear-gradient(180deg,rgba(255,252,246,0),#FFFCF6 34%)" }}>
+          <button
+            onClick={submit}
+            disabled={!canSubmit}
+            style={{
+              width: "100%",
+              height: 54,
+              borderRadius: 16,
+              display: "grid",
+              placeItems: "center",
+              font: "600 15px var(--font-body)",
+              ...(canSubmit
+                ? { background: "var(--ochre)", color: "#FFF6E6", boxShadow: "0 10px 26px -8px rgba(199,126,10,.7)" }
+                : { background: "#EFE4D2", color: "#A89377", cursor: "not-allowed" }),
+            }}
+          >
+            {submitting ? "Submitting…" : canSubmit ? "Submit for review" : "Add photo, name and location"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FieldLabel({ children }) {
+  return (
+    <div style={{ font: "600 11px/1 var(--font-body)", letterSpacing: ".1em", textTransform: "uppercase", color: "var(--ochre-deep)", marginBottom: 9 }}>
+      {children}
+    </div>
+  );
+}
+
+const toolbarBtnStyle = {
+  width: 30,
+  height: 30,
+  borderRadius: 8,
+  display: "grid",
+  placeItems: "center",
+};
+
+const successFrameStyle = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: 34,
+  textAlign: "center",
+  background: "linear-gradient(180deg,#FFF6E6,#FFFCF6)",
+  animation: "fadeUp .3s ease both",
+};
