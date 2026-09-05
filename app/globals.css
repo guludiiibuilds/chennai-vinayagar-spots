@@ -169,6 +169,36 @@ textarea {
   box-shadow: 3px 5px 30px rgba(0, 0, 0, 0.22);
 }
 
+/* Every text input/textarea in the app gets this: a hover border tint,
+   and a focus ring in the single accent color — matching the design
+   system's blue focus-state convention (buttons use a solid outline;
+   fields use a soft ring since they already carry a visible border). */
+.field-input {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.field-input:hover {
+  border-color: var(--muted);
+}
+.field-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+/* Same treatment for a field whose visible border lives on a wrapper div
+   around the <input> (e.g. an input with a leading icon) rather than on
+   the input itself — :focus-within reacts when the inner input focuses. */
+.field-wrap {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.field-wrap:hover {
+  border-color: var(--muted);
+}
+.field-wrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
 .tag {
   display: inline-flex;
   align-items: center;

@@ -146,6 +146,7 @@ function Home() {
           {!selectedSpot ? (
             <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
               <div
+                className="field-wrap"
                 style={{
                   flex: 1,
                   display: "flex",

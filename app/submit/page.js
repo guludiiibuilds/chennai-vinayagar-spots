@@ -183,6 +183,7 @@ export default function SubmitPage() {
           <div>
             <FieldLabel>Vinayagar Name</FieldLabel>
             <input
+              className="field-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Kapaleeshwarar Street Pandal"
@@ -232,6 +233,7 @@ export default function SubmitPage() {
               Or paste a Google Maps link instead
             </div>
             <input
+              className="field-input"
               value={mapsLink}
               onChange={(e) => setMapsLink(e.target.value)}
               placeholder="https://maps.app.goo.gl/…"
@@ -255,6 +257,7 @@ export default function SubmitPage() {
               Describe Vinayagar <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
             </FieldLabel>
             <textarea
+              className="field-input"
               value={about}
               onChange={(e) => setAbout(e.target.value)}
               placeholder="Theme, idol height, timings, anything visitors should know"
