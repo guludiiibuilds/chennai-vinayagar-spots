@@ -102,13 +102,14 @@ export default function SubmitPage() {
               background: "var(--green)",
               display: "grid",
               placeItems: "center",
-              boxShadow: "0 12px 30px -10px rgba(31,92,58,.7)",
             }}
           >
-            <CheckIcon stroke="#FFF6E6" width={34} height={34} strokeWidth={2.6} />
+            <CheckIcon stroke="#ffffff" width={34} height={34} strokeWidth={2.6} />
           </div>
-          <h2 style={{ font: "400 30px/1.15 var(--font-display)", color: "var(--ink)", margin: "22px 0 0" }}>Sent for review</h2>
-          <p style={{ font: "400 14px/1.65 var(--font-body)", color: "#6B5137", margin: "12px 0 0", maxWidth: 270 }}>
+          <h2 style={{ font: "600 28px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)", margin: "22px 0 0" }}>
+            Sent for review
+          </h2>
+          <p style={{ font: "400 15px/1.6 var(--font-body)", color: "var(--ink-soft)", margin: "12px 0 0", maxWidth: 270 }}>
             Thank you for adding <strong style={{ color: "var(--ink)" }}>{done}</strong>. A volunteer will approve it shortly and it will show up on
             the map for everyone.
           </p>
@@ -116,11 +117,11 @@ export default function SubmitPage() {
             <button
               onClick={() => router.push("/")}
               style={{
-                height: 52,
-                borderRadius: 16,
-                background: "var(--ochre)",
-                color: "#FFF6E6",
-                font: "600 15px var(--font-body)",
+                height: 50,
+                borderRadius: 9999,
+                background: "var(--accent)",
+                color: "#ffffff",
+                font: "400 17px var(--font-body)",
               }}
             >
               Go to Map View
@@ -138,18 +139,18 @@ export default function SubmitPage() {
           <button
             onClick={() => router.push("/")}
             aria-label="Cancel"
-            style={{ width: 36, height: 36, borderRadius: 12, background: "#F5EADB", display: "grid", placeItems: "center" }}
+            style={{ width: 36, height: 36, borderRadius: 9999, background: "var(--paper)", display: "grid", placeItems: "center" }}
           >
             <BackIcon />
           </button>
           <div>
-            <div style={{ font: "700 17px/1.2 var(--font-body)", color: "var(--ink)" }}>Spot a Vinayagar</div>
+            <div style={{ font: "600 17px/1.2 var(--font-body)", letterSpacing: "-.374px", color: "var(--ink)" }}>Spot a Vinayagar</div>
             <div style={{ font: "400 11.5px/1.3 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>Three things. No login needed.</div>
           </div>
         </div>
 
         <div style={{ flex: 1, overflowY: "auto", padding: "18px 18px 110px", display: "flex", flexDirection: "column", gap: 18 }}>
-          <div style={{ padding: "13px 14px", borderRadius: 14, background: "var(--ochre-tint)", font: "400 12px/1.6 var(--font-body)", color: "#6B5137" }}>
+          <div style={{ padding: "13px 14px", borderRadius: "var(--radius-md)", background: "var(--accent-tint)", font: "400 12px/1.6 var(--font-body)", color: "var(--ink-soft)" }}>
             Please be mindful when you are uploading details as this would help others to view Vinayagar pandals.
           </div>
 
@@ -160,9 +161,9 @@ export default function SubmitPage() {
               onClick={pickPhoto}
               style={{
                 width: "100%",
-                borderRadius: 16,
-                border: `1.5px solid ${photoFile ? "var(--green)" : "var(--line-strong)"}`,
-                background: photoFile ? "rgba(31,92,58,.07)" : "#FFF",
+                borderRadius: "var(--radius-lg)",
+                border: `1px solid ${photoFile ? "var(--green)" : "var(--line-strong)"}`,
+                background: photoFile ? "var(--green-tint)" : "var(--card)",
                 padding: photoFile ? 14 : "26px 16px",
                 display: "grid",
                 placeItems: "center",
@@ -170,7 +171,7 @@ export default function SubmitPage() {
             >
               {photoFile ? (
                 <div style={{ display: "flex", alignItems: "center", gap: 11, width: "100%" }}>
-                  <img src={photoPreview} alt="" style={{ width: 52, height: 52, borderRadius: 11, objectFit: "cover" }} />
+                  <img src={photoPreview} alt="" style={{ width: 52, height: 52, borderRadius: "var(--radius-sm)", objectFit: "cover" }} />
                   <div style={{ textAlign: "left" }}>
                     <div style={{ font: "600 13px var(--font-body)", color: "var(--ink)" }}>{photoFile.name}</div>
                     <div style={{ font: "400 11.5px var(--font-body)", color: "var(--green)", marginTop: 3 }}>Attached · tap to change</div>
@@ -178,12 +179,12 @@ export default function SubmitPage() {
                 </div>
               ) : (
                 <div style={{ textAlign: "center" }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B9955F" strokeWidth="1.9" strokeLinecap="round">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7a7a7a" strokeWidth="1.9" strokeLinecap="round">
                     <path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.1-2h6.4l1.1 2h1.2A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5Z"></path>
                     <circle cx="12" cy="12.5" r="3.4"></circle>
                   </svg>
-                  <div style={{ font: "600 13.5px var(--font-body)", color: "#5B4530", marginTop: 8 }}>Take or upload a photo</div>
-                  <div style={{ font: "400 11.5px var(--font-body)", color: "var(--muted-2)", marginTop: 3 }}>One clear shot of the idol or pandal</div>
+                  <div style={{ font: "600 13.5px var(--font-body)", color: "var(--ink)", marginTop: 8 }}>Take or upload a photo</div>
+                  <div style={{ font: "400 11.5px var(--font-body)", color: "var(--muted)", marginTop: 3 }}>One clear shot of the idol or pandal</div>
                 </div>
               )}
             </button>
@@ -198,9 +199,9 @@ export default function SubmitPage() {
               style={{
                 width: "100%",
                 height: 50,
-                borderRadius: 14,
-                border: "1.5px solid var(--line-strong)",
-                background: "#FFF",
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--line-strong)",
+                background: "var(--card)",
                 padding: "0 14px",
                 font: "400 14px var(--font-body)",
                 color: "var(--ink)",
@@ -216,14 +217,14 @@ export default function SubmitPage() {
               style={{
                 width: "100%",
                 textAlign: "left",
-                borderRadius: 16,
-                border: `1.5px solid ${loc ? "var(--green)" : "var(--line-strong)"}`,
-                background: loc ? "rgba(31,92,58,.07)" : "#FFF",
+                borderRadius: "var(--radius-lg)",
+                border: `1px solid ${loc ? "var(--green)" : "var(--line-strong)"}`,
+                background: loc ? "var(--green-tint)" : "var(--card)",
                 padding: "12px 13px",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-                <div style={{ flex: "none", width: 38, height: 38, borderRadius: 12, background: "rgba(46,108,214,.12)", display: "grid", placeItems: "center" }}>
+                <div style={{ flex: "none", width: 38, height: 38, borderRadius: "var(--radius-sm)", background: "var(--accent-tint)", display: "grid", placeItems: "center" }}>
                   <CompassIcon />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -237,7 +238,7 @@ export default function SubmitPage() {
                 {loc ? <CheckIcon width={18} height={18} strokeWidth={3} /> : null}
               </div>
             </button>
-            <div style={{ font: "400 11.5px/1.5 var(--font-body)", color: "var(--muted-2)", marginTop: 8, padding: "0 2px" }}>
+            <div style={{ font: "400 11.5px/1.5 var(--font-body)", color: "var(--muted)", marginTop: 8, padding: "0 2px" }}>
               Or paste a Google Maps link instead
             </div>
             <input
@@ -248,9 +249,9 @@ export default function SubmitPage() {
                 width: "100%",
                 height: 46,
                 marginTop: 7,
-                borderRadius: 13,
-                border: "1.5px solid var(--line)",
-                background: "#FFF",
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--line)",
+                background: "var(--card)",
                 padding: "0 13px",
                 font: "400 13px var(--font-body)",
                 color: "var(--ink)",
@@ -261,9 +262,19 @@ export default function SubmitPage() {
 
           <div>
             <FieldLabel>
-              4 · Describe the pandal <span style={{ textTransform: "none", color: "var(--muted-2)", fontWeight: 400 }}>(optional)</span>
+              4 · Describe the pandal <span style={{ textTransform: "none", color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
             </FieldLabel>
-            <div style={{ borderRadius: "14px 14px 0 0", border: "1.5px solid var(--line-strong)", borderBottom: "none", background: "#F7F0E4", display: "flex", gap: 4, padding: 6 }}>
+            <div
+              style={{
+                borderRadius: "var(--radius-md) var(--radius-md) 0 0",
+                border: "1px solid var(--line-strong)",
+                borderBottom: "none",
+                background: "var(--paper)",
+                display: "flex",
+                gap: 4,
+                padding: 6,
+              }}
+            >
               <button onClick={() => format("bold")} style={toolbarBtnStyle} aria-label="Bold">
                 <span style={{ font: "700 13px var(--font-body)", color: "var(--ink-soft)" }}>B</span>
               </button>
@@ -283,9 +294,9 @@ export default function SubmitPage() {
               style={{
                 width: "100%",
                 minHeight: 90,
-                borderRadius: "0 0 14px 14px",
-                border: "1.5px solid var(--line-strong)",
-                background: "#FFF",
+                borderRadius: "0 0 var(--radius-md) var(--radius-md)",
+                border: "1px solid var(--line-strong)",
+                background: "var(--card)",
                 padding: "12px 14px",
                 font: "400 13.5px/1.5 var(--font-body)",
                 color: "var(--ink)",
@@ -296,20 +307,18 @@ export default function SubmitPage() {
           </div>
         </div>
 
-        <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "12px 14px 16px", background: "linear-gradient(180deg,rgba(255,252,246,0),#FFFCF6 34%)" }}>
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "12px 14px 16px", background: "linear-gradient(180deg,rgba(255,255,255,0),var(--card) 34%)" }}>
           <button
             onClick={submit}
             disabled={!canSubmit}
             style={{
               width: "100%",
-              height: 54,
-              borderRadius: 16,
+              height: 50,
+              borderRadius: 9999,
               display: "grid",
               placeItems: "center",
-              font: "600 15px var(--font-body)",
-              ...(canSubmit
-                ? { background: "var(--ochre)", color: "#FFF6E6", boxShadow: "0 10px 26px -8px rgba(199,126,10,.7)" }
-                : { background: "#EFE4D2", color: "#A89377", cursor: "not-allowed" }),
+              font: "400 17px var(--font-body)",
+              ...(canSubmit ? { background: "var(--accent)", color: "#ffffff" } : { background: "var(--paper)", color: "var(--muted)", cursor: "not-allowed" }),
             }}
           >
             {submitting ? "Submitting…" : canSubmit ? "Submit for review" : "Add photo, name and location"}
@@ -322,7 +331,7 @@ export default function SubmitPage() {
 
 function FieldLabel({ children }) {
   return (
-    <div style={{ font: "600 11px/1 var(--font-body)", letterSpacing: ".1em", textTransform: "uppercase", color: "var(--ochre-deep)", marginBottom: 9 }}>
+    <div style={{ font: "600 11px/1 var(--font-body)", letterSpacing: ".06em", textTransform: "uppercase", color: "var(--muted)", marginBottom: 9 }}>
       {children}
     </div>
   );
@@ -331,7 +340,7 @@ function FieldLabel({ children }) {
 const toolbarBtnStyle = {
   width: 30,
   height: 30,
-  borderRadius: 8,
+  borderRadius: "var(--radius-xs)",
   display: "grid",
   placeItems: "center",
 };
@@ -343,6 +352,6 @@ const successFrameStyle = {
   justifyContent: "center",
   padding: 34,
   textAlign: "center",
-  background: "linear-gradient(180deg,#FFF6E6,#FFFCF6)",
+  background: "var(--card)",
   animation: "fadeUp .3s ease both",
 };

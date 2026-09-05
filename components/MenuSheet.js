@@ -20,7 +20,7 @@ export default function MenuSheet({ open, onClose }) {
         position: "absolute",
         inset: 0,
         zIndex: 40,
-        background: "rgba(36,26,18,.55)",
+        background: "rgba(0,0,0,.4)",
         display: "flex",
         alignItems: "flex-end",
       }}
@@ -30,7 +30,7 @@ export default function MenuSheet({ open, onClose }) {
         style={{
           width: "100%",
           background: "var(--card)",
-          borderRadius: "22px 22px 0 0",
+          borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",
           padding: "22px 20px 28px",
           animation: "fadeUp .22s ease both",
           maxHeight: "78%",
@@ -38,9 +38,9 @@ export default function MenuSheet({ open, onClose }) {
           position: "relative",
         }}
       >
-        <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(42,27,16,.18)", margin: "0 auto 18px" }} />
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--line-strong)", margin: "0 auto 18px" }} />
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, position: "relative" }}>
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 24, color: "var(--ink)" }}>Vinayagar Spots</div>
+          <div style={{ font: "600 24px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>Vinayagar Spots</div>
           <button aria-label="Close menu" onClick={onClose} style={{ width: 32, height: 32, borderRadius: 10, display: "grid", placeItems: "center" }}>
             <CloseIcon />
           </button>
@@ -56,12 +56,12 @@ export default function MenuSheet({ open, onClose }) {
                   flex: "none",
                   width: 32,
                   height: 32,
-                  borderRadius: 10,
-                  background: "var(--ochre-tint)",
+                  borderRadius: "var(--radius-sm)",
+                  background: "var(--accent-tint)",
                   display: "grid",
                   placeItems: "center",
                   font: "600 13px var(--font-body)",
-                  color: "var(--ochre-deep)",
+                  color: "var(--accent)",
                 }}
               >
                 {i + 1}
@@ -94,7 +94,7 @@ export default function MenuSheet({ open, onClose }) {
             Report an issue
           </button>
         </div>
-        <div style={{ marginTop: 18, font: "400 11px/1.6 var(--font-body)", color: "var(--hint)", textAlign: "center" }}>
+        <div style={{ marginTop: 18, font: "400 11px/1.6 var(--font-body)", color: "var(--muted)", textAlign: "center" }}>
           Built by <a href="https://www.linkedin.com/in/gurunivashr/">Guru Nivash</a>, for the Chennai community&nbsp;❤️
         </div>
       </div>

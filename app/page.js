@@ -12,7 +12,7 @@ import SpotSheet from "@/components/SpotSheet";
 
 const MapCanvas = dynamic(() => import("@/components/MapCanvas"), {
   ssr: false,
-  loading: () => <div style={{ position: "absolute", inset: 0, background: "#F4EADA" }} />,
+  loading: () => <div style={{ position: "absolute", inset: 0, background: "var(--paper)" }} />,
 });
 
 export default function HomePage() {
@@ -106,16 +106,17 @@ function Home() {
             position: "relative",
             zIndex: 6,
             padding: selectedSpot ? "16px 18px" : "16px 18px 12px",
-            background: "linear-gradient(180deg,#C77E0A,#B0670A)",
-            color: "#FFF6E6",
+            background: "var(--card)",
+            borderBottom: "1px solid var(--line)",
+            color: "var(--ink)",
             flex: "none",
           }}
         >
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
             <div>
-              <div style={{ font: "800 21px/1.15 var(--font-body)", letterSpacing: "-.02em" }}>Spot Vinayagar in Chennai</div>
+              <div style={{ font: "600 21px/1.15 var(--font-display)", letterSpacing: "-.374px" }}>Spot Vinayagar in Chennai</div>
               {!selectedSpot ? (
-                <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "rgba(255,246,230,.82)", marginTop: 2 }}>
+                <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>
                   {spots.length} active pandal{spots.length === 1 ? "" : "s"}
                 </div>
               ) : null}
@@ -127,11 +128,10 @@ function Home() {
                 flex: "none",
                 width: 34,
                 height: 34,
-                borderRadius: 12,
-                background: "rgba(255,246,230,.16)",
+                borderRadius: 9999,
+                background: "var(--paper)",
                 display: "grid",
                 placeItems: "center",
-                border: "1px solid rgba(255,246,230,.24)",
               }}
             >
               <MenuIcon />
@@ -146,9 +146,10 @@ function Home() {
                   display: "flex",
                   alignItems: "center",
                   gap: 8,
-                  background: "rgba(255,252,246,.95)",
-                  borderRadius: 12,
-                  padding: "9px 12px",
+                  background: "var(--paper)",
+                  border: "1px solid var(--line-strong)",
+                  borderRadius: 9999,
+                  padding: "9px 14px",
                 }}
               >
                 <SearchIcon />
@@ -166,7 +167,7 @@ function Home() {
                   }}
                 />
               </div>
-              <div style={{ display: "flex", background: "rgba(42,27,16,.22)", borderRadius: 12, padding: 3, flex: "none" }}>
+              <div style={{ display: "flex", background: "var(--paper)", borderRadius: 9999, padding: 3, flex: "none" }}>
                 <button onClick={() => setMode("map")} style={tabStyle(mode === "map")}>
                   Map
                 </button>
@@ -179,7 +180,7 @@ function Home() {
         </header>
 
         {mode === "map" ? (
-          <div style={{ position: "relative", zIndex: 1, flex: 1, overflow: "hidden", background: "#F4EADA" }}>
+          <div style={{ position: "relative", zIndex: 1, flex: 1, overflow: "hidden", background: "var(--paper)" }}>
             <MapCanvas spots={filtered} userPos={userPos} onSelect={openSpot} selectedId={selectedId} focusSpot={selectedSpot} />
             {!selectedSpot ? (
               <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "0 0 84px", zIndex: 2, pointerEvents: "none" }}>
@@ -227,10 +228,12 @@ function Home() {
               top: 132,
               zIndex: 20,
               padding: "10px 14px",
-              borderRadius: 12,
-              background: "#FFF3DF",
-              color: "#7E3B0F",
-              font: "500 12px/1.4 var(--font-body)",
+              borderRadius: "var(--radius-md)",
+              background: "var(--card)",
+              border: "1px solid var(--line-strong)",
+              borderLeft: "3px solid var(--pin)",
+              color: "var(--ink-soft)",
+              font: "400 12px/1.4 var(--font-body)",
             }}
           >
             Couldn&apos;t load spots ({loadError}). Check the Supabase project is reachable and the schema has been applied.
@@ -246,19 +249,18 @@ function Home() {
               right: 14,
               bottom: 16,
               zIndex: 8,
-              height: 54,
-              borderRadius: 16,
-              color: "#FFF6E6",
+              height: 50,
+              borderRadius: 9999,
+              color: "#ffffff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: 9,
-              font: "600 15px var(--font-body)",
-              background: "var(--ochre)",
-              boxShadow: "0 10px 26px -8px rgba(199,126,10,.7)",
+              font: "400 17px var(--font-body)",
+              background: "var(--accent)",
             }}
           >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" strokeWidth="2.4" strokeLinecap="round">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
               <path d="M12 5v14M5 12h14"></path>
             </svg>
             Spot a Vinayagar
@@ -274,9 +276,9 @@ function Home() {
 function tabStyle(active) {
   return {
     padding: "7px 13px",
-    borderRadius: 9,
-    font: "600 12.5px var(--font-body)",
-    background: active ? "#FFFCF6" : "transparent",
-    color: active ? "#8E1B15" : "rgba(255,246,230,.85)",
+    borderRadius: 9999,
+    font: "400 12.5px var(--font-body)",
+    background: active ? "var(--card)" : "transparent",
+    color: active ? "var(--ink)" : "var(--muted)",
   };
 }

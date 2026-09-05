@@ -10,9 +10,9 @@ export function SpotListCard({ spot, distanceLabel, onOpen }) {
         display: "flex",
         gap: 12,
         padding: 10,
-        borderRadius: 16,
-        background: "#FFF",
-        border: "1px solid var(--line)",
+        borderRadius: "var(--radius-lg)",
+        background: "var(--card)",
+        border: "1px solid var(--line-strong)",
         flex: "none",
         textAlign: "left",
         width: "100%",
@@ -20,7 +20,7 @@ export function SpotListCard({ spot, distanceLabel, onOpen }) {
     >
       <Thumb url={spot.photo_url} size={78} />
       <div style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", gap: 4 }}>
-        <div style={{ font: "600 14.5px/1.25 var(--font-body)", color: "var(--ink)" }}>{spot.name}</div>
+        <div style={{ font: "600 14.5px/1.25 var(--font-body)", color: "var(--ink)", letterSpacing: "-.2px" }}>{spot.name}</div>
         <div style={{ font: "400 12px/1.35 var(--font-body)", color: "var(--muted)" }}>
           {spot.area}
           {distanceLabel ? ` · ${distanceLabel} km away` : ""}
@@ -42,12 +42,11 @@ export function SpotCarouselCard({ spot, distanceLabel, onOpen }) {
         width: 236,
         scrollSnapAlign: "start",
         background: "var(--card)",
-        borderRadius: 16,
+        borderRadius: "var(--radius-lg)",
         padding: 9,
         display: "flex",
         gap: 10,
-        boxShadow: "0 6px 18px -6px rgba(42,27,16,.32)",
-        border: "1px solid rgba(42,27,16,.07)",
+        border: "1px solid var(--line-strong)",
         textAlign: "left",
       }}
     >
@@ -57,6 +56,7 @@ export function SpotCarouselCard({ spot, distanceLabel, onOpen }) {
           style={{
             font: "600 13.5px/1.25 var(--font-body)",
             color: "var(--ink)",
+            letterSpacing: "-.2px",
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
@@ -77,6 +77,7 @@ export function SpotCarouselCard({ spot, distanceLabel, onOpen }) {
 }
 
 function Thumb({ url, size }) {
+  const radius = size > 60 ? "var(--radius-sm)" : "var(--radius-xs)";
   if (url) {
     return (
       <img
@@ -86,9 +87,9 @@ function Thumb({ url, size }) {
           flex: "none",
           width: size,
           height: size,
-          borderRadius: size > 60 ? 12 : 11,
+          borderRadius: radius,
           objectFit: "cover",
-          background: "#F0E2CB",
+          background: "var(--paper)",
         }}
       />
     );
@@ -99,8 +100,8 @@ function Thumb({ url, size }) {
         flex: "none",
         width: size,
         height: size,
-        borderRadius: size > 60 ? 12 : 11,
-        background: "repeating-linear-gradient(135deg,#F0E2CB 0 7px,#E9D8BC 7px 14px)",
+        borderRadius: radius,
+        background: "var(--paper)",
         display: "grid",
         placeItems: "center",
       }}

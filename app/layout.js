@@ -1,19 +1,14 @@
-import { Bricolage_Grotesque, Instrument_Serif } from "next/font/google";
+import { Inter } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import ToastProvider from "@/components/ToastProvider";
 
-const bricolage = Bricolage_Grotesque({
+// Real SF Pro renders on Apple devices via the -apple-system/BlinkMacSystemFont
+// stack in globals.css; Inter is loaded as the closest open-source match for
+// everyone else, per the design system's own font-substitution guidance.
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
-  variable: "--font-serif",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -26,12 +21,12 @@ export const metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#C77E0A",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${bricolage.variable} ${instrumentSerif.variable}`}>
+    <html lang="en" className={inter.variable}>
       <body>
         <ToastProvider>{children}</ToastProvider>
       </body>

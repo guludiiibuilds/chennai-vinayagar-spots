@@ -24,7 +24,8 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
     <Fragment>
       {/* Floats above the sheet's own box (rather than inside its
           overflow:hidden content) so it can never be covered by the
-          sheet's rounded top edge or clipped content. */}
+          sheet's rounded top edge or clipped content. icon-circular:
+          44px, translucent + blurred, no shadow. */}
       <button
         onClick={onClose}
         aria-label="Close"
@@ -33,13 +34,14 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
           right: 14,
           bottom: "calc(60% + 12px)",
           zIndex: 6,
-          width: 38,
-          height: 38,
-          borderRadius: 13,
+          width: 44,
+          height: 44,
+          borderRadius: 9999,
           display: "grid",
           placeItems: "center",
-          background: "var(--card)",
-          boxShadow: "0 4px 14px rgba(42,27,16,.3)",
+          background: "rgba(255,255,255,.78)",
+          backdropFilter: "saturate(180%) blur(14px)",
+          WebkitBackdropFilter: "saturate(180%) blur(14px)",
         }}
       >
         <CloseIcon width={15} height={15} />
@@ -54,8 +56,8 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
           height: "60%",
           zIndex: 5,
           background: "var(--card)",
-          borderRadius: "20px 20px 0 0",
-          boxShadow: "0 -14px 34px -12px rgba(42,27,16,.4)",
+          borderTop: "1px solid var(--line-strong)",
+          borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -63,23 +65,22 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
         }}
       >
         <div style={{ flex: "none", padding: "10px 14px 4px" }}>
-          <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(42,27,16,.18)", margin: "0 auto" }} />
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--line-strong)", margin: "0 auto" }} />
         </div>
 
         <div style={{ flex: 1, overflowY: "auto", padding: "6px 18px 14px" }}>
           <div
+            className={spot.photo_url ? "photo-shadow" : undefined}
             style={{
               position: "relative",
               height: 168,
-              borderRadius: 14,
-              background: spot.photo_url
-                ? `center / cover no-repeat url(${spot.photo_url})`
-                : "repeating-linear-gradient(135deg,#EFDFC4 0 9px,#E7D4B2 9px 18px)",
+              borderRadius: "var(--radius-lg)",
+              background: spot.photo_url ? `center / cover no-repeat url(${spot.photo_url})` : "var(--paper)",
               display: spot.photo_url ? "block" : "grid",
               placeItems: "center",
             }}
           >
-            {!spot.photo_url ? <PhotoIcon stroke="#B08F58" width={26} height={26} /> : null}
+            {!spot.photo_url ? <PhotoIcon width={26} height={26} /> : null}
             <div
               style={{
                 position: "absolute",
@@ -88,11 +89,12 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
                 display: "flex",
                 alignItems: "center",
                 gap: 5,
-                background: "rgba(255,252,246,.94)",
-                borderRadius: 999,
+                background: "rgba(255,255,255,.78)",
+                backdropFilter: "saturate(180%) blur(14px)",
+                WebkitBackdropFilter: "saturate(180%) blur(14px)",
+                borderRadius: 9999,
                 padding: "6px 10px",
-                boxShadow: "0 3px 10px rgba(42,27,16,.18)",
-                font: "500 11.5px/1.2 var(--font-body)",
+                font: "400 11.5px/1.2 var(--font-body)",
                 color: "var(--ink-soft)",
               }}
             >
@@ -102,12 +104,12 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
             </div>
           </div>
 
-          <h2 style={{ font: "400 24px/1.15 var(--font-display)", color: "var(--ink)", margin: "14px 0 0", letterSpacing: "-.01em" }}>
+          <h2 style={{ font: "600 24px/1.2 var(--font-display)", color: "var(--ink)", margin: "14px 0 0", letterSpacing: "-.374px" }}>
             {spot.name}
           </h2>
 
           {spot.about ? (
-            <div style={{ font: "400 14px/1.6 var(--font-body)", color: "var(--ink-soft)", marginTop: 14 }}>
+            <div style={{ font: "400 15px/1.5 var(--font-body)", color: "var(--ink-soft)", letterSpacing: "-.2px", marginTop: 14 }}>
               {renderRichText(spot.about)}
             </div>
           ) : null}
@@ -119,10 +121,10 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
             aria-label="Share"
             style={{
               flex: "none",
-              width: 54,
-              height: 54,
-              borderRadius: 16,
-              border: "1.5px solid rgba(42,27,16,.16)",
+              width: 50,
+              height: 50,
+              borderRadius: 9999,
+              border: "1px solid var(--line-strong)",
               display: "grid",
               placeItems: "center",
               background: "var(--card)",
@@ -136,15 +138,15 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
             rel="noreferrer"
             style={{
               flex: 1,
-              height: 54,
-              borderRadius: 16,
-              color: "#FFF6E6",
+              height: 50,
+              borderRadius: 9999,
+              color: "#ffffff",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               gap: 9,
-              font: "600 15px var(--font-body)",
-              background: "var(--ochre)",
+              font: "400 17px var(--font-body)",
+              background: "var(--accent)",
             }}
           >
             <NavigateIcon />

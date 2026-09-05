@@ -1,23 +1,23 @@
-export function SearchIcon(props) {
+export function SearchIcon({ stroke = "#7a7a7a", ...props }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9A7A5C" strokeWidth="2.2" strokeLinecap="round" {...props}>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" {...props}>
       <circle cx="11" cy="11" r="7"></circle>
       <path d="m20 20-3.5-3.5"></path>
     </svg>
   );
 }
 
-export function MenuIcon(props) {
+export function MenuIcon({ stroke = "#1d1d1f", ...props }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" strokeWidth="2.2" strokeLinecap="round" {...props}>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" {...props}>
       <path d="M4 7h16M4 12h16M4 17h16"></path>
     </svg>
   );
 }
 
-export function PinGlyph(props) {
+export function PinGlyph({ stroke = "#ffffff", ...props }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" strokeWidth="2.4" strokeLinecap="round" {...props}>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" {...props}>
       <path d="M12 3v3"></path>
       <path d="M7.5 20h9"></path>
       <path d="M6 20c0-4 2.7-7 6-7s6 3 6 7"></path>
@@ -26,7 +26,7 @@ export function PinGlyph(props) {
   );
 }
 
-export function CompassIcon({ stroke = "#2E6CD6", ...props }) {
+export function CompassIcon({ stroke = "#0066cc", ...props }) {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" {...props}>
       <circle cx="12" cy="12" r="3.2"></circle>
@@ -36,7 +36,7 @@ export function CompassIcon({ stroke = "#2E6CD6", ...props }) {
   );
 }
 
-export function PhotoIcon({ stroke = "#B9955F", ...props }) {
+export function PhotoIcon({ stroke = "#c7c7cc", ...props }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" {...props}>
       <rect x="3" y="5" width="18" height="14" rx="2"></rect>
@@ -46,23 +46,23 @@ export function PhotoIcon({ stroke = "#B9955F", ...props }) {
   );
 }
 
-export function BackIcon(props) {
+export function BackIcon({ stroke = "#1d1d1f", ...props }) {
   return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2A1B10" strokeWidth="2.4" strokeLinecap="round" {...props}>
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" {...props}>
       <path d="m14 6-6 6 6 6"></path>
     </svg>
   );
 }
 
-export function CloseIcon(props) {
+export function CloseIcon({ stroke = "#1d1d1f", ...props }) {
   return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2A1B10" strokeWidth="2.4" strokeLinecap="round" {...props}>
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" {...props}>
       <path d="M6 6l12 12M18 6 6 18"></path>
     </svg>
   );
 }
 
-export function ShareIcon({ stroke = "#2A1B10", ...props }) {
+export function ShareIcon({ stroke = "#1d1d1f", ...props }) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" {...props}>
       <path d="M12 3v11"></path>
@@ -72,7 +72,7 @@ export function ShareIcon({ stroke = "#2A1B10", ...props }) {
   );
 }
 
-export function CheckIcon({ stroke = "#1F5C3A", ...props }) {
+export function CheckIcon({ stroke = "#248a3d", ...props }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="3" strokeLinecap="round" {...props}>
       <path d="m5 13 4 4 10-10"></path>
@@ -80,34 +80,34 @@ export function CheckIcon({ stroke = "#1F5C3A", ...props }) {
   );
 }
 
-export function NavigateIcon(props) {
+export function NavigateIcon({ stroke = "#ffffff", ...props }) {
   return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" strokeWidth="2.3" strokeLinecap="round" {...props}>
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.3" strokeLinecap="round" {...props}>
       <path d="M3 11 22 2l-9 19-2-8-8-2Z"></path>
     </svg>
   );
 }
 
-export function PlusIcon(props) {
+export function PlusIcon({ stroke = "#ffffff", ...props }) {
   return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FFF6E6" strokeWidth="2.4" strokeLinecap="round" {...props}>
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" {...props}>
       <path d="M12 5v14M5 12h14"></path>
     </svg>
   );
 }
 
-export function PinPlaceIcon(props) {
+export function PinPlaceIcon({ stroke = "#7a7a7a", ...props }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8C6E4F" strokeWidth="2.1" strokeLinecap="round" {...props}>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.1" strokeLinecap="round" {...props}>
       <path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"></path>
       <circle cx="12" cy="10" r="2.4"></circle>
     </svg>
   );
 }
 
-export function ListIcon(props) {
+export function ListIcon({ stroke = "#333333", ...props }) {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A3623" strokeWidth="2.1" strokeLinecap="round" {...props}>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.1" strokeLinecap="round" {...props}>
       <circle cx="4.5" cy="6" r="1"></circle>
       <circle cx="4.5" cy="12" r="1"></circle>
       <circle cx="4.5" cy="18" r="1"></circle>
