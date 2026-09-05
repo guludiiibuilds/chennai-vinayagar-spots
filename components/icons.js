@@ -7,10 +7,12 @@ export function SearchIcon({ stroke = "#7a7a7a", ...props }) {
   );
 }
 
-export function MenuIcon({ stroke = "#1d1d1f", ...props }) {
+export function InfoIcon({ stroke = "#1d1d1f", ...props }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" {...props}>
-      <path d="M4 7h16M4 12h16M4 17h16"></path>
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="12" cy="12" r="9"></circle>
+      <line x1="12" y1="11" x2="12" y2="16.5"></line>
+      <circle cx="12" cy="7.5" r="1.1" fill={stroke} stroke="none"></circle>
     </svg>
   );
 }

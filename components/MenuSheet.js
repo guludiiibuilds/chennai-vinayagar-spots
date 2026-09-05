@@ -1,7 +1,6 @@
 "use client";
 
 import { CloseIcon } from "./icons";
-import { useToast } from "./ToastProvider";
 
 const steps = [
   "Spot a Vinayagar near you and submit a photo, name and location.",
@@ -10,7 +9,6 @@ const steps = [
 ];
 
 export default function MenuSheet({ open, onClose }) {
-  const showToast = useToast();
   if (!open) return null;
 
   return (
@@ -45,12 +43,12 @@ export default function MenuSheet({ open, onClose }) {
             <CloseIcon />
           </button>
         </div>
-        <div style={{ font: "400 12.5px/1.5 var(--font-body)", color: "var(--muted)", marginTop: 4 }}>
+        <div style={{ font: "400 14px/1.55 var(--font-body)", color: "var(--ink-soft)", marginTop: 6 }}>
           A community-built map of Vinayagar Chaturthi pandals across Chennai. No login needed to browse or submit.
         </div>
-        <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 14 }}>
+        <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 16 }}>
           {steps.map((text, i) => (
-            <div key={i} style={{ display: "flex", gap: 11 }}>
+            <div key={i} style={{ display: "flex", gap: 12 }}>
               <div
                 style={{
                   flex: "none",
@@ -60,41 +58,48 @@ export default function MenuSheet({ open, onClose }) {
                   background: "var(--accent-tint)",
                   display: "grid",
                   placeItems: "center",
-                  font: "600 13px var(--font-body)",
+                  font: "600 14px var(--font-body)",
                   color: "var(--accent)",
                 }}
               >
                 {i + 1}
               </div>
-              <div style={{ font: "400 13px/1.55 var(--font-body)", color: "var(--ink-soft)" }}>{text}</div>
+              <div style={{ font: "400 15px/1.6 var(--font-body)", color: "var(--ink-soft)" }}>{text}</div>
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 20, borderTop: "1px solid var(--line)", paddingTop: 16, display: "flex", flexDirection: "column", gap: 2 }}>
+
+        <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
           <button
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({ title: "Chennai Vinayagar Spots", url: window.location.origin }).catch(() => {});
-              } else if (navigator.clipboard) {
-                navigator.clipboard.writeText(window.location.origin).catch(() => {});
-              }
-              showToast("Link copied — share it on WhatsApp");
+            onClick={onClose}
+            style={{
+              height: 50,
+              borderRadius: 9999,
+              background: "var(--accent)",
+              color: "#ffffff",
+              font: "400 17px var(--font-body)",
             }}
-            style={{ textAlign: "left", padding: "12px 4px", font: "600 13.5px var(--font-body)", color: "var(--ink)" }}
           >
-            Share this app
+            Start Vinayaka Hopping
           </button>
-          <button
-            onClick={() => {
-              onClose();
-              showToast("Open the spot you'd like to report, then use Share to flag it");
+          <a
+            href="mailto:?subject=Feedback%20for%20Chennai%20Vinayagar%20Spots"
+            style={{
+              height: 46,
+              borderRadius: 9999,
+              border: "1px solid var(--accent)",
+              color: "var(--accent)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              font: "400 15px var(--font-body)",
             }}
-            style={{ textAlign: "left", padding: "12px 4px", font: "600 13.5px var(--font-body)", color: "var(--ink)" }}
           >
-            Report an issue
-          </button>
+            Share Feedback
+          </a>
         </div>
-        <div style={{ marginTop: 18, font: "400 11px/1.6 var(--font-body)", color: "var(--muted)", textAlign: "center" }}>
+
+        <div style={{ marginTop: 18, font: "400 12px/1.6 var(--font-body)", color: "var(--muted)", textAlign: "center" }}>
           Built by <a href="https://www.linkedin.com/in/gurunivashr/">Guru Nivash</a>, for the Chennai community&nbsp;❤️
         </div>
       </div>

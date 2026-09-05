@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
 import { distanceKm, formatDistance } from "@/lib/geo";
-import { SearchIcon, MenuIcon } from "@/components/icons";
+import { SearchIcon, InfoIcon } from "@/components/icons";
 import { SpotListCard, SpotCarouselCard } from "@/components/SpotCard";
 import MenuSheet from "@/components/MenuSheet";
 import SpotSheet from "@/components/SpotSheet";
@@ -127,7 +127,7 @@ function Home() {
               ) : null}
             </div>
             <button
-              aria-label="Menu"
+              aria-label="About"
               onClick={() => setMenuOpen(true)}
               style={{
                 flex: "none",
@@ -139,7 +139,7 @@ function Home() {
                 placeItems: "center",
               }}
             >
-              <MenuIcon />
+              <InfoIcon />
             </button>
           </div>
 
