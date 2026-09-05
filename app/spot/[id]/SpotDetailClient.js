@@ -7,7 +7,7 @@ import { fetchSpotById } from "@/lib/spots";
 import { distanceKm, formatDistance, googleMapsUrl } from "@/lib/geo";
 import { renderRichText } from "@/lib/richtext";
 import { useToast } from "@/components/ToastProvider";
-import { BackIcon, ShareIcon, NavigateIcon, CheckIcon, PhotoIcon, PinPlaceIcon } from "@/components/icons";
+import { BackIcon, ShareIcon, NavigateIcon, PhotoIcon, PinPlaceIcon } from "@/components/icons";
 
 const MapCanvas = dynamic(() => import("@/components/MapCanvas"), { ssr: false });
 
@@ -118,13 +118,7 @@ export default function SpotDetailClient({ id }) {
         </div>
 
         <div style={{ flex: 1, overflowY: "auto", padding: "18px 18px 108px" }}>
-          <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
-            <span className="tag">{spot.theme}</span>
-            <span className="tag tag-approved">
-              <CheckIcon width={11} height={11} strokeWidth={3} /> Approved
-            </span>
-          </div>
-          <h1 style={{ font: "400 30px/1.12 var(--font-display)", color: "var(--ink)", margin: "12px 0 0", letterSpacing: "-.01em" }}>
+          <h1 style={{ font: "400 30px/1.12 var(--font-display)", color: "var(--ink)", margin: 0, letterSpacing: "-.01em" }}>
             {spot.name}
           </h1>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, font: "400 13px/1.4 var(--font-body)", color: "var(--muted)" }}>
