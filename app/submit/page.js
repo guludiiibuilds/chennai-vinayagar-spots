@@ -203,7 +203,7 @@ export default function SubmitPage() {
                 border: "1px solid var(--line-strong)",
                 background: "var(--card)",
                 padding: "0 14px",
-                font: "400 14px var(--font-body)",
+                font: "400 16px var(--font-body)",
                 color: "var(--ink)",
                 outline: 0,
               }}
@@ -253,7 +253,7 @@ export default function SubmitPage() {
                 border: "1px solid var(--line)",
                 background: "var(--card)",
                 padding: "0 13px",
-                font: "400 13px var(--font-body)",
+                font: "400 16px var(--font-body)",
                 color: "var(--ink)",
                 outline: 0,
               }}
@@ -298,7 +298,7 @@ export default function SubmitPage() {
                 border: "1px solid var(--line-strong)",
                 background: "var(--card)",
                 padding: "12px 14px",
-                font: "400 13.5px/1.5 var(--font-body)",
+                font: "400 16px/1.5 var(--font-body)",
                 color: "var(--ink)",
                 outline: 0,
                 resize: "vertical",

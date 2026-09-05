@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
@@ -36,7 +36,6 @@ function Home() {
   const [userPos, setUserPos] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
-  const modeBeforeSheetRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -96,17 +95,12 @@ function Home() {
   const selectedSpot = selectedId ? spotsWithDist.find((s) => s.id === selectedId) : null;
 
   const openSpot = (spot) => {
-    if (!selectedId) modeBeforeSheetRef.current = mode;
     setMode("map");
     setSelectedId(spot.id);
   };
   const closeSheet = () => {
     setSelectedId(null);
     setPhotoViewerOpen(false);
-    if (modeBeforeSheetRef.current) {
-      setMode(modeBeforeSheetRef.current);
-      modeBeforeSheetRef.current = null;
-    }
   };
 
   return (
@@ -172,7 +166,7 @@ function Home() {
                     border: 0,
                     outline: 0,
                     background: "transparent",
-                    font: "400 13.5px var(--font-body)",
+                    font: "400 16px var(--font-body)",
                     color: "var(--ink)",
                     width: "100%",
                   }}
