@@ -87,22 +87,6 @@ export default function SpotSheet({ spot, distanceLabel, onClose }) {
           </div>
         ) : null}
 
-        {spot.landmark || spot.submitted_by ? (
-          <div style={{ marginTop: 16, borderTop: "1px solid var(--line)", paddingTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
-            {spot.landmark ? (
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
-                <span style={{ font: "400 12.5px var(--font-body)", color: "var(--muted)" }}>Landmark</span>
-                <span style={{ font: "500 12.5px var(--font-body)", color: "var(--ink)", textAlign: "right" }}>{spot.landmark}</span>
-              </div>
-            ) : null}
-            {spot.submitted_by ? (
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 16 }}>
-                <span style={{ font: "400 12.5px var(--font-body)", color: "var(--muted)" }}>Added by</span>
-                <span style={{ font: "500 12.5px var(--font-body)", color: "var(--ink)", textAlign: "right" }}>{spot.submitted_by}</span>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
       </div>
 
       <div style={{ flex: "none", padding: "12px 14px 16px", borderTop: "1px solid var(--line)", display: "flex", gap: 9, background: "var(--card)" }}>
