@@ -34,6 +34,13 @@ alter table public.spots enable row level security;
 grant usage on schema public to anon, authenticated;
 grant select, insert on public.spots to anon, authenticated;
 
+-- The admin panel's service-role client (lib/supabaseAdmin.js) bypasses RLS,
+-- but bypassing RLS only skips policy checks — it does not skip this same
+-- base table grant, so service_role needs its own explicit grant too or
+-- every admin API call fails with "permission denied for table spots".
+grant usage on schema public to service_role;
+grant select, insert, update, delete on public.spots to service_role;
+
 -- Anyone (including anonymous visitors) can read approved spots.
 create policy "Public can read approved spots"
   on public.spots for select
