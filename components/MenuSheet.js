@@ -77,23 +77,15 @@ export default function MenuSheet({ open, onClose }) {
           ))}
         </div>
 
-        <div style={{ marginTop: 24, display: "flex", gap: 10 }}>
+        <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
           <button
             onClick={onClose}
             style={{
-              flex: 1,
-              minWidth: 0,
-              minHeight: 50,
+              height: 50,
               borderRadius: 9999,
               background: "var(--accent)",
               color: "#ffffff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-              lineHeight: 1.2,
-              font: "400 15px var(--font-body)",
-              padding: "6px 8px",
+              font: "400 17px var(--font-body)",
             }}
           >
             Start Vinayaka Hopping
@@ -103,24 +95,19 @@ export default function MenuSheet({ open, onClose }) {
             target="_blank"
             rel="noreferrer"
             style={{
-              flex: 1,
-              minWidth: 0,
-              minHeight: 50,
+              height: 46,
               borderRadius: 9999,
               border: "1px solid var(--accent)",
               color: "var(--accent)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              textAlign: "center",
-              gap: 6,
-              lineHeight: 1.2,
+              gap: 7,
               font: "400 15px var(--font-body)",
-              padding: "6px 8px",
             }}
           >
             Share Feedback
-            <ExternalLinkIcon width={12} height={12} />
+            <ExternalLinkIcon />
           </a>
         </div>
 
