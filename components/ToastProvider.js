@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 const ToastContext = createContext(() => {});
 
@@ -11,6 +11,17 @@ export function useToast() {
 export default function ToastProvider({ children }) {
   const [message, setMessage] = useState("");
   const timer = useRef(null);
+
+  // Mobile browsers only apply CSS :active styles on tap when at least one
+  // touchstart listener exists somewhere on the page — without this, the
+  // app's press-feedback (scale-down on :active) silently never fires on
+  // touch, which is invisible until you also remove the browser's own tap
+  // highlight overlay (as this app does) and there's nothing left at all.
+  useEffect(() => {
+    const noop = () => {};
+    document.addEventListener("touchstart", noop, { passive: true });
+    return () => document.removeEventListener("touchstart", noop);
+  }, []);
 
   const showToast = useCallback((text) => {
     clearTimeout(timer.current);
