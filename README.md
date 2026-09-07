@@ -14,7 +14,7 @@ Implements the design in `../Chennai Vinayagar Spots.dc.html` (see `../README.md
 
 1. **Apply the database schema.** Open the SQL editor for your Supabase project and run `supabase/schema.sql`. It creates the `spots` table, row-level security policies (public can read approved spots and submit pending ones; nothing can approve/reject without a service-role key), a public `spot-photos` storage bucket, and seeds the 10 spots from the original prototype as `approved` so the map isn't empty on first run.
 
-2. **Environment variables.** `.env.local` is already populated with the project URL and publishable key that were provided. If you're pointing at a different Supabase project, copy `.env.example` to `.env.local` and fill in your own values.
+2. **Environment variables.** `.env.local` is already populated with the project URL and publishable key that were provided. If you're pointing at a different Supabase project, copy `.env.example` to `.env.local` and fill in your own values. To use the admin review panel (see below), also set `SUPABASE_SERVICE_ROLE_KEY` and `ADMIN_PASSWORD` — both server-only, never prefix them with `NEXT_PUBLIC_`.
 
 3. **Install and run:**
    ```bash
@@ -35,10 +35,19 @@ Implements the design in `../Chennai Vinayagar Spots.dc.html` (see `../README.md
 - **Spot detail** (`/spot/[id]`) — photo, theme/approved badges, description, landmark/submitter, mini map, share, "Open in Google Maps" (deep-links with the spot's coordinates).
 - **Submit** (`/submit`) — photo upload (to Supabase Storage), name, location via GPS or a pasted Google Maps link (best-effort coordinate extraction), optional description with a bold/italic/bullet-list toolbar, submit disabled until photo + name + location are present. New spots are inserted as `pending`.
 - **Menu sheet** — about text, how-it-works, share app, report an issue.
+- **Admin review queue** (`/admin`) — password-gated, not linked from anywhere in the public app or listed in `robots.txt`. Lists submitted spots by status (Pending/Approved/Rejected), lets a moderator fill in/correct area, theme, and landmark (the submit form doesn't collect these), then Approve, Reject, move back to Pending, or permanently Delete. See below for how auth works.
+
+## Admin review queue
+
+Visit `/admin` and sign in with `ADMIN_PASSWORD`. There is deliberately no link to it anywhere in the app's UI — visitors can't stumble into it, and it's excluded from `robots.txt` — so bookmark the URL for whoever moderates.
+
+**How auth works:** `POST /api/admin/login` checks the submitted password against `ADMIN_PASSWORD` (server-side only) and, on success, sets an `httpOnly` cookie containing an HMAC of a fixed string keyed by that password — never the password itself, so the cookie can't be used to recover it. Every `/api/admin/*` route re-derives and compares that HMAC before touching data. All reads/writes in the admin API use `lib/supabaseAdmin.js`, a Supabase client built with the **service-role key**, which bypasses RLS entirely — that key must stay server-only (`SUPABASE_SERVICE_ROLE_KEY`, no `NEXT_PUBLIC_` prefix) and is never sent to the browser.
+
+This is one shared password for all moderators, which is simple to set up but means everyone shares one login and there's no per-person audit trail. If that stops being good enough, swap it for real Supabase Auth accounts with an admin-email allowlist — `requireAdmin()` in `lib/adminAuth.js` is the one place that decision is centralized.
 
 ## Deliberately out of scope (per the source chat)
 
-The prototype's admin approve/reject queue was explicitly made unreachable from the visitor app in the original design session — it exists only as a reference screen with no entry point. This build carries that forward: **there is no admin UI**. Submitted spots land in the `spots` table with `status = 'pending'` and need to be flipped to `'approved'` directly in Supabase (SQL editor or table view) until a moderation tool is built. The RLS policies only allow public insert of pending rows and public read of approved ones — nothing else — so this is safe to leave as-is.
+The prototype's admin approve/reject queue was explicitly made unreachable from the visitor app in the original design session — it existed only as a reference screen with no entry point. The `/admin` panel above now implements it for real, but keeps that same spirit: no nav link, no `robots.txt` entry, password-gated.
 
 ## Notes on fidelity to the prototype
 
