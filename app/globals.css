@@ -43,6 +43,10 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  /* Android Chrome flashes a translucent blue overlay on every tap by
+     default — the app already has its own press feedback (the scale-down
+     below), so the native highlight is just visual noise on top of it. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
