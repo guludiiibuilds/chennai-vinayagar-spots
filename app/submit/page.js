@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { uploadSpotPhoto, submitSpot } from "@/lib/spots";
 import { extractLatLngFromMapsLink, reverseGeocodeArea } from "@/lib/geo";
+import { compressImage } from "@/lib/image";
 import { useToast } from "@/components/ToastProvider";
 import { BackIcon, CompassIcon, CheckIcon } from "@/components/icons";
 import DesktopNotice from "@/components/DesktopNotice";
@@ -19,6 +20,7 @@ export default function SubmitPage() {
   const [desktopNoticeDismissed, setDesktopNoticeDismissed] = useState(false);
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
+  const [compressingPhoto, setCompressingPhoto] = useState(false);
   const [name, setName] = useState("");
   const [loc, setLoc] = useState(null); // { lat, lng }
   const [locating, setLocating] = useState(false);
@@ -28,19 +30,30 @@ export default function SubmitPage() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null); // submitted spot name
 
-  // Photo is optional for now — TODO: once photos are required again, the
-  // Supabase storage upload path needs to compress/resize images before
-  // upload instead of storing the original file as-is (uploadSpotPhoto in
-  // lib/spots.js). Flagged per user request on 2026-09-05.
   const canSubmit = !!(name.trim() && (loc || mapsLink.trim())) && !submitting;
 
   const pickPhoto = () => fileInputRef.current?.click();
 
-  const onPhotoChange = (e) => {
+  const onPhotoChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Show the original instantly so picking a photo never feels like it
+    // stalled, then swap in the compressed version once it's ready.
     setPhotoFile(file);
-    setPhotoPreview(URL.createObjectURL(file));
+    setPhotoPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+    setCompressingPhoto(true);
+    const compressed = await compressImage(file);
+    setCompressingPhoto(false);
+    setPhotoFile(compressed);
+    if (compressed !== file) {
+      setPhotoPreview((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return URL.createObjectURL(compressed);
+      });
+    }
   };
 
   useEffect(() => {
@@ -205,7 +218,9 @@ export default function SubmitPage() {
                   <img src={photoPreview} alt="" style={{ width: 52, height: 52, borderRadius: "var(--radius-sm)", objectFit: "cover" }} />
                   <div style={{ textAlign: "left" }}>
                     <div style={{ font: "600 13px var(--font-body)", color: "var(--ink)" }}>{photoFile.name}</div>
-                    <div style={{ font: "400 11.5px var(--font-body)", color: "var(--green)", marginTop: 3 }}>Attached · tap to change</div>
+                    <div style={{ font: "400 11.5px var(--font-body)", color: compressingPhoto ? "var(--muted)" : "var(--green)", marginTop: 3 }}>
+                      {compressingPhoto ? "Optimizing…" : "Attached · tap to change"}
+                    </div>
                   </div>
                 </div>
               ) : (
