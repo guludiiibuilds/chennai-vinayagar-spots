@@ -25,9 +25,6 @@ export function SpotListCard({ spot, distanceLabel, onOpen }) {
           {spot.area}
           {distanceLabel ? ` · ${distanceLabel} km away` : ""}
         </div>
-        <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 2 }}>
-          <span className="tag">{spot.theme}</span>
-        </div>
       </div>
     </button>
   );
@@ -67,9 +64,6 @@ export function SpotCarouselCard({ spot, distanceLabel, onOpen }) {
         <div style={{ font: "400 11.5px/1.3 var(--font-body)", color: "var(--muted)", marginTop: 3 }}>
           {spot.area}
           {distanceLabel ? ` · ${distanceLabel} km` : ""}
-        </div>
-        <div className="tag" style={{ marginTop: 6 }}>
-          {spot.theme}
         </div>
       </div>
     </button>

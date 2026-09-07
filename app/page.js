@@ -95,12 +95,7 @@ function Home() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return spotsWithDist;
-    return spotsWithDist.filter(
-      (s) =>
-        s.name.toLowerCase().includes(q) ||
-        s.area.toLowerCase().includes(q) ||
-        s.theme.toLowerCase().includes(q)
-    );
+    return spotsWithDist.filter((s) => s.name.toLowerCase().includes(q) || s.area.toLowerCase().includes(q));
   }, [spotsWithDist, query]);
 
   const selectedSpot = selectedId ? spotsWithDist.find((s) => s.id === selectedId) : null;

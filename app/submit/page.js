@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { uploadSpotPhoto, submitSpot } from "@/lib/spots";
-import { extractLatLngFromMapsLink } from "@/lib/geo";
+import { extractLatLngFromMapsLink, reverseGeocodeArea } from "@/lib/geo";
 import { useToast } from "@/components/ToastProvider";
 import { BackIcon, CompassIcon, CheckIcon } from "@/components/icons";
 import DesktopNotice from "@/components/DesktopNotice";
@@ -23,6 +23,7 @@ export default function SubmitPage() {
   const [loc, setLoc] = useState(null); // { lat, lng }
   const [locating, setLocating] = useState(false);
   const [mapsLink, setMapsLink] = useState("");
+  const [area, setArea] = useState("");
   const [about, setAbout] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null); // submitted spot name
@@ -48,6 +49,29 @@ export default function SubmitPage() {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  // Prefill Area from the captured GPS point so submitters (and the admin
+  // reviewer) don't have to type the neighbourhood by hand — never
+  // overwrites something the person already typed themselves.
+  useEffect(() => {
+    if (!loc) return;
+    let cancelled = false;
+    reverseGeocodeArea(loc.lat, loc.lng).then((name) => {
+      if (cancelled || !name) return;
+      setArea((prev) => (prev.trim() ? prev : name));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [loc]);
+
+  const lookupAreaFromMapsLink = async () => {
+    if (area.trim() || loc) return;
+    const derived = extractLatLngFromMapsLink(mapsLink.trim());
+    if (!derived) return;
+    const foundName = await reverseGeocodeArea(derived.lat, derived.lng);
+    if (foundName) setArea((prev) => (prev.trim() ? prev : foundName));
+  };
 
   const useGps = () => {
     if (!navigator.geolocation) {
@@ -80,6 +104,7 @@ export default function SubmitPage() {
       const derived = loc || extractLatLngFromMapsLink(link);
       const spot = await submitSpot({
         name: name.trim(),
+        area: area.trim(),
         about: about.trim(),
         lat: derived?.lat ?? null,
         lng: derived?.lng ?? null,
@@ -252,6 +277,7 @@ export default function SubmitPage() {
               className="field-input"
               value={mapsLink}
               onChange={(e) => setMapsLink(e.target.value)}
+              onBlur={lookupAreaFromMapsLink}
               placeholder="https://maps.app.goo.gl/…"
               style={{
                 width: "100%",
@@ -270,13 +296,36 @@ export default function SubmitPage() {
 
           <div>
             <FieldLabel>
+              Area / Neighbourhood <span style={{ color: "var(--muted)", fontWeight: 400 }}>(auto-filled from location)</span>
+            </FieldLabel>
+            <input
+              className="field-input"
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+              placeholder="e.g. Mylapore"
+              style={{
+                width: "100%",
+                height: 46,
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--line-strong)",
+                background: "var(--card)",
+                padding: "0 13px",
+                font: "400 16px var(--font-body)",
+                color: "var(--ink)",
+                outline: 0,
+              }}
+            />
+          </div>
+
+          <div>
+            <FieldLabel>
               Describe Vinayaka <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
             </FieldLabel>
             <textarea
               className="field-input"
               value={about}
               onChange={(e) => setAbout(e.target.value)}
-              placeholder="Theme, idol height, timings, anything visitors should know"
+              placeholder="Idol height, timings, anything visitors should know"
               rows={4}
               style={{
                 width: "100%",
