@@ -5,24 +5,26 @@ import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import L from "leaflet";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
-const PIN = "#ff3b30";
-const PIN_ACTIVE = "#d70015";
 const ACCENT = "#0066cc";
 
+// Custom pin artwork (teardrop + Vinayaka trunk-swirl silhouette), supplied
+// at 43x75 — roughly 2x the on-map display size, so it stays crisp on
+// retina screens. Selection is signalled by scaling the whole marker up
+// rather than swapping colors, since the artwork is a single fixed color.
+const PIN_ASSET = "/pin-vinayaka.png";
+const PIN_ASPECT = 75 / 43;
+
 function pinIcon(active) {
-  const size = active ? 36 : 30;
-  const color = active ? PIN_ACTIVE : PIN;
+  const width = active ? 34 : 28;
+  const height = Math.round(width * PIN_ASPECT);
   return L.divIcon({
     className: "",
     html: `
-      <div style="display:flex;flex-direction:column;align-items:center;animation:pinDrop .5s cubic-bezier(.2,.9,.3,1.2) both">
-        <div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid #ffffff;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.25)">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v3"></path><path d="M7.5 20h9"></path><path d="M6 20c0-4 2.7-7 6-7s6 3 6 7"></path><circle cx="12" cy="8.5" r="2.2"></circle></svg>
-        </div>
-        <div style="width:2px;height:8px;background:${color};border-radius:0 0 2px 2px"></div>
+      <div style="animation:pinDrop .5s cubic-bezier(.2,.9,.3,1.2) both;filter:drop-shadow(0 2px 5px rgba(0,0,0,.3))">
+        <img src="${PIN_ASSET}" width="${width}" height="${height}" style="display:block" />
       </div>`,
-    iconSize: [size, size + 8],
-    iconAnchor: [size / 2, size + 8],
+    iconSize: [width, height],
+    iconAnchor: [width / 2, height],
   });
 }
 
