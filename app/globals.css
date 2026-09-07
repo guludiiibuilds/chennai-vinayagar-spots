@@ -181,6 +181,81 @@ textarea {
   }
 }
 
+/* Home page only: once there's room for a real sidebar+map layout, stop
+   floating a phone-width card on blank paper and let the app fill the
+   screen edge to edge, like a desktop map app. */
+@media (min-width: 768px) {
+  .app-shell--home {
+    padding: 0;
+    background: var(--paper);
+  }
+  .app-frame--home {
+    max-width: none;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+.hp-topbar {
+  flex: none;
+  padding: 18px 24px;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+
+.hp-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.hp-sidebar {
+  flex: none;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--line-strong);
+  background: var(--card);
+  min-height: 0;
+}
+
+@media (min-width: 1200px) {
+  .hp-sidebar {
+    width: 440px;
+  }
+}
+
+.hp-sidebar-search {
+  flex: none;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.hp-sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hp-sidebar-footer {
+  flex: none;
+  padding: 14px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.hp-map-pane {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  background: var(--paper);
+}
+
 /* Reserved for photography only — the single drop-shadow in the system,
    used when a spot photo needs to read as an object resting on a surface. */
 .photo-shadow {

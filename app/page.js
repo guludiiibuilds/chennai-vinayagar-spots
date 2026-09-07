@@ -9,7 +9,10 @@ import { SearchIcon, InfoIcon } from "@/components/icons";
 import { SpotListCard, SpotCarouselCard } from "@/components/SpotCard";
 import MenuSheet from "@/components/MenuSheet";
 import SpotSheet from "@/components/SpotSheet";
+import SpotPanel from "@/components/SpotPanel";
 import PhotoViewer from "@/components/PhotoViewer";
+
+const DESKTOP_BREAKPOINT = 768;
 
 const MapCanvas = dynamic(() => import("@/components/MapCanvas"), {
   ssr: false,
@@ -36,6 +39,14 @@ function Home() {
   const [userPos, setUserPos] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= DESKTOP_BREAKPOINT);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -102,6 +113,136 @@ function Home() {
     setSelectedId(null);
     setPhotoViewerOpen(false);
   };
+
+  if (isDesktop) {
+    return (
+      <div className="app-shell app-shell--home">
+        <div className="app-frame app-frame--home">
+          <div className="hp-topbar">
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+              <div>
+                <div style={{ font: "600 22px/1.15 var(--font-display)", letterSpacing: "-.374px" }}>Spot Vinayaka in Chennai</div>
+                <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>
+                  {spots.length} active idol{spots.length === 1 ? "" : "s"}
+                </div>
+              </div>
+              <button
+                aria-label="About"
+                onClick={() => setMenuOpen(true)}
+                style={{ flex: "none", width: 34, height: 34, borderRadius: 9999, background: "var(--paper)", display: "grid", placeItems: "center" }}
+              >
+                <InfoIcon />
+              </button>
+            </div>
+          </div>
+
+          <div className="hp-body">
+            <div className="hp-sidebar">
+              {!selectedSpot ? (
+                <div className="hp-sidebar-search">
+                  <div
+                    className="field-wrap"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      background: "var(--paper)",
+                      border: "1px solid var(--line-strong)",
+                      borderRadius: 9999,
+                      padding: "9px 14px",
+                    }}
+                  >
+                    <SearchIcon />
+                    <input
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Search area or idol name"
+                      style={{ border: 0, outline: 0, background: "transparent", font: "400 15px var(--font-body)", color: "var(--ink)", width: "100%" }}
+                    />
+                  </div>
+                </div>
+              ) : null}
+
+              {selectedSpot ? (
+                <SpotPanel
+                  spot={selectedSpot}
+                  distanceLabel={formatDistance(selectedSpot.distKm)}
+                  onBack={closeSheet}
+                  onOpenPhoto={() => setPhotoViewerOpen(true)}
+                />
+              ) : (
+                <div className="hp-sidebar-list">
+                  {filtered.map((s) => (
+                    <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
+                  ))}
+                  {!loading && filtered.length === 0 ? (
+                    <div style={{ padding: "38px 20px", textAlign: "center", font: "400 13px/1.6 var(--font-body)", color: "var(--muted)" }}>
+                      No spots match that search yet.
+                      <br />
+                      Know one? Add it below.
+                    </div>
+                  ) : null}
+                </div>
+              )}
+
+              {!selectedSpot ? (
+                <div className="hp-sidebar-footer">
+                  <button
+                    onClick={() => router.push("/submit")}
+                    style={{
+                      width: "100%",
+                      height: 48,
+                      borderRadius: 9999,
+                      color: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 9,
+                      font: "400 16px var(--font-body)",
+                      background: "var(--accent)",
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
+                      <path d="M12 5v14M5 12h14"></path>
+                    </svg>
+                    Spot a Vinayaka
+                  </button>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="hp-map-pane">
+              <MapCanvas spots={filtered} userPos={userPos} onSelect={openSpot} selectedId={selectedId} focusSpot={selectedSpot} />
+              {loadError ? (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 16,
+                    right: 16,
+                    top: 16,
+                    zIndex: 20,
+                    padding: "10px 14px",
+                    borderRadius: "var(--radius-md)",
+                    background: "var(--card)",
+                    border: "1px solid var(--line-strong)",
+                    borderLeft: "3px solid var(--pin)",
+                    color: "var(--ink-soft)",
+                    font: "400 12px/1.4 var(--font-body)",
+                  }}
+                >
+                  Couldn&apos;t load spots ({loadError}). Check the Supabase project is reachable and the schema has been applied.
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />
+
+          {photoViewerOpen && selectedSpot ? <PhotoViewer spot={selectedSpot} onClose={() => setPhotoViewerOpen(false)} /> : null}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app-shell">
