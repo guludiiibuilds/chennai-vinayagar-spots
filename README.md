@@ -1,6 +1,6 @@
-# Chennai Vinayagar Spots
+# Chennai Vinayaka Spots
 
-A mobile-first web app for discovering and contributing Vinayagar Chaturthi pandal locations across Chennai. No login required to browse or submit. Built with Next.js (App Router), Supabase (data + photo storage), and Leaflet/OpenStreetMap for the map.
+A mobile-first web app for discovering and contributing Vinayaka Chaturthi idol locations across Chennai. No login required to browse or submit. Built with Next.js (App Router), Supabase (data + photo storage), and Leaflet/OpenStreetMap for the map.
 
 Implements the design in `../Chennai Vinayagar Spots.dc.html` (see `../README.md` and `../chats/chat1.md` for the original design brief).
 
@@ -31,7 +31,7 @@ Implements the design in `../Chennai Vinayagar Spots.dc.html` (see `../README.md
 
 ## What's implemented
 
-- **Home** (`/`) — map/list toggle, search by name/area/theme, live geolocation ("me" marker + distance), carousel of spots over the map, "Spot a Vinayagar" FAB.
+- **Home** (`/`) — map/list toggle, search by name/area/theme, live geolocation ("me" marker + distance), carousel of spots over the map, "Spot a Vinayaka" FAB.
 - **Spot detail** (`/spot/[id]`) — photo, theme/approved badges, description, landmark/submitter, mini map, share, "Open in Google Maps" (deep-links with the spot's coordinates).
 - **Submit** (`/submit`) — photo upload (to Supabase Storage), name, location via GPS or a pasted Google Maps link (best-effort coordinate extraction), optional description with a bold/italic/bullet-list toolbar, submit disabled until photo + name + location are present. New spots are inserted as `pending`.
 - **Menu sheet** — about text, how-it-works, share app, report an issue.

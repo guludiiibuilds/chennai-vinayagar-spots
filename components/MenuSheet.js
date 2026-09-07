@@ -3,7 +3,7 @@
 import { CloseIcon } from "./icons";
 
 const steps = [
-  "Spot a Vinayagar near you and submit a photo, name and location.",
+  "Spot a Vinayaka near you and submit a photo, name and location.",
   "A local volunteer checks it, usually within an hour. Until then, please explore other spots.",
   "Once approved, it appears on the map for everyone to visit.",
 ];
@@ -38,13 +38,13 @@ export default function MenuSheet({ open, onClose }) {
       >
         <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--line-strong)", margin: "0 auto 18px" }} />
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, position: "relative" }}>
-          <div style={{ font: "600 24px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>Vinayagar Spots</div>
+          <div style={{ font: "600 24px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>Vinayaka Spots</div>
           <button aria-label="Close menu" onClick={onClose} style={{ width: 32, height: 32, borderRadius: 10, display: "grid", placeItems: "center" }}>
             <CloseIcon />
           </button>
         </div>
         <div style={{ font: "400 14px/1.55 var(--font-body)", color: "var(--ink-soft)", marginTop: 6 }}>
-          A community-built map of Vinayagar Chaturthi pandals across Chennai. No login needed to browse or submit.
+          A community-built map of Vinayaka Chaturthi idols across Chennai. No login needed to browse or submit.
         </div>
         <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 16 }}>
           {steps.map((text, i) => (
@@ -83,7 +83,7 @@ export default function MenuSheet({ open, onClose }) {
             Start Vinayaka Hopping
           </button>
           <a
-            href="mailto:?subject=Feedback%20for%20Chennai%20Vinayagar%20Spots"
+            href="mailto:?subject=Feedback%20for%20Chennai%20Vinayaka%20Spots"
             style={{
               height: 46,
               borderRadius: 9999,

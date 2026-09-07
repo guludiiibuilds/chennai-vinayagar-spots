@@ -119,10 +119,10 @@ function Home() {
         >
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
             <div>
-              <div style={{ font: "600 21px/1.15 var(--font-display)", letterSpacing: "-.374px" }}>Spot Vinayagar in Chennai</div>
+              <div style={{ font: "600 21px/1.15 var(--font-display)", letterSpacing: "-.374px" }}>Spot Vinayaka in Chennai</div>
               {!selectedSpot ? (
                 <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>
-                  {spots.length} active pandal{spots.length === 1 ? "" : "s"}
+                  {spots.length} active idol{spots.length === 1 ? "" : "s"}
                 </div>
               ) : null}
             </div>
@@ -162,7 +162,7 @@ function Home() {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search area or pandal name"
+                  placeholder="Search area or idol name"
                   style={{
                     border: 0,
                     outline: 0,
@@ -277,7 +277,7 @@ function Home() {
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
               <path d="M12 5v14M5 12h14"></path>
             </svg>
-            Spot a Vinayagar
+            Spot a Vinayaka
           </button>
         ) : null}
 

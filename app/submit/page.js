@@ -136,7 +136,7 @@ export default function SubmitPage() {
             <BackIcon />
           </button>
           <div>
-            <div style={{ font: "600 17px/1.2 var(--font-body)", letterSpacing: "-.374px", color: "var(--ink)" }}>Spot a Vinayagar</div>
+            <div style={{ font: "600 17px/1.2 var(--font-body)", letterSpacing: "-.374px", color: "var(--ink)" }}>Spot a Vinayaka</div>
             <div style={{ font: "400 11.5px/1.3 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>Fill correct data for others to view.</div>
           </div>
         </div>
@@ -144,7 +144,7 @@ export default function SubmitPage() {
         <div style={{ flex: 1, overflowY: "auto", padding: "18px 18px 110px", display: "flex", flexDirection: "column", gap: 18 }}>
           <div>
             <FieldLabel>
-              Vinayagar Photo <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
+              Vinayaka Photo <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
             </FieldLabel>
             <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={onPhotoChange} style={{ display: "none" }} />
             <button
@@ -174,19 +174,19 @@ export default function SubmitPage() {
                     <circle cx="12" cy="12.5" r="3.4"></circle>
                   </svg>
                   <div style={{ font: "600 13.5px var(--font-body)", color: "var(--ink)", marginTop: 8 }}>Take or upload a photo</div>
-                  <div style={{ font: "400 11.5px var(--font-body)", color: "var(--muted)", marginTop: 3 }}>One clear shot of the idol or pandal</div>
+                  <div style={{ font: "400 11.5px var(--font-body)", color: "var(--muted)", marginTop: 3 }}>One clear shot of the idol</div>
                 </div>
               )}
             </button>
           </div>
 
           <div>
-            <FieldLabel>Vinayagar Name</FieldLabel>
+            <FieldLabel>Vinayaka Name</FieldLabel>
             <input
               className="field-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Kapaleeshwarar Street Pandal"
+              placeholder="e.g. Kapaleeshwarar Street Idol"
               style={{
                 width: "100%",
                 height: 50,
@@ -254,7 +254,7 @@ export default function SubmitPage() {
 
           <div>
             <FieldLabel>
-              Describe Vinayagar <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
+              Describe Vinayaka <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
             </FieldLabel>
             <textarea
               className="field-input"

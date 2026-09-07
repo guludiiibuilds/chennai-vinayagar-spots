@@ -13,9 +13,9 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Chennai Vinayagar Spots",
+  title: "Chennai Vinayaka Spots",
   description:
-    "Find and share Vinayagar Chaturthi pandals across Chennai — no login needed to browse or submit.",
+    "Find and share Vinayaka Chaturthi idols across Chennai — no login needed to browse or submit.",
 };
 
 export const viewport = {
