@@ -30,7 +30,7 @@ export default function SubmitPage() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null); // submitted spot name
 
-  const canSubmit = !!(name.trim() && (loc || mapsLink.trim())) && !submitting;
+  const canSubmit = !!(photoFile && name.trim() && (loc || mapsLink.trim())) && !submitting;
 
   const pickPhoto = () => fileInputRef.current?.click();
 
@@ -107,7 +107,7 @@ export default function SubmitPage() {
 
   const submit = async () => {
     if (!canSubmit) {
-      showToast("Please add a name and a location");
+      showToast("Please add a photo, a name and a location");
       return;
     }
     setSubmitting(true);
@@ -197,9 +197,7 @@ export default function SubmitPage() {
 
         <div style={{ flex: 1, overflowY: "auto", padding: "18px 18px 110px", display: "flex", flexDirection: "column", gap: 18 }}>
           <div>
-            <FieldLabel>
-              Vinayaka Photo <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
-            </FieldLabel>
+            <FieldLabel>Vinayaka Photo</FieldLabel>
             <input ref={fileInputRef} type="file" accept="image/*" onChange={onPhotoChange} style={{ display: "none" }} />
             <button
               onClick={pickPhoto}
