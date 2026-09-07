@@ -1,6 +1,8 @@
 "use client";
 
-import { CloseIcon } from "./icons";
+import { CloseIcon, ExternalLinkIcon } from "./icons";
+
+const FEEDBACK_FORM_URL = "https://forms.gle/sYnnzH4h9FL3hXJu5";
 
 const steps = [
   "Spot a Vinayaka near you and submit a photo, name and location.",
@@ -29,7 +31,7 @@ export default function MenuSheet({ open, onClose }) {
           width: "100%",
           background: "var(--card)",
           borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",
-          padding: "22px 20px 28px",
+          padding: "22px 20px 16px",
           animation: "fadeUp .22s ease both",
           maxHeight: "78%",
           overflowY: "auto",
@@ -38,8 +40,14 @@ export default function MenuSheet({ open, onClose }) {
       >
         <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--line-strong)", margin: "0 auto 18px" }} />
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, position: "relative" }}>
-          <div style={{ font: "600 24px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>Vinayaka Spots</div>
-          <button aria-label="Close menu" onClick={onClose} style={{ width: 32, height: 32, borderRadius: 10, display: "grid", placeItems: "center" }}>
+          <div style={{ font: "600 24px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>
+            Chennai Vinayagar Idols 2026
+          </div>
+          <button
+            aria-label="Close menu"
+            onClick={onClose}
+            style={{ flex: "none", width: 32, height: 32, marginTop: -4, borderRadius: 10, display: "grid", placeItems: "center" }}
+          >
             <CloseIcon />
           </button>
         </div>
@@ -83,7 +91,9 @@ export default function MenuSheet({ open, onClose }) {
             Start Vinayaka Hopping
           </button>
           <a
-            href="mailto:?subject=Feedback%20for%20Chennai%20Vinayaka%20Spots"
+            href={FEEDBACK_FORM_URL}
+            target="_blank"
+            rel="noreferrer"
             style={{
               height: 46,
               borderRadius: 9999,
@@ -92,10 +102,12 @@ export default function MenuSheet({ open, onClose }) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              gap: 7,
               font: "400 15px var(--font-body)",
             }}
           >
             Share Feedback
+            <ExternalLinkIcon />
           </a>
         </div>
 
