@@ -187,7 +187,7 @@ export default function SubmitPage() {
             <FieldLabel>
               Vinayaka Photo <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
             </FieldLabel>
-            <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={onPhotoChange} style={{ display: "none" }} />
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={onPhotoChange} style={{ display: "none" }} />
             <button
               onClick={pickPhoto}
               style={{
