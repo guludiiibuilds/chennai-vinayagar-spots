@@ -152,14 +152,32 @@ textarea {
   box-shadow: 0 0 0 1px var(--line-strong);
 }
 
+/* Tablet and up: the phone-width frame becomes a floating card instead of
+   filling the viewport — give it a deliberate backdrop and shadow so wide
+   screens read as an intentional layout, not a stray card on blank paper. */
 @media (min-width: 461px) {
   .app-shell {
-    padding: 28px 12px;
+    padding: 32px 16px;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(0, 102, 204, 0.07), transparent 45%),
+      radial-gradient(circle at 88% 92%, rgba(255, 59, 48, 0.05), transparent 45%),
+      var(--paper);
   }
   .app-frame {
-    height: min(844px, 92vh);
-    border-radius: 18px;
+    height: min(844px, 90vh);
+    border-radius: 20px;
     overflow: hidden;
+    box-shadow: 0 30px 70px -24px rgba(0, 0, 0, 0.28), 0 0 0 1px var(--line-strong);
+  }
+}
+
+/* Desktop: a little more breathing room around the card. */
+@media (min-width: 900px) {
+  .app-shell {
+    padding: 56px 16px;
+  }
+  .app-frame {
+    height: min(844px, 84vh);
   }
 }
 

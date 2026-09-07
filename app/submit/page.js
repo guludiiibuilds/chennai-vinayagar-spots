@@ -1,17 +1,22 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { uploadSpotPhoto, submitSpot } from "@/lib/spots";
 import { extractLatLngFromMapsLink } from "@/lib/geo";
 import { useToast } from "@/components/ToastProvider";
 import { BackIcon, CompassIcon, CheckIcon } from "@/components/icons";
+import DesktopNotice from "@/components/DesktopNotice";
+
+const DESKTOP_BREAKPOINT = 1024;
 
 export default function SubmitPage() {
   const router = useRouter();
   const showToast = useToast();
   const fileInputRef = useRef(null);
 
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [desktopNoticeDismissed, setDesktopNoticeDismissed] = useState(false);
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [name, setName] = useState("");
@@ -36,6 +41,13 @@ export default function SubmitPage() {
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
   };
+
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= DESKTOP_BREAKPOINT);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const useGps = () => {
     if (!navigator.geolocation) {
@@ -127,6 +139,10 @@ export default function SubmitPage() {
   return (
     <div className="app-shell">
       <div className="app-frame" style={{ animation: "fadeUp .28s ease both" }}>
+        {isDesktop && !desktopNoticeDismissed ? (
+          <DesktopNotice onContinue={() => setDesktopNoticeDismissed(true)} />
+        ) : null}
+
         <div style={{ flex: "none", padding: "16px 18px 14px", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", gap: 12 }}>
           <button
             onClick={() => router.push("/")}
