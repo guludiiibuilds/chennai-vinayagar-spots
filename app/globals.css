@@ -25,6 +25,7 @@
      error-red token covers both instead of keeping them separate) */
   --pin: #f04438; /* error-500 */
   --pin-active: #b42318; /* error-700 */
+  --pin-tint: rgba(240, 68, 56, 0.16); /* error-500 tint, for cluster badges */
 
   /* Semantic success (captured location, uploaded photo) */
   --green: #079455; /* success-600 */
