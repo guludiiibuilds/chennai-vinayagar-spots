@@ -180,7 +180,10 @@
   --text-badge-ls: 0.04em;
   --text-label-size: 13px;
   --text-label-weight: 700;
-  --text-body-size: 15px;
+  /* 16px, not the spec's 15px: this token only ever lands on an <input>/
+     <textarea> (TextField, SearchBar) — anything smaller makes iOS/Android
+     auto-zoom the page in on focus, a jarring jump while typing. */
+  --text-body-size: 16px;
   --text-body-s-size: 13px;
   --text-caption-size: 12px;
   --text-map-label-size: 11px;
@@ -326,7 +329,10 @@ textarea {
   width: 100%;
   max-width: 460px;
   height: 100vh;
-  height: 100svh;
+  height: 100dvh; /* tracks the browser chrome's actual current state, so the
+    frame doesn't stay pinned to the worst-case (chrome-visible) height and
+    leave a gap, or look cut off, whenever that state changes later — e.g.
+    reopening the browser with the address bar in a different position. */
   background: var(--card);
   display: flex;
   flex-direction: column;
