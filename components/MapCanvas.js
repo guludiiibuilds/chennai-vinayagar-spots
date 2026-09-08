@@ -51,7 +51,7 @@ function clusterIcon(cluster) {
   return L.divIcon({
     className: "",
     html: `
-      <div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--pin-tint);color:var(--pin-active);display:grid;place-items:center;font:600 ${count < 100 ? 14 : 12}px var(--font-body);border:2.5px solid #ffffff;box-shadow:0 2px 8px rgba(0,0,0,.3)">
+      <div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--accent);color:#ffffff;display:grid;place-items:center;font:600 ${count < 100 ? 14 : 12}px var(--font-body);border:2.5px solid #ffffff;box-shadow:0 2px 8px rgba(0,0,0,.3)">
         ${count}
       </div>`,
     iconSize: [size, size],
