@@ -31,6 +31,7 @@ export default function DesktopNotice({ onContinue }) {
           maxWidth: 320,
           background: "var(--card)",
           borderRadius: "var(--radius-lg)",
+          boxShadow: "var(--shadow-lg)",
           padding: "28px 24px 24px",
           textAlign: "center",
           animation: "fadeUp .22s ease both",

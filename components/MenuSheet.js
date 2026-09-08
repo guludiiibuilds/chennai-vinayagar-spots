@@ -31,6 +31,7 @@ export default function MenuSheet({ open, onClose }) {
           width: "100%",
           background: "var(--card)",
           borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",
+          boxShadow: "var(--shadow-lg)",
           padding: "22px 20px 16px",
           animation: "fadeUp .22s ease both",
           maxHeight: "78%",

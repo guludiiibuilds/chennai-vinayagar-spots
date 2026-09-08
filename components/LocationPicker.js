@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
-const ACCENT = "#0066cc";
 
 // Same artwork/proportions as the map pins elsewhere (see MapCanvas.js),
 // but rendered here as a plain CSS-centered overlay rather than a Leaflet
@@ -110,7 +109,7 @@ export default function LocationPicker({ initialCenter, initialZoom = 16, onCent
 
       <div style={{ position: "absolute", right: 14, top: 14, display: "flex", flexDirection: "column", gap: 8, zIndex: 6 }}>
         <button aria-label="Center on my location" onClick={locateMe} disabled={locating} style={ctrlBtnStyle}>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2.2" strokeLinecap="round">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round">
             <circle cx="12" cy="12" r="3.2"></circle>
             <circle cx="12" cy="12" r="8"></circle>
             <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path>

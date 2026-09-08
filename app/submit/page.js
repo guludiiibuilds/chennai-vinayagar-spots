@@ -238,7 +238,7 @@ function SubmitForm() {
                 </div>
               ) : (
                 <div style={{ textAlign: "center" }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7a7a7a" strokeWidth="1.9" strokeLinecap="round">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" strokeWidth="1.9" strokeLinecap="round">
                     <path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.2l1.1-2h6.4l1.1 2h1.2A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5Z"></path>
                     <circle cx="12" cy="12.5" r="3.4"></circle>
                   </svg>

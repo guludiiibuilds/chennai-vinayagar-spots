@@ -1,4 +1,4 @@
-export function SearchIcon({ stroke = "#7a7a7a", ...props }) {
+export function SearchIcon({ stroke = "var(--muted)", ...props }) {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" {...props}>
       <circle cx="11" cy="11" r="7"></circle>
@@ -7,7 +7,7 @@ export function SearchIcon({ stroke = "#7a7a7a", ...props }) {
   );
 }
 
-export function InfoIcon({ stroke = "#1d1d1f", ...props }) {
+export function InfoIcon({ stroke = "var(--ink)", ...props }) {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" {...props}>
       <circle cx="12" cy="12" r="9"></circle>
@@ -28,7 +28,7 @@ export function PinGlyph({ stroke = "#ffffff", ...props }) {
   );
 }
 
-export function CompassIcon({ stroke = "#0066cc", ...props }) {
+export function CompassIcon({ stroke = "var(--accent)", ...props }) {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" {...props}>
       <circle cx="12" cy="12" r="3.2"></circle>
@@ -38,7 +38,7 @@ export function CompassIcon({ stroke = "#0066cc", ...props }) {
   );
 }
 
-export function PhotoIcon({ stroke = "#c7c7cc", ...props }) {
+export function PhotoIcon({ stroke = "var(--line-strong)", ...props }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="1.8" {...props}>
       <rect x="3" y="5" width="18" height="14" rx="2"></rect>
@@ -48,7 +48,7 @@ export function PhotoIcon({ stroke = "#c7c7cc", ...props }) {
   );
 }
 
-export function BackIcon({ stroke = "#1d1d1f", ...props }) {
+export function BackIcon({ stroke = "var(--ink)", ...props }) {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" {...props}>
       <path d="m14 6-6 6 6 6"></path>
@@ -56,7 +56,7 @@ export function BackIcon({ stroke = "#1d1d1f", ...props }) {
   );
 }
 
-export function CloseIcon({ stroke = "#1d1d1f", ...props }) {
+export function CloseIcon({ stroke = "var(--ink)", ...props }) {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" {...props}>
       <path d="M6 6l12 12M18 6 6 18"></path>
@@ -64,7 +64,7 @@ export function CloseIcon({ stroke = "#1d1d1f", ...props }) {
   );
 }
 
-export function ShareIcon({ stroke = "#1d1d1f", ...props }) {
+export function ShareIcon({ stroke = "var(--ink)", ...props }) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" {...props}>
       <path d="M12 3v11"></path>
@@ -74,7 +74,7 @@ export function ShareIcon({ stroke = "#1d1d1f", ...props }) {
   );
 }
 
-export function CheckIcon({ stroke = "#248a3d", ...props }) {
+export function CheckIcon({ stroke = "var(--green)", ...props }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="3" strokeLinecap="round" {...props}>
       <path d="m5 13 4 4 10-10"></path>
@@ -98,7 +98,7 @@ export function PlusIcon({ stroke = "#ffffff", ...props }) {
   );
 }
 
-export function PinPlaceIcon({ stroke = "#7a7a7a", ...props }) {
+export function PinPlaceIcon({ stroke = "var(--muted)", ...props }) {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.1" strokeLinecap="round" {...props}>
       <path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"></path>
@@ -107,7 +107,7 @@ export function PinPlaceIcon({ stroke = "#7a7a7a", ...props }) {
   );
 }
 
-export function ListIcon({ stroke = "#333333", ...props }) {
+export function ListIcon({ stroke = "var(--ink-soft)", ...props }) {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.1" strokeLinecap="round" {...props}>
       <circle cx="4.5" cy="6" r="1"></circle>

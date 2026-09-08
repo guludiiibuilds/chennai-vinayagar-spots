@@ -5,7 +5,6 @@ import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import L from "leaflet";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
-const ACCENT = "#0066cc";
 
 // Custom pin artwork (teardrop + Vinayaka trunk-swirl silhouette), supplied
 // at 43x75 — roughly 2x the on-map display size, so it stays crisp on
@@ -32,8 +31,8 @@ const meIcon = L.divIcon({
   className: "",
   html: `
     <div style="position:relative;width:20px;height:20px">
-      <div style="position:absolute;inset:0;border-radius:50%;background:${ACCENT};animation:pulseRing 2.4s ease-out infinite"></div>
-      <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;background:${ACCENT};border:2.5px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,.25)"></div>
+      <div style="position:absolute;inset:0;border-radius:50%;background:var(--accent);animation:pulseRing 2.4s ease-out infinite"></div>
+      <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;background:var(--accent);border:2.5px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,.25)"></div>
     </div>`,
   iconSize: [20, 20],
   iconAnchor: [10, 10],
@@ -48,7 +47,7 @@ function MapControls({ userPos }) {
         onClick={() => userPos && map.setView([userPos.lat, userPos.lng], 15)}
         style={ctrlBtnStyle}
       >
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2.2" strokeLinecap="round">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round">
           <circle cx="12" cy="12" r="3.2"></circle>
           <circle cx="12" cy="12" r="8"></circle>
           <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path>
