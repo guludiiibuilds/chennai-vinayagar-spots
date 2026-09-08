@@ -193,7 +193,7 @@ function Home() {
                       alignItems: "center",
                       justifyContent: "center",
                       gap: 9,
-                      font: "400 16px var(--font-body)",
+                      font: "700 15px var(--font-display)",
                       background: "var(--accent)",
                     }}
                   >
@@ -388,7 +388,7 @@ function Home() {
               alignItems: "center",
               justifyContent: "center",
               gap: 9,
-              font: "400 17px var(--font-body)",
+              font: "700 15px var(--font-display)",
               background: "var(--accent)",
               boxShadow: "var(--shadow-floating)",
             }}
@@ -414,7 +414,8 @@ function tabStyle(active) {
   return {
     padding: "7px 13px",
     borderRadius: 9999,
-    font: "400 12.5px var(--font-body)",
+    font: "700 13px var(--font-body)",
+    letterSpacing: "0.02em",
     background: active ? "var(--card)" : "transparent",
     color: active ? "var(--ink)" : "var(--muted)",
   };

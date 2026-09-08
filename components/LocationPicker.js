@@ -146,10 +146,10 @@ export default function LocationPicker({ initialCenter, initialZoom = 16, onCent
             <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path>
           </svg>
         </button>
-        <button aria-label="Zoom in" onClick={() => mapRef.current?.zoomIn()} style={{ ...ctrlBtnStyle, font: "400 18px var(--font-body)", color: "var(--ink)" }}>
+        <button aria-label="Zoom in" onClick={() => mapRef.current?.zoomIn()} style={{ ...ctrlBtnStyle, font: "700 18px var(--font-display)", color: "var(--ink)" }}>
           +
         </button>
-        <button aria-label="Zoom out" onClick={() => mapRef.current?.zoomOut()} style={{ ...ctrlBtnStyle, font: "400 18px var(--font-body)", color: "var(--ink)" }}>
+        <button aria-label="Zoom out" onClick={() => mapRef.current?.zoomOut()} style={{ ...ctrlBtnStyle, font: "700 18px var(--font-display)", color: "var(--ink)" }}>
           −
         </button>
       </div>

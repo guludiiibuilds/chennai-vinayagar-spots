@@ -167,7 +167,7 @@ function SubmitForm() {
                 borderRadius: 9999,
                 background: "var(--accent)",
                 color: "#ffffff",
-                font: "400 17px var(--font-body)",
+                font: "700 15px var(--font-display)",
               }}
             >
               Go to Map View
@@ -205,7 +205,7 @@ function SubmitForm() {
             <BackIcon />
           </button>
           <div>
-            <div style={{ font: "600 17px/1.2 var(--font-body)", letterSpacing: "-.374px", color: "var(--ink)" }}>Spot a Vinayaka</div>
+            <div style={{ font: "600 17px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>Spot a Vinayaka</div>
             <div style={{ font: "400 11.5px/1.3 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>Fill correct data for others to view.</div>
           </div>
         </div>
@@ -379,7 +379,7 @@ function SubmitForm() {
               borderRadius: 9999,
               display: "grid",
               placeItems: "center",
-              font: "400 17px var(--font-body)",
+              font: "700 15px var(--font-display)",
               ...(canSubmit ? { background: "var(--accent)", color: "#ffffff" } : { background: "var(--paper)", color: "var(--muted)", cursor: "not-allowed" }),
             }}
           >
@@ -393,7 +393,7 @@ function SubmitForm() {
 
 function FieldLabel({ children }) {
   return (
-    <div style={{ font: "700 14px/1.3 var(--font-body)", letterSpacing: "-.2px", color: "var(--ink-soft)", marginBottom: 9 }}>
+    <div style={{ font: "700 13px/1.3 var(--font-body)", letterSpacing: "0.02em", color: "var(--ink-soft)", marginBottom: 9 }}>
       {children}
     </div>
   );

@@ -94,7 +94,7 @@ export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto })
                 WebkitBackdropFilter: "saturate(180%) blur(14px)",
                 borderRadius: 9999,
                 padding: "6px 10px",
-                font: "400 11.5px/1.2 var(--font-body)",
+                font: "700 11px var(--font-display)",
                 color: "var(--ink-soft)",
               }}
             >
@@ -145,7 +145,7 @@ export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto })
               alignItems: "center",
               justifyContent: "center",
               gap: 9,
-              font: "400 17px var(--font-body)",
+              font: "700 15px var(--font-display)",
               background: "var(--accent)",
             }}
           >

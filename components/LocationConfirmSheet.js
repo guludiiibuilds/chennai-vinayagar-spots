@@ -150,12 +150,12 @@ export default function LocationConfirmSheet({
           <button
             onClick={() => onConfirm(center, area)}
             disabled={!center}
-            style={{ height: 50, borderRadius: 9999, background: "var(--accent)", color: "#ffffff", font: "400 17px var(--font-body)" }}
+            style={{ height: 50, borderRadius: 9999, background: "var(--accent)", color: "#ffffff", font: "700 15px var(--font-display)" }}
           >
             {confirmLabel}
           </button>
           {onSkip ? (
-            <button onClick={onSkip} style={{ height: 36, borderRadius: 9999, color: "var(--muted)", font: "400 13px var(--font-body)" }}>
+            <button onClick={onSkip} style={{ height: 36, borderRadius: 9999, color: "var(--muted)", font: "700 13px var(--font-body)", letterSpacing: "0.02em" }}>
               Set Location Manually Instead
             </button>
           ) : null}

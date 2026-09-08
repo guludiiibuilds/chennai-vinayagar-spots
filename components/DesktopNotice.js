@@ -68,7 +68,7 @@ export default function DesktopNotice({ onContinue }) {
               borderRadius: 9999,
               background: "var(--accent)",
               color: "#ffffff",
-              font: "400 16px var(--font-body)",
+              font: "700 15px var(--font-display)",
             }}
           >
             Copy Link
@@ -80,7 +80,7 @@ export default function DesktopNotice({ onContinue }) {
               borderRadius: 9999,
               background: "transparent",
               color: "var(--muted)",
-              font: "400 14px var(--font-body)",
+              font: "700 15px var(--font-display)",
             }}
           >
             Continue on Desktop Anyway

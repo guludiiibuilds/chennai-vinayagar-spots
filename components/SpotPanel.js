@@ -24,7 +24,7 @@ export default function SpotPanel({ spot, distanceLabel, onBack, onOpenPhoto }) 
     <div style={{ display: "flex", flexDirection: "column", height: "100%", animation: "fadeUp .22s ease both" }}>
       <button
         onClick={onBack}
-        style={{ display: "flex", alignItems: "center", gap: 6, padding: "14px 16px 4px", font: "600 13px var(--font-body)", color: "var(--ink-soft)", flex: "none" }}
+        style={{ display: "flex", alignItems: "center", gap: 6, padding: "14px 16px 4px", font: "700 13px var(--font-body)", letterSpacing: "0.02em", color: "var(--ink-soft)", flex: "none" }}
       >
         <BackIcon width={15} height={15} />
         Back to list
@@ -58,7 +58,7 @@ export default function SpotPanel({ spot, distanceLabel, onBack, onOpenPhoto }) 
               WebkitBackdropFilter: "saturate(180%) blur(14px)",
               borderRadius: 9999,
               padding: "6px 10px",
-              font: "400 11.5px/1.2 var(--font-body)",
+              font: "700 11px var(--font-display)",
               color: "var(--ink-soft)",
             }}
           >
@@ -109,7 +109,7 @@ export default function SpotPanel({ spot, distanceLabel, onBack, onOpenPhoto }) 
             alignItems: "center",
             justifyContent: "center",
             gap: 9,
-            font: "400 15.5px var(--font-body)",
+            font: "700 15px var(--font-display)",
             background: "var(--accent)",
           }}
         >

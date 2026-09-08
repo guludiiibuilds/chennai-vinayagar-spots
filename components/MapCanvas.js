@@ -51,7 +51,7 @@ function clusterIcon(cluster) {
   return L.divIcon({
     className: "",
     html: `
-      <div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--accent);color:#ffffff;display:grid;place-items:center;font:600 ${count < 100 ? 14 : 12}px var(--font-body);border:2.5px solid #ffffff;box-shadow:0 2px 8px rgba(0,0,0,.3)">
+      <div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--accent);color:#ffffff;display:grid;place-items:center;font:700 ${count < 100 ? 14 : 12}px var(--font-display);border:2.5px solid #ffffff;box-shadow:0 2px 8px rgba(0,0,0,.3)">
         ${count}
       </div>`,
     iconSize: [size, size],
@@ -114,10 +114,10 @@ function MapControls({ userPos }) {
           <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path>
         </svg>
       </button>
-      <button aria-label="Zoom in" onClick={() => map.zoomIn()} style={{ ...ctrlBtnStyle, font: "400 18px var(--font-body)", color: "var(--ink)" }}>
+      <button aria-label="Zoom in" onClick={() => map.zoomIn()} style={{ ...ctrlBtnStyle, font: "700 18px var(--font-display)", color: "var(--ink)" }}>
         +
       </button>
-      <button aria-label="Zoom out" onClick={() => map.zoomOut()} style={{ ...ctrlBtnStyle, font: "400 18px var(--font-body)", color: "var(--ink)" }}>
+      <button aria-label="Zoom out" onClick={() => map.zoomOut()} style={{ ...ctrlBtnStyle, font: "700 18px var(--font-display)", color: "var(--ink)" }}>
         −
       </button>
     </div>

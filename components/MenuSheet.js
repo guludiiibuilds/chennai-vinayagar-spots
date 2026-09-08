@@ -67,7 +67,7 @@ export default function MenuSheet({ open, onClose }) {
                   background: "var(--accent-tint)",
                   display: "grid",
                   placeItems: "center",
-                  font: "600 14px var(--font-body)",
+                  font: "700 11px var(--font-display)",
                   color: "var(--accent)",
                 }}
               >
@@ -86,7 +86,7 @@ export default function MenuSheet({ open, onClose }) {
               borderRadius: 9999,
               background: "var(--accent)",
               color: "#ffffff",
-              font: "400 17px var(--font-body)",
+              font: "700 15px var(--font-display)",
             }}
           >
             Start Vinayaka Hopping
@@ -104,7 +104,7 @@ export default function MenuSheet({ open, onClose }) {
               alignItems: "center",
               justifyContent: "center",
               gap: 7,
-              font: "400 15px var(--font-body)",
+              font: "700 15px var(--font-display)",
             }}
           >
             Share Feedback

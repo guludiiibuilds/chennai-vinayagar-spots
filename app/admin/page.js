@@ -200,7 +200,7 @@ export default function AdminPage() {
               height: 46,
               marginTop: 16,
               borderRadius: 9999,
-              font: "400 15.5px var(--font-body)",
+              font: "700 15px var(--font-display)",
               ...(password
                 ? { background: "var(--accent)", color: "#ffffff" }
                 : { background: "var(--paper)", color: "var(--muted)", cursor: "not-allowed" }),
@@ -246,7 +246,7 @@ export default function AdminPage() {
           </div>
           <button
             onClick={logout}
-            style={{ height: 36, padding: "0 16px", borderRadius: 9999, border: "1px solid var(--line-strong)", font: "400 13.5px var(--font-body)", color: "var(--ink-soft)" }}
+            style={{ height: 36, padding: "0 16px", borderRadius: 9999, border: "1px solid var(--line-strong)", font: "700 15px var(--font-display)", color: "var(--ink-soft)" }}
           >
             Log out
           </button>
@@ -385,7 +385,7 @@ function ActionButton({ children, onClick, disabled, tone, ghost }) {
     <button
       onClick={onClick}
       disabled={disabled}
-      style={{ height: 36, padding: "0 14px", borderRadius: 9999, font: "400 13px var(--font-body)", ...style }}
+      style={{ height: 36, padding: "0 14px", borderRadius: 9999, font: "700 15px var(--font-display)", ...style }}
     >
       {children}
     </button>
@@ -396,7 +396,8 @@ function tabStyle(active) {
   return {
     padding: "7px 13px",
     borderRadius: 9999,
-    font: "400 12.5px var(--font-body)",
+    font: "700 13px var(--font-body)",
+    letterSpacing: "0.02em",
     background: active ? "var(--card)" : "transparent",
     color: active ? "var(--ink)" : "var(--muted)",
   };
