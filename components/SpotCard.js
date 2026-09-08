@@ -30,46 +30,6 @@ export function SpotListCard({ spot, distanceLabel, onOpen }) {
   );
 }
 
-export function SpotCarouselCard({ spot, distanceLabel, onOpen }) {
-  return (
-    <button
-      onClick={() => onOpen(spot)}
-      style={{
-        flex: "none",
-        width: 236,
-        scrollSnapAlign: "start",
-        background: "var(--card)",
-        borderRadius: "var(--radius-lg)",
-        padding: 9,
-        display: "flex",
-        gap: 10,
-        border: "1px solid var(--line-strong)",
-        textAlign: "left",
-      }}
-    >
-      <Thumb url={spot.photo_url} size={56} />
-      <div style={{ minWidth: 0, flex: 1 }}>
-        <div
-          style={{
-            font: "600 13.5px/1.25 var(--font-body)",
-            color: "var(--ink)",
-            letterSpacing: "-.2px",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {spot.name}
-        </div>
-        <div style={{ font: "400 11.5px/1.3 var(--font-body)", color: "var(--muted)", marginTop: 3 }}>
-          {spot.area}
-          {distanceLabel ? ` · ${distanceLabel} km` : ""}
-        </div>
-      </div>
-    </button>
-  );
-}
-
 function Thumb({ url, size }) {
   const radius = size > 60 ? "var(--radius-sm)" : "var(--radius-xs)";
   if (url) {

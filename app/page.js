@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
 import { distanceKm, formatDistance } from "@/lib/geo";
 import { SearchIcon, InfoIcon } from "@/components/icons";
-import { SpotListCard, SpotCarouselCard } from "@/components/SpotCard";
+import { SpotListCard } from "@/components/SpotCard";
 import MenuSheet from "@/components/MenuSheet";
 import SpotSheet from "@/components/SpotSheet";
 import SpotPanel from "@/components/SpotPanel";
@@ -324,24 +324,6 @@ function Home() {
         {mode === "map" ? (
           <div style={{ position: "relative", zIndex: 1, flex: 1, overflow: "hidden", background: "var(--paper)" }}>
             <MapCanvas spots={filtered} userPos={userPos} onSelect={openSpot} selectedId={selectedId} focusSpot={selectedSpot} />
-            {!selectedSpot ? (
-              <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "0 0 84px", zIndex: 2, pointerEvents: "none" }}>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 10,
-                    overflowX: "auto",
-                    scrollSnapType: "x mandatory",
-                    padding: "10px 20px",
-                    pointerEvents: "auto",
-                  }}
-                >
-                  {filtered.map((s) => (
-                    <SpotCarouselCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
-                  ))}
-                </div>
-              </div>
-            ) : null}
             {selectedSpot ? (
               <div onClick={closeSheet} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: "60%", zIndex: 3 }} />
             ) : null}
