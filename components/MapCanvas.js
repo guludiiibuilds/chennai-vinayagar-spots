@@ -3,6 +3,10 @@
 import { useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import L from "leaflet";
+// Side-effect only: attaches L.markerClusterGroup to the Leaflet global that
+// "leaflet" itself just set on window — must be imported after "leaflet" so
+// that global exists by the time this module's top-level code reads it.
+import "leaflet.markercluster";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
 
@@ -37,6 +41,63 @@ const meIcon = L.divIcon({
   iconSize: [20, 20],
   iconAnchor: [10, 10],
 });
+
+// Cluster badge size steps up with count so a pandal-dense area (e.g. many
+// idols reported around one street) reads as visibly "bigger" than a
+// two-pin cluster, without needing a legend.
+function clusterIcon(cluster) {
+  const count = cluster.getChildCount();
+  const size = count < 10 ? 36 : count < 25 ? 42 : 48;
+  return L.divIcon({
+    className: "",
+    html: `
+      <div style="width:${size}px;height:${size}px;border-radius:50%;background:var(--accent);color:#ffffff;display:grid;place-items:center;font:600 ${count < 100 ? 14 : 12}px var(--font-body);border:2.5px solid #ffffff;box-shadow:0 2px 8px rgba(0,0,0,.3)">
+        ${count}
+      </div>`,
+    iconSize: [size, size],
+  });
+}
+
+// Imperative marker-cluster layer: react-leaflet has no first-class cluster
+// component, so this drives Leaflet.markercluster directly via useMap(),
+// the same pattern MinimalAttribution/FlyToSelection use elsewhere in this
+// file. Clicking a cluster zooms into its bounds (the plugin's default);
+// once individual pins are close enough apart to tell locations apart, the
+// cluster splits and each pin behaves exactly as it did unclustered.
+function ClusteredMarkers({ spots, selectedId, onSelect }) {
+  const map = useMap();
+  const clusterRef = useRef(null);
+
+  useEffect(() => {
+    const cluster = L.markerClusterGroup({
+      maxClusterRadius: 60,
+      showCoverageOnHover: false,
+      spiderfyOnMaxZoom: true,
+      iconCreateFunction: clusterIcon,
+    });
+    clusterRef.current = cluster;
+    map.addLayer(cluster);
+    return () => {
+      map.removeLayer(cluster);
+      clusterRef.current = null;
+    };
+  }, [map]);
+
+  useEffect(() => {
+    const cluster = clusterRef.current;
+    if (!cluster) return;
+    cluster.clearLayers();
+    spots
+      .filter((s) => s.lat != null && s.lng != null)
+      .forEach((s) => {
+        const marker = L.marker([s.lat, s.lng], { icon: pinIcon(s.id === selectedId) });
+        if (onSelect) marker.on("click", () => onSelect(s));
+        cluster.addLayer(marker);
+      });
+  }, [spots, selectedId, onSelect]);
+
+  return null;
+}
 
 function MapControls({ userPos }) {
   const map = useMap();
@@ -119,16 +180,7 @@ export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusS
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       />
       <MinimalAttribution />
-      {spots
-        .filter((s) => s.lat != null && s.lng != null)
-        .map((s) => (
-          <Marker
-            key={s.id}
-            position={[s.lat, s.lng]}
-            icon={pinIcon(s.id === selectedId)}
-            eventHandlers={onSelect ? { click: () => onSelect(s) } : undefined}
-          />
-        ))}
+      <ClusteredMarkers spots={spots} selectedId={selectedId} onSelect={onSelect} />
       {userPos ? <Marker position={[userPos.lat, userPos.lng]} icon={meIcon} interactive={false} /> : null}
       {focusSpot ? null : <MapControls userPos={userPos} />}
       {focusSpot ? <FlyToSelection target={focusSpot} zoom={focusZoom} /> : null}
