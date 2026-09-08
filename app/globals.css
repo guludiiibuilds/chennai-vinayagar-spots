@@ -110,27 +110,37 @@ textarea {
   }
 }
 
+/* The marker div this animates has no absolute positioning of its own —
+   Leaflet already places it precisely via iconAnchor (see MapCanvas.js), so
+   this must only animate motion RELATIVE to that resting position. Baking
+   a translate(-50%,-100%) into the "rest" state (as earlier versions did)
+   double-applies Leaflet's own anchor offset, shifting every pin up-left by
+   half its width and its full height — small at a glance, but very visibly
+   wrong once you zoom in on a specific address. */
 @keyframes pinDrop {
   0% {
-    transform: translate(-50%, -140%) scale(0.6);
+    transform: translateY(-40%) scale(0.6);
     opacity: 0;
   }
   60% {
-    transform: translate(-50%, -100%) scale(1.06);
+    transform: translateY(0) scale(1.06);
   }
   100% {
-    transform: translate(-50%, -100%) scale(1);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 }
 
+/* Same fix as pinDrop above: this div already fills its parent exactly
+   (position:absolute; inset:0), so it needs no translate at all — just a
+   scale from its own center. */
 @keyframes pulseRing {
   0% {
-    transform: translate(-50%, -50%) scale(0.5);
+    transform: scale(0.5);
     opacity: 0.55;
   }
   100% {
-    transform: translate(-50%, -50%) scale(2.4);
+    transform: scale(2.4);
     opacity: 0;
   }
 }
