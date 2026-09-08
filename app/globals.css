@@ -285,6 +285,16 @@ textarea {
   box-shadow: 3px 5px 30px rgba(0, 0, 0, 0.22);
 }
 
+/* OpenStreetMap's tile usage policy requires visible attribution — this
+   just shrinks Leaflet's default control down to a quieter footprint
+   (the "Leaflet" library credit itself is dropped in code, via
+   attributionControl.setPrefix(false) in MapCanvas.js/LocationPicker.js). */
+.leaflet-control-attribution {
+  font-size: 9px;
+  padding: 0 4px;
+  background: rgba(255, 255, 255, 0.65);
+}
+
 /* Every text input/textarea in the app gets this: a hover border tint,
    and a focus ring in the single accent color — matching the design
    system's blue focus-state convention (buttons use a solid outline;

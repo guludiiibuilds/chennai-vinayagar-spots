@@ -77,6 +77,17 @@ const ctrlBtnStyle = {
   cursor: "pointer",
 };
 
+// OpenStreetMap's tile usage policy requires visible attribution, so this
+// only trims the "Leaflet" library credit (and its flag) that Leaflet
+// prepends by default — the required "© OpenStreetMap contributors" stays.
+function MinimalAttribution() {
+  const map = useMap();
+  useEffect(() => {
+    map.attributionControl?.setPrefix(false);
+  }, [map]);
+  return null;
+}
+
 // react-leaflet's `center`/`zoom` on MapContainer are only the initial view —
 // changing them after mount doesn't move an already-live map. This flies the
 // map to the selected spot imperatively whenever the selection changes.
@@ -107,6 +118,7 @@ export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusS
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
+      <MinimalAttribution />
       {spots
         .filter((s) => s.lat != null && s.lng != null)
         .map((s) => (

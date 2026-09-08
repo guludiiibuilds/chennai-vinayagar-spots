@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
+import { useEffect, useRef, useState } from "react";
+import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
 
@@ -13,6 +13,17 @@ const PIN_ASSET = "/pin-vinayaka.png";
 const PIN_ASPECT = 75 / 43;
 const PIN_WIDTH = 36;
 const PIN_HEIGHT = Math.round(PIN_WIDTH * PIN_ASPECT);
+
+// OpenStreetMap's tile usage policy requires visible attribution, so this
+// only trims the "Leaflet" library credit (and its flag) that Leaflet
+// prepends by default — the required "© OpenStreetMap contributors" stays.
+function MinimalAttribution() {
+  const map = useMap();
+  useEffect(() => {
+    map.attributionControl?.setPrefix(false);
+  }, [map]);
+  return null;
+}
 
 function MoveTracker({ onMoveEnd, onDragStart, onDragEnd }) {
   useMapEvents({
@@ -76,6 +87,7 @@ export default function LocationPicker({ initialCenter, initialZoom = 16, onCent
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
+        <MinimalAttribution />
         <MoveTracker
           onMoveEnd={onCenterChange}
           onDragStart={() => {
