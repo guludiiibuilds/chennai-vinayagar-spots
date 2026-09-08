@@ -13,7 +13,7 @@ export function SpotListCard({ spot, distanceLabel, onOpen }) {
         borderRadius: "var(--radius-lg)",
         background: "var(--card)",
         border: "1px solid var(--line-strong)",
-        boxShadow: "var(--shadow-xs)",
+        boxShadow: "var(--shadow-card)",
         flex: "none",
         textAlign: "left",
         width: "100%",

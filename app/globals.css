@@ -1,51 +1,152 @@
 :root {
-  /* BoldDesk design system (Untitled-UI token architecture) — see
-     the project's BoldDesk readme for the source spec. Surfaces */
-  --paper: #f9fafb; /* gray-50 */
-  --card: #ffffff;
-  --pearl: #fcfcfd; /* gray-25: ghost-button fill */
+  /* Chennai Vinayagar DS — the app's own design system (vermillion +
+     saffron on warm cream), replacing the earlier BoldDesk purple/
+     enterprise tokens. Full color ramps first; the semantic aliases
+     below are what components actually consume via var(--x). */
+
+  /* Vermillion — primary brand accent, from the "Vinayagar" wordmark */
+  --vermillion-50: #fdf1ea;
+  --vermillion-100: #fce1d4;
+  --vermillion-200: #f8c3a9;
+  --vermillion-300: #f49775;
+  --vermillion-400: #ef6f45;
+  --vermillion-500: #e8562a;
+  --vermillion-600: #d1441c;
+  --vermillion-700: #ac3517;
+  --vermillion-800: #852818;
+  --vermillion-900: #5e1c14;
+
+  /* Saffron — celebratory/devotional accent, from crown + rays */
+  --saffron-50: #fef8ec;
+  --saffron-100: #fcefd4;
+  --saffron-200: #f8d28c;
+  --saffron-300: #f4bd62;
+  --saffron-400: #f0a93a;
+  --saffron-500: #dc9022;
+  --saffron-600: #bd7818;
+  --saffron-700: #946014;
+  --saffron-800: #6e4811;
+  --saffron-900: #4a300c;
+
+  /* Navy — text / brand-dark, from the "Chennai" wordmark */
+  --navy-50: #eef1f7;
+  --navy-100: #d6dded;
+  --navy-200: #aab8d6;
+  --navy-300: #7d92bd;
+  --navy-400: #4e699e;
+  --navy-500: #2c4a7c;
+  --navy-600: #223b67;
+  --navy-700: #1b2e52;
+  --navy-800: #14213d;
+  --navy-900: #0d152a;
+
+  /* Cream — warm neutrals, never cold gray */
+  --cream-0: #fefcf7;
+  --cream-50: #fdfaf2;
+  --cream-100: #faf3e3;
+  --cream-200: #f6eedc;
+  --cream-300: #f1e4c9;
+  --cream-400: #e6d6b0;
+  --cream-500: #d3bf92;
+  --cream-600: #a99a72;
+  --cream-700: #7e7256;
+  --cream-800: #544c3a;
+  --cream-900: #2a2620;
+
+  /* Semantic status — kept distinct from the brand colors above */
+  --status-success: #3f8c4c;
+  --status-success-hover: #2f6e3a;
+  --status-success-bg: #e2f2e4;
+  --status-error: #c4372a;
+  --status-error-hover: #9e2b20;
+  --status-error-bg: #f9e3e0;
+  --status-info: #2e7da6;
+  --status-info-hover: #236283;
+  --status-info-bg: #e2eff5;
+
+  /* Surfaces */
+  --paper: var(--cream-100);
+  --card: var(--cream-0);
+  --pearl: var(--cream-50); /* ghost-button fill */
 
   /* Text */
-  --ink: #101828; /* gray-900 */
-  --ink-soft: #344054; /* gray-700 */
-  --muted: #667085; /* gray-500 */
+  --ink: var(--navy-800);
+  --ink-soft: var(--navy-600);
+  --muted: var(--cream-700);
 
   /* Hairlines */
-  --line: #f2f4f7; /* gray-100 */
-  --line-strong: #eaecf0; /* gray-200 */
+  --line: var(--cream-200);
+  --line-strong: var(--cream-400);
 
   /* Single accent — every interactive element */
-  --accent: #7f56d9; /* brand-600 */
-  --accent-hover: #6941c6; /* brand-700 */
-  --accent-tint: rgba(127, 86, 217, 0.1);
-  --accent-ring: rgba(127, 86, 217, 0.24); /* BoldDesk's 4px focus-ring tint */
+  --accent: var(--vermillion-500);
+  --accent-hover: var(--vermillion-600);
+  --accent-tint: rgba(232, 86, 42, 0.1);
+  --accent-ring: rgba(44, 74, 124, 0.3); /* the system's focus color is navy, not the accent */
 
   /* Map pin / destructive actions (shared semantic red — this app has
      always reused the pin color for admin "reject" buttons too, so one
      error-red token covers both instead of keeping them separate) */
-  --pin: #f04438; /* error-500 */
-  --pin-active: #b42318; /* error-700 */
+  --pin: var(--status-error);
+  --pin-active: var(--status-error-hover);
 
   /* Semantic success (captured location, uploaded photo) */
-  --green: #079455; /* success-600 */
-  --green-tint: rgba(18, 183, 106, 0.12); /* success-500 tint */
+  --green: var(--status-success);
+  --green-tint: var(--status-success-bg);
 
-  /* Radius scale (BoldDesk: xxs2/xs4/sm6/md8/lg10/xl12/full) */
+  /* Radius scale */
   --radius-none: 0px;
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px; /* bottom-sheet / modal corners */
   --radius-pill: 9999px;
 
-  /* Elevation — BoldDesk uses shadow more freely than a flat system:
-     a whisper-soft lift on controls/cards, a deeper one on sheets and
-     popovers floating above content. */
-  --shadow-xs: 0px 1px 2px rgba(16, 24, 40, 0.05);
-  --shadow-lg: 0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03);
+  /* Spacing scale (4px base) — available for new layout work; existing
+     components keep their already-tuned per-screen pixel values. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
 
-  --font-body: Inter, -apple-system, BlinkMacSystemFont, var(--font-inter), system-ui, sans-serif;
-  --font-display: Inter, -apple-system, BlinkMacSystemFont, var(--font-inter), system-ui, sans-serif;
+  /* Elevation — navy-tinted, never pure black, with one vermillion-tinted
+     tier reserved for the app's primary floating action button. */
+  --shadow-xs: 0px 1px 2px rgba(20, 33, 61, 0.06);
+  --shadow-sm: 0px 2px 4px rgba(20, 33, 61, 0.08);
+  --shadow-card: 0px 4px 16px rgba(20, 33, 61, 0.1);
+  --shadow-elevated: 0px 12px 32px rgba(20, 33, 61, 0.16);
+  --shadow-lg: var(--shadow-elevated); /* sheets, modals, popovers */
+  --shadow-floating: 0px 8px 24px rgba(232, 86, 42, 0.24); /* primary FAB only */
+  --shadow-focus: 0 0 0 3px rgba(44, 74, 124, 0.3);
+
+  /* Motion */
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-slow: 380ms; /* sheet/modal entrances only */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1); /* celebratory — no bounce/overshoot */
+
+  --font-display: var(--font-baloo), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-body: var(--font-mulish), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 * {
@@ -90,7 +191,7 @@ button {
    slightly on press instead of relying on shadow or color for feedback. */
 button,
 a {
-  transition: transform 0.12s ease;
+  transition: transform var(--duration-fast) var(--ease-standard);
 }
 button:active,
 a:active {
@@ -182,15 +283,15 @@ textarea {
   .app-shell {
     padding: 32px 16px;
     background:
-      radial-gradient(circle at 12% 8%, rgba(127, 86, 217, 0.07), transparent 45%),
-      radial-gradient(circle at 88% 92%, rgba(240, 68, 56, 0.05), transparent 45%),
+      radial-gradient(circle at 12% 8%, rgba(232, 86, 42, 0.07), transparent 45%),
+      radial-gradient(circle at 88% 92%, rgba(220, 144, 34, 0.06), transparent 45%),
       var(--paper);
   }
   .app-frame {
     height: min(844px, 90vh);
-    border-radius: 20px;
+    border-radius: var(--radius-xl);
     overflow: hidden;
-    box-shadow: 0 30px 70px -24px rgba(16, 24, 40, 0.28), 0 0 0 1px var(--line-strong);
+    box-shadow: 0 30px 70px -24px rgba(20, 33, 61, 0.28), 0 0 0 1px var(--line-strong);
   }
 }
 
@@ -296,11 +397,11 @@ textarea {
 }
 
 /* Every text input/textarea in the app gets this: a hover border tint,
-   and a focus ring in the single accent color — matching the design
-   system's blue focus-state convention (buttons use a solid outline;
-   fields use a soft ring since they already carry a visible border). */
+   and a focus ring in the system's navy focus color (buttons use a solid
+   outline; fields use a soft ring since they already carry a visible
+   border) — matching --shadow-focus's color, just widened to 4px. */
 .field-input {
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
 }
 .field-input:hover {
   border-color: var(--muted);
@@ -315,7 +416,7 @@ textarea {
    around the <input> (e.g. an input with a leading icon) rather than on
    the input itself — :focus-within reacts when the inner input focuses. */
 .field-wrap {
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--duration-fast) var(--ease-standard), box-shadow var(--duration-fast) var(--ease-standard);
 }
 .field-wrap:hover {
   border-color: var(--muted);

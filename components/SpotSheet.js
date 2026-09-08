@@ -54,7 +54,7 @@ export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto })
           zIndex: 5,
           background: "var(--card)",
           borderTop: "1px solid var(--line-strong)",
-          borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",
+          borderRadius: "var(--radius-xl) var(--radius-xl) 0 0",
           boxShadow: "var(--shadow-lg)",
           display: "flex",
           flexDirection: "column",

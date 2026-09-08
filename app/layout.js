@@ -1,15 +1,23 @@
-import { Inter } from "next/font/google";
+import { Baloo_2, Mulish } from "next/font/google";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "./globals.css";
 import ToastProvider from "@/components/ToastProvider";
 
-// Real SF Pro renders on Apple devices via the -apple-system/BlinkMacSystemFont
-// stack in globals.css; Inter is loaded as the closest open-source match for
-// everyone else, per the design system's own font-substitution guidance.
-const inter = Inter({
+// Baloo 2 (rounded, celebratory) carries headings/buttons/badges; Mulish
+// carries body/forms/metadata — the Chennai Vinayagar DS type pairing.
+const baloo = Baloo_2({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-baloo",
+  display: "swap",
+});
+
+const mulish = Mulish({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
+  variable: "--font-mulish",
   display: "swap",
 });
 
@@ -22,12 +30,12 @@ export const metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#ffffff",
+  themeColor: "#fefcf7",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${baloo.variable} ${mulish.variable}`}>
       <body>
         <ToastProvider>{children}</ToastProvider>
       </body>

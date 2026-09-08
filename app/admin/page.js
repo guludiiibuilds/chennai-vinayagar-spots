@@ -298,7 +298,7 @@ function SpotReviewCard({ spot, onChange, onSave, onAction, onDelete }) {
   };
 
   return (
-    <div style={{ display: "flex", gap: 18, background: "var(--card)", border: "1px solid var(--line-strong)", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-xs)", padding: 18, opacity: busy ? 0.6 : 1 }}>
+    <div style={{ display: "flex", gap: 18, background: "var(--card)", border: "1px solid var(--line-strong)", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-card)", padding: 18, opacity: busy ? 0.6 : 1 }}>
       <div style={{ flex: "none", width: 140 }}>
         {spot.photo_url ? (
           <img src={spot.photo_url} alt="" style={{ width: 140, height: 140, borderRadius: "var(--radius-md)", objectFit: "cover", background: "var(--paper)" }} />

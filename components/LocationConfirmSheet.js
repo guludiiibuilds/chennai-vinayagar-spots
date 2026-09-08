@@ -111,7 +111,7 @@ export default function LocationConfirmSheet({
           zIndex: 5,
           background: "var(--card)",
           borderTop: "1px solid var(--line-strong)",
-          borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",
+          borderRadius: "var(--radius-xl) var(--radius-xl) 0 0",
           boxShadow: "var(--shadow-lg)",
           padding: "10px 18px 16px",
           animation: "fadeUp .22s ease both",

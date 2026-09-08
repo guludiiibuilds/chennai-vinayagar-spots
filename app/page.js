@@ -390,6 +390,7 @@ function Home() {
               gap: 9,
               font: "400 17px var(--font-body)",
               background: "var(--accent)",
+              boxShadow: "var(--shadow-floating)",
             }}
           >
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
