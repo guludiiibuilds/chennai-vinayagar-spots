@@ -53,16 +53,30 @@
   --cream-800: #544c3a;
   --cream-900: #2a2620;
 
+  /* Green — success ramp; 600/700 match --status-success/-hover exactly so
+     the two naming schemes agree instead of drifting apart. */
+  --green-50: #eef8f0;
+  --green-100: #e2f2e4;
+  --green-200: #c3e5c8;
+  --green-300: #9ed3a6;
+  --green-400: #6fbb7d;
+  --green-500: #4fa25f;
+  --green-600: #3f8c4c;
+  --green-700: #2f6e3a;
+  --green-800: #24552d;
+  --green-900: #1a3f21;
+
   /* Semantic status — kept distinct from the brand colors above */
-  --status-success: #3f8c4c;
-  --status-success-hover: #2f6e3a;
-  --status-success-bg: #e2f2e4;
+  --status-success: var(--green-600);
+  --status-success-hover: var(--green-700);
+  --status-success-bg: var(--green-100);
   --status-error: #c4372a;
   --status-error-hover: #9e2b20;
   --status-error-bg: #f9e3e0;
   --status-info: #2e7da6;
   --status-info-hover: #236283;
   --status-info-bg: #e2eff5;
+  --blue-500: var(--status-info); /* "current location" marker only — not a brand color */
 
   /* Surfaces */
   --paper: var(--cream-100);
@@ -133,10 +147,54 @@
   --duration-base: 220ms;
   --duration-slow: 380ms; /* sheet/modal entrances only */
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1); /* celebratory — no bounce/overshoot */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1); /* celebratory — no bounce/overshoot */
 
   --font-display: var(--font-baloo), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-body: var(--font-mulish), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --color-error: var(--status-error);
+
+  /* Component-library aliases — the shared Button/Badge/Chip/TextField/etc.
+     components (components/*.js) were authored against this naming scheme
+     directly; every alias just repoints to a value already defined above,
+     so there is exactly one source of truth per color/size, never two. */
+  --color-brand-primary: var(--accent);
+  --color-brand-primary-hover: var(--accent-hover);
+  --color-brand-secondary: var(--navy-700);
+  --color-brand-secondary-hover: var(--navy-800);
+  --color-brand-accent: var(--saffron-400);
+  --color-brand-accent-hover: var(--saffron-500);
+
+  --color-surface-elevated: var(--card);
+  --color-border-default: var(--line);
+  --color-border-strong: var(--line-strong);
+
+  --color-text-primary: var(--ink);
+  --color-text-secondary: var(--ink-soft);
+  --color-text-muted: var(--muted);
+
+  --text-button-size: 15px;
+  --text-button-weight: 700;
+  --text-button-ls: normal;
+  --text-badge-size: 11px;
+  --text-badge-weight: 700;
+  --text-badge-ls: 0.04em;
+  --text-label-size: 13px;
+  --text-label-weight: 700;
+  --text-body-size: 15px;
+  --text-body-s-size: 13px;
+  --text-caption-size: 12px;
+  --text-map-label-size: 11px;
+
+  --radius-button-pill: var(--radius-pill);
+  --radius-badge: var(--radius-pill);
+  --radius-chip: var(--radius-pill);
+  --radius-card: var(--radius-lg);
+  --radius-input: 12px;
+  --radius-image: 16px;
+  --radius-marker: 16px 16px 16px 4px; /* teardrop, per the DS map-pin spec */
+  --radius-bottom-sheet: 28px 28px 0 0;
+
+  --layout-bottom-sheet-padding: var(--space-5);
 }
 
 @media (prefers-reduced-motion: reduce) {
