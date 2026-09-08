@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { googleMapsUrl } from "@/lib/geo";
+import { Button } from "@/components/Button";
+import { Chip } from "@/components/Chip";
+import { TextField } from "@/components/TextField";
 
 // Metadata exports are ignored in files with "use client" — noindex for
 // this route is set via app/admin/layout.js instead.
@@ -192,22 +195,13 @@ export default function AdminPage() {
           {loginError ? (
             <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--pin-active)", marginTop: 10 }}>{loginError}</div>
           ) : null}
-          <button
-            type="submit"
-            disabled={loggingIn || !password}
-            style={{
-              width: "100%",
-              height: 46,
-              marginTop: 16,
-              borderRadius: 9999,
-              font: "700 15px var(--font-display)",
-              ...(password
-                ? { background: "var(--accent)", color: "#ffffff" }
-                : { background: "var(--paper)", color: "var(--muted)", cursor: "not-allowed" }),
-            }}
-          >
+          {/* Button renders a plain <button> with no type attribute, which
+              defaults to type="submit" inside a <form> — same behavior as
+              the native submit button this replaced, via the form's
+              onSubmit={login} below. */}
+          <Button variant="primary" disabled={loggingIn || !password} loading={loggingIn} style={{ width: "100%", height: 46, marginTop: 16 }}>
             {loggingIn ? "Signing in…" : "Sign in"}
-          </button>
+          </Button>
         </form>
       </div>
     );
@@ -237,19 +231,16 @@ export default function AdminPage() {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ display: "flex", background: "var(--paper)", borderRadius: 9999, padding: 3 }}>
+          <div style={{ display: "flex", gap: 6 }}>
             {TABS.map((t) => (
-              <button key={t.key} onClick={() => setTab(t.key)} style={tabStyle(tab === t.key)}>
+              <Chip key={t.key} selected={tab === t.key} onClick={() => setTab(t.key)}>
                 {t.label}
-              </button>
+              </Chip>
             ))}
           </div>
-          <button
-            onClick={logout}
-            style={{ height: 36, padding: "0 16px", borderRadius: 9999, border: "1px solid var(--line-strong)", font: "700 15px var(--font-display)", color: "var(--ink-soft)" }}
-          >
+          <Button variant="outline" size="sm" onClick={logout} style={{ height: 36 }}>
             Log out
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -326,16 +317,7 @@ function SpotReviewCard({ spot, onChange, onSave, onAction, onDelete }) {
           <Field label="Landmark" value={spot.landmark} onChange={(v) => onChange({ landmark: v })} flex={1} />
           <Field label="Maps link" value={spot.maps_link || ""} onChange={(v) => onChange({ maps_link: v })} flex={1} />
         </div>
-        <div>
-          <FieldLabel>About</FieldLabel>
-          <textarea
-            className="field-input"
-            value={spot.about || ""}
-            onChange={(e) => onChange({ about: e.target.value })}
-            rows={2}
-            style={{ width: "100%", borderRadius: "var(--radius-md)", border: "1px solid var(--line-strong)", background: "var(--card)", padding: "8px 10px", font: "400 13.5px/1.4 var(--font-body)", color: "var(--ink)", outline: 0, resize: "vertical" }}
-          />
-        </div>
+        <TextField label="About" value={spot.about || ""} onChange={(e) => onChange({ about: e.target.value })} multiline />
 
         <div style={{ display: "flex", gap: 8, marginTop: 4, flexWrap: "wrap" }}>
           <ActionButton onClick={() => run(onSave)} disabled={busy}>Save changes</ActionButton>
@@ -358,19 +340,9 @@ function SpotReviewCard({ spot, onChange, onSave, onAction, onDelete }) {
 function Field({ label, value, onChange, flex }) {
   return (
     <div style={{ flex }}>
-      <FieldLabel>{label}</FieldLabel>
-      <input
-        className="field-input"
-        value={value || ""}
-        onChange={(e) => onChange(e.target.value)}
-        style={{ width: "100%", height: 38, borderRadius: "var(--radius-md)", border: "1px solid var(--line-strong)", background: "var(--card)", padding: "0 10px", font: "400 13.5px var(--font-body)", color: "var(--ink)", outline: 0 }}
-      />
+      <TextField label={label} value={value || ""} onChange={(e) => onChange(e.target.value)} />
     </div>
   );
-}
-
-function FieldLabel({ children }) {
-  return <div style={{ font: "600 11px var(--font-body)", color: "var(--muted)", marginBottom: 4, textTransform: "uppercase", letterSpacing: ".3px" }}>{children}</div>;
 }
 
 function ActionButton({ children, onClick, disabled, tone, ghost }) {
@@ -390,15 +362,4 @@ function ActionButton({ children, onClick, disabled, tone, ghost }) {
       {children}
     </button>
   );
-}
-
-function tabStyle(active) {
-  return {
-    padding: "7px 13px",
-    borderRadius: 9999,
-    font: "700 13px var(--font-body)",
-    letterSpacing: "0.02em",
-    background: active ? "var(--card)" : "transparent",
-    color: active ? "var(--ink)" : "var(--muted)",
-  };
 }

@@ -3,6 +3,8 @@
 import { renderRichText } from "@/lib/richtext";
 import { googleMapsUrl } from "@/lib/geo";
 import { BackIcon, ShareIcon, NavigateIcon, PhotoIcon, PinPlaceIcon } from "./icons";
+import { Button } from "./Button";
+import { IconButton } from "./IconButton";
 
 // Sidebar counterpart to SpotSheet — same spot detail, laid out in normal
 // document flow (not an absolutely-positioned bottom sheet) since on
@@ -80,42 +82,15 @@ export default function SpotPanel({ spot, distanceLabel, onBack, onOpenPhoto }) 
       </div>
 
       <div style={{ flex: "none", padding: "12px 16px 16px", borderTop: "1px solid var(--line)", display: "flex", gap: 9 }}>
-        <button
-          onClick={share}
-          aria-label="Share"
-          style={{
-            flex: "none",
-            width: 46,
-            height: 46,
-            borderRadius: 9999,
-            border: "1px solid var(--line-strong)",
-            display: "grid",
-            placeItems: "center",
-            background: "var(--card)",
-          }}
+        <IconButton variant="outline" label="Share" onClick={share} icon={<ShareIcon />} style={{ width: 46, height: 46, borderRadius: 9999 }} />
+        <Button
+          variant="primary"
+          onClick={() => window.open(googleMapsUrl(spot), "_blank", "noopener,noreferrer")}
+          icon={<NavigateIcon />}
+          style={{ flex: 1, height: 46 }}
         >
-          <ShareIcon />
-        </button>
-        <a
-          href={googleMapsUrl(spot)}
-          target="_blank"
-          rel="noreferrer"
-          style={{
-            flex: 1,
-            height: 46,
-            borderRadius: 9999,
-            color: "#ffffff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 9,
-            font: "700 15px var(--font-display)",
-            background: "var(--accent)",
-          }}
-        >
-          <NavigateIcon />
           Take Me There
-        </a>
+        </Button>
       </div>
     </div>
   );

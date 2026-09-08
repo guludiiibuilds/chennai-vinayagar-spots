@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import { reverseGeocodeArea } from "@/lib/geo";
 import { useToast } from "@/components/ToastProvider";
 import { CloseIcon, CheckIcon } from "@/components/icons";
+import { Button } from "@/components/Button";
+import { IconButton } from "@/components/IconButton";
 
 const LocationPicker = dynamic(() => import("@/components/LocationPicker"), {
   ssr: false,
@@ -123,13 +125,7 @@ export default function LocationConfirmSheet({
             <div style={{ font: "600 19px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>{title}</div>
             <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 3 }}>{subtitle}</div>
           </div>
-          <button
-            aria-label="Close"
-            onClick={onClose}
-            style={{ flex: "none", width: 32, height: 32, borderRadius: 10, display: "grid", placeItems: "center" }}
-          >
-            <CloseIcon />
-          </button>
+          <IconButton variant="soft" size="sm" label="Close" onClick={onClose} icon={<CloseIcon />} style={{ borderRadius: 10 }} />
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 11, marginTop: 14 }}>
@@ -147,17 +143,13 @@ export default function LocationConfirmSheet({
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 14 }}>
-          <button
-            onClick={() => onConfirm(center, area)}
-            disabled={!center}
-            style={{ height: 50, borderRadius: 9999, background: "var(--accent)", color: "#ffffff", font: "700 15px var(--font-display)" }}
-          >
+          <Button variant="primary" onClick={() => onConfirm(center, area)} disabled={!center} style={{ height: 50 }}>
             {confirmLabel}
-          </button>
+          </Button>
           {onSkip ? (
-            <button onClick={onSkip} style={{ height: 36, borderRadius: 9999, color: "var(--muted)", font: "700 13px var(--font-body)", letterSpacing: "0.02em" }}>
+            <Button variant="ghost" size="sm" onClick={onSkip} style={{ height: 36, color: "var(--color-text-muted)", letterSpacing: "0.02em" }}>
               Set Location Manually Instead
-            </button>
+            </Button>
           ) : null}
         </div>
       </div>

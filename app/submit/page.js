@@ -9,6 +9,9 @@ import { useToast } from "@/components/ToastProvider";
 import { BackIcon, CompassIcon, CheckIcon } from "@/components/icons";
 import DesktopNotice from "@/components/DesktopNotice";
 import LocationConfirmSheet from "@/components/LocationConfirmSheet";
+import { Button } from "@/components/Button";
+import { IconButton } from "@/components/IconButton";
+import { TextField } from "@/components/TextField";
 
 const DESKTOP_BREAKPOINT = 1024;
 
@@ -160,18 +163,9 @@ function SubmitForm() {
             the map for everyone.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 9, marginTop: 28, width: "100%", maxWidth: 280 }}>
-            <button
-              onClick={() => router.push("/")}
-              style={{
-                height: 50,
-                borderRadius: 9999,
-                background: "var(--accent)",
-                color: "#ffffff",
-                font: "700 15px var(--font-display)",
-              }}
-            >
+            <Button variant="primary" onClick={() => router.push("/")} style={{ height: 50 }}>
               Go to Map View
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -197,13 +191,7 @@ function SubmitForm() {
         ) : null}
 
         <div style={{ flex: "none", padding: "16px 18px 14px", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", gap: 12 }}>
-          <button
-            onClick={() => router.push("/")}
-            aria-label="Cancel"
-            style={{ width: 36, height: 36, borderRadius: 9999, background: "var(--paper)", display: "grid", placeItems: "center" }}
-          >
-            <BackIcon />
-          </button>
+          <IconButton variant="soft" onClick={() => router.push("/")} label="Cancel" icon={<BackIcon />} />
           <div>
             <div style={{ font: "600 17px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>Spot a Vinayaka</div>
             <div style={{ font: "400 11.5px/1.3 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>Fill correct data for others to view.</div>
@@ -249,26 +237,12 @@ function SubmitForm() {
             </button>
           </div>
 
-          <div>
-            <FieldLabel>Vinayaka Name</FieldLabel>
-            <input
-              className="field-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Kapaleeshwarar Street Idol"
-              style={{
-                width: "100%",
-                height: 50,
-                borderRadius: "var(--radius-md)",
-                border: "1px solid var(--line-strong)",
-                background: "var(--card)",
-                padding: "0 14px",
-                font: "400 16px var(--font-body)",
-                color: "var(--ink)",
-                outline: 0,
-              }}
-            />
-          </div>
+          <TextField
+            label="Vinayaka Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Kapaleeshwarar Street Idol"
+          />
 
           <div>
             <FieldLabel>Location</FieldLabel>
@@ -299,6 +273,9 @@ function SubmitForm() {
             <div style={{ font: "400 11.5px/1.5 var(--font-body)", color: "var(--muted)", marginTop: 8, padding: "0 2px" }}>
               Or paste a Google Maps link instead
             </div>
+            {/* Plain input, not TextField: needs an onBlur handler (to look
+                up the area from the pasted link) that TextField's fixed
+                props don't expose. */}
             <input
               className="field-input"
               value={mapsLink}
@@ -320,71 +297,34 @@ function SubmitForm() {
             />
           </div>
 
-          <div>
-            <FieldLabel>
-              Area / Neighbourhood <span style={{ color: "var(--muted)", fontWeight: 400 }}>(auto-filled from location)</span>
-            </FieldLabel>
-            <input
-              className="field-input"
-              value={area}
-              onChange={(e) => setArea(e.target.value)}
-              placeholder="e.g. Mylapore"
-              style={{
-                width: "100%",
-                height: 46,
-                borderRadius: "var(--radius-md)",
-                border: "1px solid var(--line-strong)",
-                background: "var(--card)",
-                padding: "0 13px",
-                font: "400 16px var(--font-body)",
-                color: "var(--ink)",
-                outline: 0,
-              }}
-            />
-          </div>
+          <TextField
+            label={
+              <>
+                Area / Neighbourhood <span style={{ color: "var(--muted)", fontWeight: 400 }}>(auto-filled from location)</span>
+              </>
+            }
+            value={area}
+            onChange={(e) => setArea(e.target.value)}
+            placeholder="e.g. Mylapore"
+          />
 
-          <div>
-            <FieldLabel>
-              Describe Vinayaka <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
-            </FieldLabel>
-            <textarea
-              className="field-input"
-              value={about}
-              onChange={(e) => setAbout(e.target.value)}
-              placeholder="Idol height, timings, anything visitors should know"
-              rows={4}
-              style={{
-                width: "100%",
-                minHeight: 90,
-                borderRadius: "var(--radius-md)",
-                border: "1px solid var(--line-strong)",
-                background: "var(--card)",
-                padding: "12px 14px",
-                font: "400 16px/1.5 var(--font-body)",
-                color: "var(--ink)",
-                outline: 0,
-                resize: "vertical",
-              }}
-            />
-          </div>
+          <TextField
+            label={
+              <>
+                Describe Vinayaka <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
+              </>
+            }
+            value={about}
+            onChange={(e) => setAbout(e.target.value)}
+            placeholder="Idol height, timings, anything visitors should know"
+            multiline
+          />
         </div>
 
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "12px 14px 16px", background: "linear-gradient(180deg,rgba(255,255,255,0),var(--card) 34%)" }}>
-          <button
-            onClick={submit}
-            disabled={!canSubmit}
-            style={{
-              width: "100%",
-              height: 50,
-              borderRadius: 9999,
-              display: "grid",
-              placeItems: "center",
-              font: "700 15px var(--font-display)",
-              ...(canSubmit ? { background: "var(--accent)", color: "#ffffff" } : { background: "var(--paper)", color: "var(--muted)", cursor: "not-allowed" }),
-            }}
-          >
+          <Button variant="primary" onClick={submit} disabled={!canSubmit} loading={submitting} style={{ width: "100%", height: 50 }}>
             {submitting ? "Submitting…" : "Submit for review"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

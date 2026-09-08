@@ -1,6 +1,7 @@
 "use client";
 
 import { useToast } from "./ToastProvider";
+import { Button } from "./Button";
 
 export default function DesktopNotice({ onContinue }) {
   const showToast = useToast();
@@ -61,30 +62,12 @@ export default function DesktopNotice({ onContinue }) {
           go ahead here anyway.
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>
-          <button
-            onClick={copyLink}
-            style={{
-              height: 48,
-              borderRadius: 9999,
-              background: "var(--accent)",
-              color: "#ffffff",
-              font: "700 15px var(--font-display)",
-            }}
-          >
+          <Button variant="primary" onClick={copyLink} style={{ height: 48 }}>
             Copy Link
-          </button>
-          <button
-            onClick={onContinue}
-            style={{
-              height: 40,
-              borderRadius: 9999,
-              background: "transparent",
-              color: "var(--muted)",
-              font: "700 15px var(--font-display)",
-            }}
-          >
+          </Button>
+          <Button variant="ghost" onClick={onContinue} style={{ height: 40, color: "var(--color-text-muted)" }}>
             Continue on Desktop Anyway
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -5,12 +5,17 @@ import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
 import { distanceKm, formatDistance } from "@/lib/geo";
-import { SearchIcon, InfoIcon } from "@/components/icons";
+import { InfoIcon } from "@/components/icons";
 import { SpotListCard } from "@/components/SpotCard";
 import MenuSheet from "@/components/MenuSheet";
 import SpotSheet from "@/components/SpotSheet";
 import SpotPanel from "@/components/SpotPanel";
 import PhotoViewer from "@/components/PhotoViewer";
+import { Button } from "@/components/Button";
+import { IconButton } from "@/components/IconButton";
+import { Chip } from "@/components/Chip";
+import { SearchBar } from "@/components/SearchBar";
+import { EmptyState } from "@/components/EmptyState";
 
 const DESKTOP_BREAKPOINT = 768;
 
@@ -121,13 +126,7 @@ function Home() {
                   {spots.length} active idol{spots.length === 1 ? "" : "s"}
                 </div>
               </div>
-              <button
-                aria-label="About"
-                onClick={() => setMenuOpen(true)}
-                style={{ flex: "none", width: 34, height: 34, borderRadius: 9999, background: "var(--paper)", display: "grid", placeItems: "center" }}
-              >
-                <InfoIcon />
-              </button>
+              <IconButton variant="soft" size="sm" label="About" onClick={() => setMenuOpen(true)} icon={<InfoIcon />} />
             </div>
           </div>
 
@@ -135,26 +134,7 @@ function Home() {
             <div className="hp-sidebar">
               {!selectedSpot ? (
                 <div className="hp-sidebar-search">
-                  <div
-                    className="field-wrap"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      background: "var(--paper)",
-                      border: "1px solid var(--line-strong)",
-                      borderRadius: 9999,
-                      padding: "9px 14px",
-                    }}
-                  >
-                    <SearchIcon />
-                    <input
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Search area or idol name"
-                      style={{ border: 0, outline: 0, background: "transparent", font: "400 15px var(--font-body)", color: "var(--ink)", width: "100%" }}
-                    />
-                  </div>
+                  <SearchBar value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search area or idol name" />
                 </div>
               ) : null}
 
@@ -171,37 +151,25 @@ function Home() {
                     <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
                   ))}
                   {!loading && filtered.length === 0 ? (
-                    <div style={{ padding: "38px 20px", textAlign: "center", font: "400 13px/1.6 var(--font-body)", color: "var(--muted)" }}>
-                      No spots match that search yet.
-                      <br />
-                      Know one? Add it below.
-                    </div>
+                    <EmptyState icon="🔍" title="No spots match that search yet" description="Know one? Add it below." />
                   ) : null}
                 </div>
               )}
 
               {!selectedSpot ? (
                 <div className="hp-sidebar-footer">
-                  <button
+                  <Button
+                    variant="primary"
                     onClick={() => router.push("/submit/location")}
-                    style={{
-                      width: "100%",
-                      height: 48,
-                      borderRadius: 9999,
-                      color: "#ffffff",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 9,
-                      font: "700 15px var(--font-display)",
-                      background: "var(--accent)",
-                    }}
+                    icon={
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
+                        <path d="M12 5v14M5 12h14"></path>
+                      </svg>
+                    }
+                    style={{ width: "100%" }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
-                      <path d="M12 5v14M5 12h14"></path>
-                    </svg>
                     Spot a Vinayaka
-                  </button>
+                  </Button>
                 </div>
               ) : null}
             </div>
@@ -262,60 +230,15 @@ function Home() {
                 </div>
               ) : null}
             </div>
-            <button
-              aria-label="About"
-              onClick={() => setMenuOpen(true)}
-              style={{
-                flex: "none",
-                width: 34,
-                height: 34,
-                borderRadius: 9999,
-                background: "var(--paper)",
-                display: "grid",
-                placeItems: "center",
-              }}
-            >
-              <InfoIcon />
-            </button>
+            <IconButton variant="soft" size="sm" label="About" onClick={() => setMenuOpen(true)} icon={<InfoIcon />} />
           </div>
 
           {!selectedSpot ? (
-            <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-              <div
-                className="field-wrap"
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  background: "var(--paper)",
-                  border: "1px solid var(--line-strong)",
-                  borderRadius: 9999,
-                  padding: "9px 14px",
-                }}
-              >
-                <SearchIcon />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search area or idol name"
-                  style={{
-                    border: 0,
-                    outline: 0,
-                    background: "transparent",
-                    font: "400 16px var(--font-body)",
-                    color: "var(--ink)",
-                    width: "100%",
-                  }}
-                />
-              </div>
-              <div style={{ display: "flex", background: "var(--paper)", borderRadius: 9999, padding: 3, flex: "none" }}>
-                <button onClick={() => setMode("map")} style={tabStyle(mode === "map")}>
-                  Map
-                </button>
-                <button onClick={() => setMode("list")} style={tabStyle(mode === "list")}>
-                  List
-                </button>
+            <div style={{ marginTop: 14 }}>
+              <SearchBar value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search area or idol name" />
+              <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                <Chip selected={mode === "map"} onClick={() => setMode("map")}>Map</Chip>
+                <Chip selected={mode === "list"} onClick={() => setMode("list")}>List</Chip>
               </div>
             </div>
           ) : null}
@@ -342,11 +265,7 @@ function Home() {
               <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
             ))}
             {!loading && filtered.length === 0 ? (
-              <div style={{ padding: "38px 20px", textAlign: "center", font: "400 13px/1.6 var(--font-body)", color: "var(--muted)" }}>
-                No spots match that search yet.
-                <br />
-                Know one? Add it below.
-              </div>
+              <EmptyState icon="🔍" title="No spots match that search yet" description="Know one? Add it below." />
             ) : null}
           </div>
         )}
@@ -373,8 +292,14 @@ function Home() {
         ) : null}
 
         {!selectedSpot ? (
-          <button
+          <Button
+            variant="primary"
             onClick={() => router.push("/submit/location")}
+            icon={
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+            }
             style={{
               position: "absolute",
               left: 14,
@@ -382,22 +307,11 @@ function Home() {
               bottom: 16,
               zIndex: 8,
               height: 50,
-              borderRadius: 9999,
-              color: "#ffffff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 9,
-              font: "700 15px var(--font-display)",
-              background: "var(--accent)",
               boxShadow: "var(--shadow-floating)",
             }}
           >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
-              <path d="M12 5v14M5 12h14"></path>
-            </svg>
             Spot a Vinayaka
-          </button>
+          </Button>
         ) : null}
 
         <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />
@@ -408,15 +322,4 @@ function Home() {
       </div>
     </div>
   );
-}
-
-function tabStyle(active) {
-  return {
-    padding: "7px 13px",
-    borderRadius: 9999,
-    font: "700 13px var(--font-body)",
-    letterSpacing: "0.02em",
-    background: active ? "var(--card)" : "transparent",
-    color: active ? "var(--ink)" : "var(--muted)",
-  };
 }

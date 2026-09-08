@@ -1,6 +1,8 @@
 "use client";
 
 import { CloseIcon, ExternalLinkIcon } from "./icons";
+import { Button } from "./Button";
+import { IconButton } from "./IconButton";
 
 const FEEDBACK_FORM_URL = "https://forms.gle/sYnnzH4h9FL3hXJu5";
 
@@ -44,13 +46,14 @@ export default function MenuSheet({ open, onClose }) {
           <div style={{ font: "600 24px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>
             Chennai Vinayagar Idols 2026
           </div>
-          <button
-            aria-label="Close menu"
+          <IconButton
+            variant="soft"
+            size="sm"
+            label="Close menu"
             onClick={onClose}
-            style={{ flex: "none", width: 32, height: 32, marginTop: -10, borderRadius: 10, display: "grid", placeItems: "center" }}
-          >
-            <CloseIcon />
-          </button>
+            icon={<CloseIcon />}
+            style={{ borderRadius: 10, marginTop: -10 }}
+          />
         </div>
         <div style={{ font: "400 14px/1.55 var(--font-body)", color: "var(--ink-soft)", marginTop: 6 }}>
           A community-built map of Vinayaka Chaturthi idols across Chennai. No login needed to browse or submit.
@@ -79,37 +82,17 @@ export default function MenuSheet({ open, onClose }) {
         </div>
 
         <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
-          <button
-            onClick={onClose}
-            style={{
-              height: 50,
-              borderRadius: 9999,
-              background: "var(--accent)",
-              color: "#ffffff",
-              font: "700 15px var(--font-display)",
-            }}
-          >
+          <Button variant="primary" onClick={onClose} style={{ height: 50 }}>
             Start Vinayaka Hopping
-          </button>
-          <a
-            href={FEEDBACK_FORM_URL}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              height: 46,
-              borderRadius: 9999,
-              border: "1px solid var(--accent)",
-              color: "var(--accent)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 7,
-              font: "700 15px var(--font-display)",
-            }}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => window.open(FEEDBACK_FORM_URL, "_blank", "noopener,noreferrer")}
+            iconRight={<ExternalLinkIcon />}
+            style={{ height: 46 }}
           >
             Share Feedback
-            <ExternalLinkIcon />
-          </a>
+          </Button>
         </div>
 
         <div style={{ marginTop: 18, font: "400 12px/1.6 var(--font-body)", color: "var(--muted)", textAlign: "center" }}>
