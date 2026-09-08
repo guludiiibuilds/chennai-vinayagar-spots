@@ -92,14 +92,14 @@ function FlyToSelection({ target, zoom }) {
   return null;
 }
 
-export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusSpot, focusZoom = 15 }) {
+export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusSpot, focusZoom = 15, initialZoom = 12 }) {
   const mapRef = useRef(null);
   const initialCenter = spots[0]?.lat != null ? [spots[0].lat, spots[0].lng] : CHENNAI_CENTER;
 
   return (
     <MapContainer
       center={initialCenter}
-      zoom={12}
+      zoom={initialZoom}
       zoomControl={false}
       style={{ position: "absolute", inset: 0, zIndex: 0, background: "var(--paper)" }}
       ref={mapRef}

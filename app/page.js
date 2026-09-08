@@ -183,7 +183,7 @@ function Home() {
               {!selectedSpot ? (
                 <div className="hp-sidebar-footer">
                   <button
-                    onClick={() => router.push("/submit")}
+                    onClick={() => router.push("/submit/location")}
                     style={{
                       width: "100%",
                       height: 48,
@@ -374,7 +374,7 @@ function Home() {
 
         {!selectedSpot ? (
           <button
-            onClick={() => router.push("/submit")}
+            onClick={() => router.push("/submit/location")}
             style={{
               position: "absolute",
               left: 14,

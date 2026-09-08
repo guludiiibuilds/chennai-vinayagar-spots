@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { uploadSpotPhoto, submitSpot } from "@/lib/spots";
 import { extractLatLngFromMapsLink, reverseGeocodeArea } from "@/lib/geo";
 import { compressImage } from "@/lib/image";
@@ -12,7 +12,16 @@ import DesktopNotice from "@/components/DesktopNotice";
 const DESKTOP_BREAKPOINT = 1024;
 
 export default function SubmitPage() {
+  return (
+    <Suspense fallback={null}>
+      <SubmitForm />
+    </Suspense>
+  );
+}
+
+function SubmitForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const showToast = useToast();
   const fileInputRef = useRef(null);
 
@@ -22,10 +31,17 @@ export default function SubmitPage() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [compressingPhoto, setCompressingPhoto] = useState(false);
   const [name, setName] = useState("");
-  const [loc, setLoc] = useState(null); // { lat, lng }
+  // Pre-filled when arriving from the "Confirm Location" step
+  // (/submit/location) via ?lat=&lng=&area= — still fully editable here.
+  const [loc, setLoc] = useState(() => {
+    const lat = parseFloat(searchParams.get("lat"));
+    const lng = parseFloat(searchParams.get("lng"));
+    return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+  });
   const [locating, setLocating] = useState(false);
   const [mapsLink, setMapsLink] = useState("");
-  const [area, setArea] = useState("");
+  const [area, setArea] = useState(() => searchParams.get("area") || "");
+  const arrivedWithArea = useRef(!!searchParams.get("area"));
   const [about, setAbout] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null); // submitted spot name
@@ -67,7 +83,7 @@ export default function SubmitPage() {
   // reviewer) don't have to type the neighbourhood by hand — never
   // overwrites something the person already typed themselves.
   useEffect(() => {
-    if (!loc) return;
+    if (!loc || arrivedWithArea.current) return;
     let cancelled = false;
     reverseGeocodeArea(loc.lat, loc.lng).then((name) => {
       if (cancelled || !name) return;
