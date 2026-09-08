@@ -8,6 +8,7 @@ import { compressImage } from "@/lib/image";
 import { useToast } from "@/components/ToastProvider";
 import { BackIcon, CompassIcon, CheckIcon } from "@/components/icons";
 import DesktopNotice from "@/components/DesktopNotice";
+import LocationConfirmSheet from "@/components/LocationConfirmSheet";
 
 const DESKTOP_BREAKPOINT = 1024;
 
@@ -38,7 +39,7 @@ function SubmitForm() {
     const lng = parseFloat(searchParams.get("lng"));
     return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
   });
-  const [locating, setLocating] = useState(false);
+  const [showLocationSheet, setShowLocationSheet] = useState(false);
   const [mapsLink, setMapsLink] = useState("");
   const [area, setArea] = useState(() => searchParams.get("area") || "");
   const arrivedWithArea = useRef(!!searchParams.get("area"));
@@ -102,23 +103,10 @@ function SubmitForm() {
     if (foundName) setArea((prev) => (prev.trim() ? prev : foundName));
   };
 
-  const useGps = () => {
-    if (!navigator.geolocation) {
-      showToast("Location isn't available on this device");
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setLoc({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        setLocating(false);
-      },
-      () => {
-        setLocating(false);
-        showToast("Couldn't get your location — try pasting a Maps link instead");
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
+  const confirmLocation = (center, newArea) => {
+    setLoc(center);
+    if (newArea) setArea(newArea);
+    setShowLocationSheet(false);
   };
 
   const submit = async () => {
@@ -195,6 +183,17 @@ function SubmitForm() {
       <div className="app-frame" style={{ animation: "fadeUp .28s ease both" }}>
         {isDesktop && !desktopNoticeDismissed ? (
           <DesktopNotice onContinue={() => setDesktopNoticeDismissed(true)} />
+        ) : null}
+
+        {showLocationSheet ? (
+          <LocationConfirmSheet
+            initialCenter={loc}
+            initialArea={area}
+            title={loc ? "Change Location" : "Confirm Location"}
+            confirmLabel={loc ? "Update Location" : "Confirm Location"}
+            onConfirm={confirmLocation}
+            onClose={() => setShowLocationSheet(false)}
+          />
         ) : null}
 
         <div style={{ flex: "none", padding: "16px 18px 14px", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", gap: 12 }}>
@@ -274,7 +273,7 @@ function SubmitForm() {
           <div>
             <FieldLabel>Location</FieldLabel>
             <button
-              onClick={useGps}
+              onClick={() => setShowLocationSheet(true)}
               style={{
                 width: "100%",
                 textAlign: "left",
@@ -289,11 +288,9 @@ function SubmitForm() {
                   <CompassIcon />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ font: "600 13.5px var(--font-body)", color: "var(--ink)" }}>
-                    {locating ? "Locating…" : loc ? "Location captured" : "Use my current location"}
-                  </div>
+                  <div style={{ font: "600 13.5px var(--font-body)", color: "var(--ink)" }}>{loc ? "Location set" : "Set location on map"}</div>
                   <div style={{ font: "400 11.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 3 }}>
-                    {loc ? `${loc.lat.toFixed(4)}° N, ${loc.lng.toFixed(4)}° E` : "Pin drops where you're standing — adjust after"}
+                    {loc ? `${loc.lat.toFixed(4)}° N, ${loc.lng.toFixed(4)}° E · tap to change` : "Drop a pin on the map to set it"}
                   </div>
                 </div>
                 {loc ? <CheckIcon width={18} height={18} strokeWidth={3} /> : null}
