@@ -5,14 +5,33 @@ import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
 
-// Same artwork/proportions as the map pins elsewhere (see MapCanvas.js),
-// but rendered here as a plain CSS-centered overlay rather than a Leaflet
-// marker — this pin never moves; the map pans underneath it, so wherever
-// it points is always exactly the map's current center.
-const PIN_ASSET = "/pin-vinayaka.png";
-const PIN_ASPECT = 75 / 43;
-const PIN_WIDTH = 36;
-const PIN_HEIGHT = Math.round(PIN_WIDTH * PIN_ASPECT);
+// A round push-pin (ball + needle), distinct from the teardrop artwork
+// used for actual spot markers elsewhere (see MapCanvas.js) — this pin
+// never moves; the map pans underneath it, so wherever it points is
+// always exactly the map's current center. Drawn as inline SVG rather
+// than a raster asset so the needle's tip — the true anchor point — lands
+// on an exact pixel: the viewBox's bottom edge is that tip, so the same
+// translate(-50%,-100%) anchoring used for the teardrop pin still lines
+// up perfectly here.
+const PIN_WIDTH = 30;
+const PIN_HEIGHT = 42;
+
+function PushPin() {
+  return (
+    <svg width={PIN_WIDTH} height={PIN_HEIGHT} viewBox="0 0 30 42" fill="none" style={{ display: "block" }}>
+      <defs>
+        <radialGradient id="pushPinBall" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stopColor="#ff8a80" />
+          <stop offset="45%" stopColor="var(--pin)" />
+          <stop offset="100%" stopColor="var(--pin-active)" />
+        </radialGradient>
+      </defs>
+      <line x1="15" y1="20" x2="15" y2="42" stroke="#5b5b5b" strokeWidth="2.2" strokeLinecap="round" />
+      <circle cx="15" cy="12" r="11.5" fill="url(#pushPinBall)" stroke="rgba(0,0,0,.15)" strokeWidth="0.75" />
+      <circle cx="11" cy="7.5" r="3" fill="rgba(255,255,255,.5)" />
+    </svg>
+  );
+}
 
 // OpenStreetMap's tile usage policy requires visible attribution, so this
 // only trims the "Leaflet" library credit (and its flag) that Leaflet
@@ -116,7 +135,7 @@ export default function LocationPicker({ initialCenter, initialZoom = 16, onCent
           zIndex: 5,
         }}
       >
-        <img src={PIN_ASSET} width={PIN_WIDTH} height={PIN_HEIGHT} alt="" style={{ display: "block" }} />
+        <PushPin />
       </div>
 
       <div style={{ position: "absolute", right: 14, top: 14, display: "flex", flexDirection: "column", gap: 8, zIndex: 6 }}>
