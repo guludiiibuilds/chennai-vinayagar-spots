@@ -112,7 +112,7 @@ export default function LocationConfirmSheet({
           bottom: 0,
           zIndex: 5,
           background: "var(--card)",
-          borderTop: "1px solid var(--border-strong)",
+          borderTop: "1px solid var(--border-subtle)",
           borderRadius: "var(--radius-xl) var(--radius-xl) 0 0",
           boxShadow: "var(--shadow-lg)",
           padding: "10px 18px 16px",
@@ -147,7 +147,7 @@ export default function LocationConfirmSheet({
             {confirmLabel}
           </Button>
           {onSkip ? (
-            <Button variant="ghost" size="sm" onClick={onSkip} style={{ height: 36, color: "var(--color-text-muted)", letterSpacing: "0.02em" }}>
+            <Button variant="secondary" size="sm" onClick={onSkip} style={{ height: 36, letterSpacing: "0.02em" }}>
               Set Location Manually Instead
             </Button>
           ) : null}
