@@ -319,6 +319,12 @@ function SpotReviewCard({ spot, onChange, onSave, onAction, onDelete }) {
         </div>
         <TextField label="About" value={spot.about || ""} onChange={(e) => onChange({ about: e.target.value })} multiline />
 
+        <div>
+          <Chip selected={!!spot.is_popular} icon={<span>★</span>} onClick={() => onChange({ is_popular: !spot.is_popular })}>
+            Popular
+          </Chip>
+        </div>
+
         <div style={{ display: "flex", gap: 8, marginTop: 4, flexWrap: "wrap" }}>
           <ActionButton onClick={() => run(onSave)} disabled={busy}>Save changes</ActionButton>
           {spot.status !== "approved" ? (

@@ -17,14 +17,29 @@ const CHENNAI_CENTER = [13.0067, 80.257];
 const PIN_ASSET = "/pin-vinayaka.png";
 const PIN_ASPECT = 75 / 43;
 
-function pinIcon(active) {
+// Small corner badges on the pin itself, so "popular" and "nearby" idols
+// stand out while panning/zooming without opening each one — popular
+// (admin-flagged) gets a gold star at the top-right, nearby (within
+// NEARBY_KM of the visitor) gets a plain green dot at the top-left. Either,
+// both, or neither can show per spot.
+function pinIcon(active, spot = {}) {
   const width = active ? 34 : 28;
   const height = Math.round(width * PIN_ASPECT);
+  const badges = `${
+    spot.is_popular
+      ? `<div style="position:absolute;top:-2px;right:-2px;width:15px;height:15px;border-radius:50%;background:var(--saffron-400);border:1.5px solid #fff;display:grid;place-items:center;font-size:9px;line-height:1;color:#fff">★</div>`
+      : ""
+  }${
+    spot.isNearby
+      ? `<div style="position:absolute;top:-2px;left:-2px;width:10px;height:10px;border-radius:50%;background:var(--green);border:1.5px solid #fff"></div>`
+      : ""
+  }`;
   return L.divIcon({
     className: "",
     html: `
-      <div style="animation:pinDrop .5s cubic-bezier(.2,.9,.3,1.2) both;filter:drop-shadow(0 2px 5px rgba(0,0,0,.3))">
+      <div style="position:relative;animation:pinDrop .5s cubic-bezier(.2,.9,.3,1.2) both;filter:drop-shadow(0 2px 5px rgba(0,0,0,.3))">
         <img src="${PIN_ASSET}" width="${width}" height="${height}" style="display:block" />
+        ${badges}
       </div>`,
     iconSize: [width, height],
     iconAnchor: [width / 2, height],
@@ -90,7 +105,7 @@ function ClusteredMarkers({ spots, selectedId, onSelect }) {
     spots
       .filter((s) => s.lat != null && s.lng != null)
       .forEach((s) => {
-        const marker = L.marker([s.lat, s.lng], { icon: pinIcon(s.id === selectedId) });
+        const marker = L.marker([s.lat, s.lng], { icon: pinIcon(s.id === selectedId, s) });
         if (onSelect) marker.on("click", () => onSelect(s));
         cluster.addLayer(marker);
       });
@@ -99,10 +114,18 @@ function ClusteredMarkers({ spots, selectedId, onSelect }) {
   return null;
 }
 
-function MapControls({ userPos }) {
+function MapControls({ userPos, onSearchClick }) {
   const map = useMap();
   return (
     <div style={{ position: "absolute", right: 14, top: 14, display: "flex", flexDirection: "column", gap: 8, zIndex: 500 }}>
+      {onSearchClick ? (
+        <button aria-label="Search" onClick={onSearchClick} style={ctrlBtnStyle}>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+        </button>
+      ) : null}
       <button
         aria-label="Center on my location"
         onClick={() => userPos && map.setView([userPos.lat, userPos.lng], 15)}
@@ -194,7 +217,7 @@ function FlyToSelection({ target, zoom }) {
   return null;
 }
 
-export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusSpot, focusZoom = 15, initialZoom = 12 }) {
+export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusSpot, focusZoom = 15, initialZoom = 12, onSearchClick }) {
   const mapRef = useRef(null);
   const initialCenter = spots[0]?.lat != null ? [spots[0].lat, spots[0].lng] : CHENNAI_CENTER;
 
@@ -217,7 +240,7 @@ export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusS
       <AutoInvalidateSize />
       <ClusteredMarkers spots={spots} selectedId={selectedId} onSelect={onSelect} />
       {userPos ? <Marker position={[userPos.lat, userPos.lng]} icon={meIcon} interactive={false} /> : null}
-      {focusSpot ? null : <MapControls userPos={userPos} />}
+      {focusSpot ? null : <MapControls userPos={userPos} onSearchClick={onSearchClick} />}
       {focusSpot ? <FlyToSelection target={focusSpot} zoom={focusZoom} /> : null}
     </MapContainer>
   );

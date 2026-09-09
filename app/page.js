@@ -1,11 +1,11 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
 import { distanceKm, formatDistance } from "@/lib/geo";
-import { InfoIcon } from "@/components/icons";
+import { InfoIcon, CloseIcon } from "@/components/icons";
 import { SpotListCard } from "@/components/SpotCard";
 import MenuSheet from "@/components/MenuSheet";
 import SpotSheet from "@/components/SpotSheet";
@@ -13,9 +13,12 @@ import SpotPanel from "@/components/SpotPanel";
 import PhotoViewer from "@/components/PhotoViewer";
 import { Button } from "@/components/Button";
 import { IconButton } from "@/components/IconButton";
-import { Chip } from "@/components/Chip";
 import { SearchBar } from "@/components/SearchBar";
 import { EmptyState } from "@/components/EmptyState";
+import { ViewModeDropdown } from "@/components/ViewModeDropdown";
+import Logo from "@/components/Logo";
+
+const NEARBY_KM = 5;
 
 const DESKTOP_BREAKPOINT = 768;
 
@@ -42,9 +45,16 @@ function Home() {
   const [mode, setMode] = useState("map");
   const [menuOpen, setMenuOpen] = useState(false);
   const [userPos, setUserPos] = useState(null);
+  const [locationStatus, setLocationStatus] = useState("checking"); // "checking" | "granted" | "denied"
   const [selectedId, setSelectedId] = useState(null);
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [searchActive, setSearchActive] = useState(false);
+  const searchInputWrapRef = useRef(null);
+
+  useEffect(() => {
+    if (searchActive) searchInputWrapRef.current?.querySelector("input")?.focus();
+  }, [searchActive]);
 
   useEffect(() => {
     const check = () => setIsDesktop(window.innerWidth >= DESKTOP_BREAKPOINT);
@@ -79,21 +89,51 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!navigator.geolocation) return;
+  // Distance-based features (nearest-first sorting, "within 5km" badges) are
+  // core to browsing here, not an optional enhancement, so location isn't a
+  // silent best-effort request anymore — the whole browse view is gated on
+  // it (see the locationStatus !== "granted" branch below). beginLocating
+  // only ever sets state from the async geolocation callbacks, so the mount
+  // effect below can call it without tripping over synchronous setState.
+  const beginLocating = () => {
+    if (!navigator.geolocation) {
+      setLocationStatus("denied");
+      return;
+    }
     navigator.geolocation.getCurrentPosition(
-      (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => {},
+      (pos) => {
+        setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocationStatus("granted");
+      },
+      () => setLocationStatus("denied"),
       { enableHighAccuracy: true, timeout: 8000 }
     );
+  };
+
+  // Retry entry point for the "Enable Location" button: resets the status
+  // to "checking" first, since by the time it's clicked the state is
+  // "denied", not the mount-time default.
+  const requestLocation = () => {
+    setLocationStatus("checking");
+    beginLocating();
+  };
+
+  useEffect(() => {
+    // beginLocating only sets state synchronously in its "no geolocation
+    // API" bailout branch — everything else resolves through the async
+    // getCurrentPosition callbacks, which is the pattern this rule wants;
+    // it just can't see the branch is a rare environment check, not a
+    // render-cascade risk.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    beginLocating();
   }, []);
 
   const spotsWithDist = useMemo(
     () =>
-      spots.map((s) => ({
-        ...s,
-        distKm: userPos ? distanceKm(userPos, { lat: s.lat, lng: s.lng }) : null,
-      })),
+      spots.map((s) => {
+        const distKm = userPos ? distanceKm(userPos, { lat: s.lat, lng: s.lng }) : null;
+        return { ...s, distKm, isNearby: distKm != null && distKm <= NEARBY_KM };
+      }),
     [spots, userPos]
   );
 
@@ -102,6 +142,10 @@ function Home() {
     if (!q) return spotsWithDist;
     return spotsWithDist.filter((s) => s.name.toLowerCase().includes(q) || s.area.toLowerCase().includes(q));
   }, [spotsWithDist, query]);
+
+  // List views specifically show nearest-first; the map doesn't care about
+  // array order since pins are placed by lat/lng, not list position.
+  const nearestFirst = useMemo(() => [...filtered].sort((a, b) => (a.distKm ?? Infinity) - (b.distKm ?? Infinity)), [filtered]);
 
   const selectedSpot = selectedId ? spotsWithDist.find((s) => s.id === selectedId) : null;
 
@@ -114,6 +158,43 @@ function Home() {
     setPhotoViewerOpen(false);
   };
 
+  if (locationStatus !== "granted") {
+    return (
+      <div className="app-shell">
+        <div className="app-frame" style={{ alignItems: "center", justifyContent: "center", padding: 32, textAlign: "center" }}>
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: "50%",
+              background: "var(--accent-tint)",
+              display: "grid",
+              placeItems: "center",
+            }}
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+          </div>
+          <h1 style={{ font: "600 20px/1.3 var(--font-display)", color: "var(--ink)", marginTop: 18 }}>
+            Turn on location to continue
+          </h1>
+          <p style={{ font: "400 14px/1.55 var(--font-body)", color: "var(--ink-soft)", marginTop: 8, maxWidth: 300 }}>
+            Distances, nearby idols, and the map all need to know roughly where you are. Nothing is shared — it stays on your
+            device.
+          </p>
+          <Button variant="primary" onClick={requestLocation} loading={locationStatus === "checking"} style={{ marginTop: 22, height: 48, width: "100%", maxWidth: 260 }}>
+            {locationStatus === "checking" ? "Checking…" : "Enable Location"}
+          </Button>
+          <div style={{ font: "400 12px/1.5 var(--font-body)", color: "var(--muted)", marginTop: 14, maxWidth: 280 }}>
+            If nothing happens, allow location access for this site in your browser&apos;s settings, then try again.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isDesktop) {
     return (
       <div className="app-shell app-shell--home">
@@ -121,7 +202,7 @@ function Home() {
           <div className="hp-topbar">
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
               <div>
-                <div style={{ font: "600 22px/1.15 var(--font-display)", letterSpacing: "-.374px" }}>Spot Vinayaka in Chennai</div>
+                <Logo size={24} />
                 <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>
                   {spots.length} active idol{spots.length === 1 ? "" : "s"}
                 </div>
@@ -147,7 +228,7 @@ function Home() {
                 />
               ) : (
                 <div className="hp-sidebar-list">
-                  {filtered.map((s) => (
+                  {nearestFirst.map((s) => (
                     <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
                   ))}
                   {!loading && filtered.length === 0 ? (
@@ -221,32 +302,60 @@ function Home() {
             flex: "none",
           }}
         >
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-            <div>
-              <div style={{ font: "600 21px/1.15 var(--font-display)", letterSpacing: "-.374px" }}>Spot Vinayaka in Chennai</div>
-              {!selectedSpot ? (
-                <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>
-                  {spots.length} active idol{spots.length === 1 ? "" : "s"}
-                </div>
-              ) : null}
+          {searchActive ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {/* SearchBar doesn't forward a ref or autoFocus, so this
+                  wrapper ref + effect below reaches in for the DOM input
+                  directly to focus it the moment the search row appears. */}
+              <div ref={searchInputWrapRef} style={{ flex: 1 }}>
+                <SearchBar
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search area or idol name"
+                />
+              </div>
+              <IconButton
+                variant="soft"
+                size="sm"
+                label="Close search"
+                onClick={() => {
+                  setSearchActive(false);
+                  setQuery("");
+                }}
+                icon={<CloseIcon />}
+              />
             </div>
-            <IconButton variant="soft" size="sm" label="About" onClick={() => setMenuOpen(true)} icon={<InfoIcon />} />
-          </div>
+          ) : (
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+              <div>
+                <Logo size={22} />
+                {!selectedSpot ? (
+                  <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>
+                    {spots.length} active idol{spots.length === 1 ? "" : "s"}
+                  </div>
+                ) : null}
+              </div>
+              <IconButton variant="soft" size="sm" label="About" onClick={() => setMenuOpen(true)} icon={<InfoIcon />} />
+            </div>
+          )}
 
           {!selectedSpot ? (
             <div style={{ marginTop: 14 }}>
-              <SearchBar value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search area or idol name" />
-              <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                <Chip selected={mode === "map"} onClick={() => setMode("map")}>Map</Chip>
-                <Chip selected={mode === "list"} onClick={() => setMode("list")}>List</Chip>
-              </div>
+              <ViewModeDropdown mode={mode} onChange={setMode} />
             </div>
           ) : null}
         </header>
 
         {mode === "map" ? (
           <div style={{ position: "relative", zIndex: 1, flex: 1, overflow: "hidden", background: "var(--paper)" }}>
-            <MapCanvas spots={filtered} userPos={userPos} onSelect={openSpot} selectedId={selectedId} focusSpot={selectedSpot} />
+            <MapCanvas
+              spots={filtered}
+              userPos={userPos}
+              onSelect={openSpot}
+              selectedId={selectedId}
+              focusSpot={selectedSpot}
+              onSearchClick={selectedSpot ? undefined : () => setSearchActive(true)}
+            />
             {selectedSpot ? (
               <div onClick={closeSheet} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: "60%", zIndex: 3 }} />
             ) : null}
@@ -261,7 +370,7 @@ function Home() {
           </div>
         ) : (
           <div style={{ flex: 1, overflowY: "auto", background: "var(--card)", padding: "14px 14px 100px", display: "flex", flexDirection: "column", gap: 10 }}>
-            {filtered.map((s) => (
+            {nearestFirst.map((s) => (
               <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
             ))}
             {!loading && filtered.length === 0 ? (
