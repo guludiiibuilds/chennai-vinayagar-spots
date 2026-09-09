@@ -147,7 +147,7 @@ export default function LocationConfirmSheet({
             {confirmLabel}
           </Button>
           {onSkip ? (
-            <Button variant="secondary" size="sm" onClick={onSkip} style={{ height: 36, letterSpacing: "0.02em" }}>
+            <Button variant="outline" onClick={onSkip} style={{ height: 46 }}>
               Set Location Manually Instead
             </Button>
           ) : null}
