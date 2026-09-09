@@ -24,6 +24,15 @@ const HOVER = {
   ghost: "var(--cream-200)",
 };
 
+// Touch browsers fire mouseenter on tap for click compatibility, but never
+// fire the matching mouseleave (there's no pointer to move away with) — so
+// hover-driven state left unguarded gets stuck "on" after the first tap.
+// prefers-hover media detects real hover-capable pointers (mice/trackpads),
+// which is the only case this component should react to.
+function hoverCapable() {
+  return typeof window !== "undefined" && window.matchMedia && window.matchMedia("(hover: hover)").matches;
+}
+
 export function Button({ variant = "primary", size = "md", icon, iconRight, disabled, loading, children, onClick, style }) {
   const sizeStyle = SIZES[size] || SIZES.md;
   const variantStyle = VARIANTS[variant] || VARIANTS.primary;
@@ -32,7 +41,7 @@ export function Button({ variant = "primary", size = "md", icon, iconRight, disa
     <button
       disabled={disabled || loading}
       onClick={onClick}
-      onMouseEnter={() => setHover(true)}
+      onMouseEnter={() => hoverCapable() && setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
         display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
