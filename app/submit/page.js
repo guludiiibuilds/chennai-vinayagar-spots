@@ -191,14 +191,14 @@ function SubmitForm() {
         ) : null}
 
         <div style={{ flex: "none", padding: "16px 18px 14px", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", gap: 12 }}>
-          <IconButton variant="soft" onClick={() => router.push("/")} label="Cancel" icon={<BackIcon />} />
+          <IconButton variant="outline" onClick={() => router.push("/")} label="Cancel" icon={<BackIcon />} />
           <div>
             <div style={{ font: "600 17px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>Spot a Vinayaka</div>
             <div style={{ font: "400 11.5px/1.3 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>Fill correct data for others to view.</div>
           </div>
         </div>
 
-        <div style={{ flex: 1, overflowY: "auto", padding: "18px 18px 110px", display: "flex", flexDirection: "column", gap: 18 }}>
+        <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "18px 18px 8px", display: "flex", flexDirection: "column", gap: 18 }}>
           <div>
             <FieldLabel>Vinayaka Photo</FieldLabel>
             <input ref={fileInputRef} type="file" accept="image/*" onChange={onPhotoChange} style={{ display: "none" }} />
@@ -321,7 +321,7 @@ function SubmitForm() {
           />
         </div>
 
-        <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "12px 14px 16px", background: "linear-gradient(180deg,rgba(255,255,255,0),var(--card) 34%)" }}>
+        <div style={{ flex: "none", padding: "12px 14px 16px", background: "var(--card)", borderTop: "1px solid var(--border-subtle)" }}>
           <Button variant="primary" onClick={submit} disabled={!canSubmit} loading={submitting} style={{ width: "100%", height: 50 }}>
             {submitting ? "Submitting…" : "Submit for review"}
           </Button>
