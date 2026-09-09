@@ -121,6 +121,7 @@ export default function AdminPage() {
         landmark: spot.landmark,
         about: spot.about,
         maps_link: spot.maps_link,
+        is_popular: spot.is_popular,
         ...extra,
       }),
     });
