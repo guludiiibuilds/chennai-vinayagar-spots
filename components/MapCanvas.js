@@ -149,6 +149,37 @@ function MinimalAttribution() {
   return null;
 }
 
+// Leaflet sizes its tile grid once at load and has no way to notice its
+// container changing size afterward — it just keeps rendering at the old
+// size, leaving newly-revealed space blank (showing the plain background
+// color set on MapContainer above). That happens whenever the mobile
+// browser's own chrome changes how much of the screen it takes up: the
+// address bar showing/hiding, or reopening the app finding it in a
+// different state than at last paint. A ResizeObserver on the map's own
+// container is the standard fix — it fires on the actual rendered size
+// changing, regardless of what caused it, and re-syncs Leaflet to match.
+function AutoInvalidateSize() {
+  const map = useMap();
+  useEffect(() => {
+    const container = map.getContainer();
+    const ro = new ResizeObserver(() => map.invalidateSize());
+    ro.observe(container);
+    // Also covers the case where the resize happens while this tab is
+    // backgrounded (no ResizeObserver callback fires until it's visible
+    // again anyway, but this makes the intent explicit and catches any
+    // gap between "visible" and the next real layout pass).
+    const onVisible = () => {
+      if (document.visibilityState === "visible") map.invalidateSize();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      ro.disconnect();
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [map]);
+  return null;
+}
+
 // react-leaflet's `center`/`zoom` on MapContainer are only the initial view —
 // changing them after mount doesn't move an already-live map. This flies the
 // map to the selected spot imperatively whenever the selection changes.
@@ -175,11 +206,15 @@ export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusS
       style={{ position: "absolute", inset: 0, zIndex: 0, background: "var(--paper)" }}
       ref={mapRef}
     >
+      {/* CARTO's "Positron" basemap: a light, low-saturation style with
+          minimal labels — reads as a calm surface for colorful pins to sit
+          on, unlike stock OSM tiles' busy default colors/road styling. */}
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
       />
       <MinimalAttribution />
+      <AutoInvalidateSize />
       <ClusteredMarkers spots={spots} selectedId={selectedId} onSelect={onSelect} />
       {userPos ? <Marker position={[userPos.lat, userPos.lng]} icon={meIcon} interactive={false} /> : null}
       {focusSpot ? null : <MapControls userPos={userPos} />}

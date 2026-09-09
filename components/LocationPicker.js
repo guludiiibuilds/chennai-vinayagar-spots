@@ -44,6 +44,28 @@ function MinimalAttribution() {
   return null;
 }
 
+// See the identical helper in MapCanvas.js: Leaflet doesn't notice its
+// container resizing on its own (address bar show/hide, reopening the
+// browser in a different chrome state), so it keeps rendering tiles at
+// the stale size unless something explicitly tells it to re-measure.
+function AutoInvalidateSize() {
+  const map = useMap();
+  useEffect(() => {
+    const container = map.getContainer();
+    const ro = new ResizeObserver(() => map.invalidateSize());
+    ro.observe(container);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") map.invalidateSize();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      ro.disconnect();
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [map]);
+  return null;
+}
+
 function MoveTracker({ onMoveEnd, onDragStart, onDragEnd }) {
   useMapEvents({
     moveend: (e) => {
@@ -103,10 +125,11 @@ export default function LocationPicker({ initialCenter, initialZoom = 16, onCent
         ref={mapRef}
       >
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         />
         <MinimalAttribution />
+        <AutoInvalidateSize />
         <MoveTracker
           onMoveEnd={onCenterChange}
           onDragStart={() => {
