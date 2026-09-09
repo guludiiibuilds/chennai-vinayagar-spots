@@ -78,6 +78,14 @@
   --status-info-bg: #e2eff5;
   --blue-500: var(--status-info); /* "current location" marker only — not a brand color */
 
+  /* Border greys — warm-tinted scale for cards, bottom sheets, dividers.
+     Cards use subtle; bottom sheets use strong (see the Chennai Vinayagar
+     DS "Border greys" reference). */
+  --border-subtle: #e5e5e0;
+  --border-default: #dcdcd5;
+  --border-strong: #c9c2b0;
+  --border-strongest: #a89f88;
+
   /* Surfaces */
   --paper: var(--cream-100);
   --card: var(--cream-0);

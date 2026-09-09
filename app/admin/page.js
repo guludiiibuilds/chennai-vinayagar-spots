@@ -163,7 +163,7 @@ export default function AdminPage() {
             maxWidth: 320,
             background: "var(--card)",
             borderRadius: "var(--radius-lg)",
-            border: "1px solid var(--line-strong)",
+            border: "1px solid var(--border-subtle)",
             boxShadow: "var(--shadow-lg)",
             padding: 28,
           }}
@@ -289,7 +289,7 @@ function SpotReviewCard({ spot, onChange, onSave, onAction, onDelete }) {
   };
 
   return (
-    <div style={{ display: "flex", gap: 18, background: "var(--card)", border: "1px solid var(--line-strong)", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-card)", padding: 18, opacity: busy ? 0.6 : 1 }}>
+    <div style={{ display: "flex", gap: 18, background: "var(--card)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-card)", padding: 18, opacity: busy ? 0.6 : 1 }}>
       <div style={{ flex: "none", width: 140 }}>
         {spot.photo_url ? (
           <img src={spot.photo_url} alt="" style={{ width: 140, height: 140, borderRadius: "var(--radius-md)", objectFit: "cover", background: "var(--paper)" }} />
