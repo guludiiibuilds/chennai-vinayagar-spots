@@ -200,7 +200,7 @@ function Home() {
       <div className="app-shell app-shell--home">
         <div className="app-frame app-frame--home">
           <div className="hp-topbar">
-            <Logo size={24} />
+            <Logo size={34} />
             <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em", textTransform: "uppercase" }}>
               {spots.length} active idol{spots.length === 1 ? "" : "s"} ·{" "}
               <button
@@ -329,7 +329,7 @@ function Home() {
             </div>
           ) : (
             <div>
-              <Logo size={22} />
+              <Logo size={32} />
               <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em", textTransform: "uppercase" }}>
                 {!selectedSpot ? `${spots.length} active idol${spots.length === 1 ? "" : "s"} · ` : null}
                 <button
