@@ -2,8 +2,8 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { uploadSpotPhoto, submitSpot } from "@/lib/spots";
-import { extractLatLngFromMapsLink, reverseGeocodeArea } from "@/lib/geo";
+import { fetchApprovedSpots, uploadSpotPhoto, submitSpot } from "@/lib/spots";
+import { distanceKm, extractLatLngFromMapsLink, reverseGeocodeArea } from "@/lib/geo";
 import { compressImage } from "@/lib/image";
 import { useToast } from "@/components/ToastProvider";
 import { BackIcon, CompassIcon, CheckIcon } from "@/components/icons";
@@ -14,6 +14,22 @@ import { IconButton } from "@/components/IconButton";
 import { TextField } from "@/components/TextField";
 
 const DESKTOP_BREAKPOINT = 1024;
+
+// Two pandals can legitimately sit within a few dozen metres of each other
+// on the same street, so this only warns — it never blocks a submission
+// outright.
+const DUPLICATE_RADIUS_KM = 0.1;
+
+function findNearestSpot(point, spots) {
+  if (!point) return null;
+  let nearest = null;
+  for (const s of spots) {
+    if (s.lat == null || s.lng == null) continue;
+    const distKm = distanceKm(point, { lat: s.lat, lng: s.lng });
+    if (distKm != null && (!nearest || distKm < nearest.distKm)) nearest = { ...s, distKm };
+  }
+  return nearest;
+}
 
 export default function SubmitPage() {
   return (
@@ -49,8 +65,25 @@ function SubmitForm() {
   const [about, setAbout] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null); // submitted spot name
+  const [existingSpots, setExistingSpots] = useState([]);
+  const [nearbyDuplicate, setNearbyDuplicate] = useState(null);
+  const [duplicateConfirmed, setDuplicateConfirmed] = useState(false);
 
   const canSubmit = !!(photoFile && name.trim() && (loc || mapsLink.trim())) && !submitting;
+
+  // Best-effort: used only to warn about a likely duplicate, so a failed
+  // fetch here just means that check gets silently skipped.
+  useEffect(() => {
+    let cancelled = false;
+    fetchApprovedSpots()
+      .then((data) => {
+        if (!cancelled) setExistingSpots(data);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const pickPhoto = () => fileInputRef.current?.click();
 
@@ -110,18 +143,31 @@ function SubmitForm() {
     setLoc(center);
     if (newArea) setArea(newArea);
     setShowLocationSheet(false);
+    // A changed location needs re-checking against existing spots.
+    setNearbyDuplicate(null);
+    setDuplicateConfirmed(false);
   };
 
-  const submit = async () => {
+  const deriveLocation = () => loc || extractLatLngFromMapsLink(mapsLink.trim());
+
+  const submit = async (skipDuplicateCheck = false) => {
     if (!canSubmit) {
       showToast("Please add a photo, a name and a location");
       return;
     }
+    if (!skipDuplicateCheck && !duplicateConfirmed) {
+      const nearest = findNearestSpot(deriveLocation(), existingSpots);
+      if (nearest && nearest.distKm <= DUPLICATE_RADIUS_KM) {
+        setNearbyDuplicate(nearest);
+        return;
+      }
+    }
+    setNearbyDuplicate(null);
     setSubmitting(true);
     try {
       const photoUrl = photoFile ? await uploadSpotPhoto(photoFile) : null;
       const link = mapsLink.trim();
-      const derived = loc || extractLatLngFromMapsLink(link);
+      const derived = deriveLocation();
       const spot = await submitSpot({
         name: name.trim(),
         area: area.trim(),
@@ -279,7 +325,11 @@ function SubmitForm() {
             <input
               className="field-input"
               value={mapsLink}
-              onChange={(e) => setMapsLink(e.target.value)}
+              onChange={(e) => {
+                setMapsLink(e.target.value);
+                setNearbyDuplicate(null);
+                setDuplicateConfirmed(false);
+              }}
               onBlur={lookupAreaFromMapsLink}
               placeholder="https://maps.app.goo.gl/…"
               style={{
@@ -322,7 +372,49 @@ function SubmitForm() {
         </div>
 
         <div style={{ flex: "none", padding: "12px 14px 16px", background: "var(--card)", borderTop: "1px solid var(--border-subtle)" }}>
-          <Button variant="primary" onClick={submit} disabled={!canSubmit} loading={submitting} style={{ width: "100%", height: 50 }}>
+          {nearbyDuplicate ? (
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                alignItems: "flex-start",
+                padding: "12px 13px",
+                borderRadius: "var(--radius-md)",
+                background: "var(--saffron-50)",
+                border: "1px solid var(--saffron-200)",
+                marginBottom: 10,
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--saffron-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none", marginTop: 1 }}>
+                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"></path>
+                <path d="M12 9v4M12 17h.01"></path>
+              </svg>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ font: "700 13px/1.4 var(--font-body)", color: "var(--ink)" }}>Already a spot nearby</div>
+                <div style={{ font: "400 12.5px/1.5 var(--font-body)", color: "var(--ink-soft)", marginTop: 3 }}>
+                  <strong>{nearbyDuplicate.name}</strong> is about {Math.max(1, Math.round(nearbyDuplicate.distKm * 1000))}m away. If this is a
+                  different idol, submit anyway.
+                </div>
+                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                  <Button variant="outline" size="sm" onClick={() => setNearbyDuplicate(null)} style={{ flex: 1 }}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => {
+                      setDuplicateConfirmed(true);
+                      submit(true);
+                    }}
+                    style={{ flex: 1 }}
+                  >
+                    It&apos;s different, submit
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+          <Button variant="primary" onClick={() => submit()} disabled={!canSubmit} loading={submitting} style={{ width: "100%", height: 50 }}>
             {submitting ? "Submitting…" : "Submit for review"}
           </Button>
         </div>
