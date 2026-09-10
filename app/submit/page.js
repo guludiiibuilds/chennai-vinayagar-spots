@@ -3,33 +3,18 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots, uploadSpotPhoto, submitSpot } from "@/lib/spots";
-import { distanceKm, extractLatLngFromMapsLink, reverseGeocodeArea } from "@/lib/geo";
+import { DUPLICATE_RADIUS_KM, extractLatLngFromMapsLink, findNearestSpot, reverseGeocodeArea } from "@/lib/geo";
 import { compressImage } from "@/lib/image";
 import { useToast } from "@/components/ToastProvider";
 import { BackIcon, CompassIcon, CheckIcon } from "@/components/icons";
 import DesktopNotice from "@/components/DesktopNotice";
 import LocationConfirmSheet from "@/components/LocationConfirmSheet";
+import DuplicateSpotSheet from "@/components/DuplicateSpotSheet";
 import { Button } from "@/components/Button";
 import { IconButton } from "@/components/IconButton";
 import { TextField } from "@/components/TextField";
 
 const DESKTOP_BREAKPOINT = 1024;
-
-// Two pandals can legitimately sit within a few dozen metres of each other
-// on the same street, so this only warns — it never blocks a submission
-// outright.
-const DUPLICATE_RADIUS_KM = 0.1;
-
-function findNearestSpot(point, spots) {
-  if (!point) return null;
-  let nearest = null;
-  for (const s of spots) {
-    if (s.lat == null || s.lng == null) continue;
-    const distKm = distanceKm(point, { lat: s.lat, lng: s.lng });
-    if (distKm != null && (!nearest || distKm < nearest.distKm)) nearest = { ...s, distKm };
-  }
-  return nearest;
-}
 
 export default function SubmitPage() {
   return (
@@ -66,8 +51,15 @@ function SubmitForm() {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null); // submitted spot name
   const [existingSpots, setExistingSpots] = useState([]);
-  const [nearbyDuplicate, setNearbyDuplicate] = useState(null);
-  const [duplicateConfirmed, setDuplicateConfirmed] = useState(false);
+  const [duplicateWarning, setDuplicateWarning] = useState(null); // { spot, onContinue }
+  // A location arriving pre-filled from /submit/location has already been
+  // vetted there (LocationConfirmSheet runs this same check before
+  // confirming), so it doesn't need asking about again here.
+  const [duplicateConfirmed, setDuplicateConfirmed] = useState(() => {
+    const lat = parseFloat(searchParams.get("lat"));
+    const lng = parseFloat(searchParams.get("lng"));
+    return Number.isFinite(lat) && Number.isFinite(lng);
+  });
 
   const canSubmit = !!(photoFile && name.trim() && (loc || mapsLink.trim())) && !submitting;
 
@@ -131,38 +123,42 @@ function SubmitForm() {
     };
   }, [loc]);
 
+  // Runs the same nearby-spot check the map picker runs at confirm-time,
+  // but for the pasted-link path — as soon as the link is parseable,
+  // rather than waiting until final submit.
   const lookupAreaFromMapsLink = async () => {
-    if (area.trim() || loc) return;
     const derived = extractLatLngFromMapsLink(mapsLink.trim());
-    if (!derived) return;
+    if (derived && !duplicateConfirmed) {
+      const nearest = findNearestSpot(derived, existingSpots);
+      if (nearest && nearest.distKm <= DUPLICATE_RADIUS_KM) {
+        setDuplicateWarning({
+          spot: nearest,
+          onContinue: () => {
+            setDuplicateConfirmed(true);
+            setDuplicateWarning(null);
+          },
+        });
+      }
+    }
+    if (area.trim() || loc || !derived) return;
     const foundName = await reverseGeocodeArea(derived.lat, derived.lng);
     if (foundName) setArea((prev) => (prev.trim() ? prev : foundName));
   };
 
+  // LocationConfirmSheet already ran this same check before calling
+  // onConfirm, so a location arriving here has already been vetted (either
+  // clear, or explicitly confirmed as a different idol).
   const confirmLocation = (center, newArea) => {
     setLoc(center);
     if (newArea) setArea(newArea);
     setShowLocationSheet(false);
-    // A changed location needs re-checking against existing spots.
-    setNearbyDuplicate(null);
-    setDuplicateConfirmed(false);
+    setDuplicateWarning(null);
+    setDuplicateConfirmed(true);
   };
 
   const deriveLocation = () => loc || extractLatLngFromMapsLink(mapsLink.trim());
 
-  const submit = async (skipDuplicateCheck = false) => {
-    if (!canSubmit) {
-      showToast("Please add a photo, a name and a location");
-      return;
-    }
-    if (!skipDuplicateCheck && !duplicateConfirmed) {
-      const nearest = findNearestSpot(deriveLocation(), existingSpots);
-      if (nearest && nearest.distKm <= DUPLICATE_RADIUS_KM) {
-        setNearbyDuplicate(nearest);
-        return;
-      }
-    }
-    setNearbyDuplicate(null);
+  const performSubmit = async () => {
     setSubmitting(true);
     try {
       const photoUrl = photoFile ? await uploadSpotPhoto(photoFile) : null;
@@ -183,6 +179,31 @@ function SubmitForm() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  // Safety net for whichever earlier check never actually ran (e.g. a
+  // pasted link submitted without the field ever losing focus) — everything
+  // else has already been vetted by the time this fires.
+  const submit = () => {
+    if (!canSubmit) {
+      showToast("Please add a photo, a name and a location");
+      return;
+    }
+    if (!duplicateConfirmed) {
+      const nearest = findNearestSpot(deriveLocation(), existingSpots);
+      if (nearest && nearest.distKm <= DUPLICATE_RADIUS_KM) {
+        setDuplicateWarning({
+          spot: nearest,
+          onContinue: () => {
+            setDuplicateConfirmed(true);
+            setDuplicateWarning(null);
+            performSubmit();
+          },
+        });
+        return;
+      }
+    }
+    performSubmit();
   };
 
   if (done) {
@@ -235,6 +256,12 @@ function SubmitForm() {
             onClose={() => setShowLocationSheet(false)}
           />
         ) : null}
+
+        <DuplicateSpotSheet
+          spot={duplicateWarning?.spot}
+          onCancel={() => setDuplicateWarning(null)}
+          onContinue={duplicateWarning?.onContinue}
+        />
 
         <div style={{ flex: "none", padding: "16px 18px 14px", borderBottom: "1px solid var(--line)", display: "flex", alignItems: "center", gap: 12 }}>
           <IconButton variant="outline" onClick={() => router.push("/")} label="Cancel" icon={<BackIcon />} />
@@ -327,7 +354,7 @@ function SubmitForm() {
               value={mapsLink}
               onChange={(e) => {
                 setMapsLink(e.target.value);
-                setNearbyDuplicate(null);
+                setDuplicateWarning(null);
                 setDuplicateConfirmed(false);
               }}
               onBlur={lookupAreaFromMapsLink}
@@ -372,49 +399,7 @@ function SubmitForm() {
         </div>
 
         <div style={{ flex: "none", padding: "12px 14px 16px", background: "var(--card)", borderTop: "1px solid var(--border-subtle)" }}>
-          {nearbyDuplicate ? (
-            <div
-              style={{
-                display: "flex",
-                gap: 10,
-                alignItems: "flex-start",
-                padding: "12px 13px",
-                borderRadius: "var(--radius-md)",
-                background: "var(--saffron-50)",
-                border: "1px solid var(--saffron-200)",
-                marginBottom: 10,
-              }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--saffron-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flex: "none", marginTop: 1 }}>
-                <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"></path>
-                <path d="M12 9v4M12 17h.01"></path>
-              </svg>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ font: "700 13px/1.4 var(--font-body)", color: "var(--ink)" }}>Already a spot nearby</div>
-                <div style={{ font: "400 12.5px/1.5 var(--font-body)", color: "var(--ink-soft)", marginTop: 3 }}>
-                  <strong>{nearbyDuplicate.name}</strong> is about {Math.max(1, Math.round(nearbyDuplicate.distKm * 1000))}m away. If this is a
-                  different idol, submit anyway.
-                </div>
-                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                  <Button variant="outline" size="sm" onClick={() => setNearbyDuplicate(null)} style={{ flex: 1 }}>
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => {
-                      setDuplicateConfirmed(true);
-                      submit(true);
-                    }}
-                    style={{ flex: 1 }}
-                  >
-                    It&apos;s different, submit
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ) : null}
-          <Button variant="primary" onClick={() => submit()} disabled={!canSubmit} loading={submitting} style={{ width: "100%", height: 50 }}>
+          <Button variant="primary" onClick={submit} disabled={!canSubmit} loading={submitting} style={{ width: "100%", height: 50 }}>
             {submitting ? "Submitting…" : "Submit for review"}
           </Button>
         </div>

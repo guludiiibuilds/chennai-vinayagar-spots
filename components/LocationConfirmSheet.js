@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import { reverseGeocodeArea } from "@/lib/geo";
+import { DUPLICATE_RADIUS_KM, findNearestSpot, reverseGeocodeArea } from "@/lib/geo";
+import { fetchApprovedSpots } from "@/lib/spots";
 import { useToast } from "@/components/ToastProvider";
 import { CloseIcon, CheckIcon } from "@/components/icons";
 import { Button } from "@/components/Button";
 import { IconButton } from "@/components/IconButton";
+import DuplicateSpotSheet from "@/components/DuplicateSpotSheet";
 
 const LocationPicker = dynamic(() => import("@/components/LocationPicker"), {
   ssr: false,
@@ -50,6 +52,37 @@ export default function LocationConfirmSheet({
   const [area, setArea] = useState(initialArea);
   const [areaLoading, setAreaLoading] = useState(false);
   const arrivedWithArea = useRef(!!initialArea);
+  const [existingSpots, setExistingSpots] = useState([]);
+  const [duplicateWarning, setDuplicateWarning] = useState(null); // { spot, onContinue }
+
+  // Best-effort: used only to warn about a likely duplicate, so a failed
+  // fetch here just means that check gets silently skipped.
+  useEffect(() => {
+    let cancelled = false;
+    fetchApprovedSpots()
+      .then((data) => {
+        if (!cancelled) setExistingSpots(data);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleConfirmClick = () => {
+    const nearest = findNearestSpot(center, existingSpots);
+    if (nearest && nearest.distKm <= DUPLICATE_RADIUS_KM) {
+      setDuplicateWarning({
+        spot: nearest,
+        onContinue: () => {
+          setDuplicateWarning(null);
+          onConfirm(center, area);
+        },
+      });
+      return;
+    }
+    onConfirm(center, area);
+  };
 
   useEffect(() => {
     if (center) return; // already have a starting point (e.g. re-opened to change an existing location)
@@ -143,7 +176,7 @@ export default function LocationConfirmSheet({
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 14 }}>
-          <Button variant="primary" onClick={() => onConfirm(center, area)} disabled={!center} style={{ height: 50 }}>
+          <Button variant="primary" onClick={handleConfirmClick} disabled={!center} style={{ height: 50 }}>
             {confirmLabel}
           </Button>
           {onSkip ? (
@@ -153,6 +186,12 @@ export default function LocationConfirmSheet({
           ) : null}
         </div>
       </div>
+
+      <DuplicateSpotSheet
+        spot={duplicateWarning?.spot}
+        onCancel={() => setDuplicateWarning(null)}
+        onContinue={duplicateWarning?.onContinue}
+      />
     </div>
   );
 }
