@@ -202,7 +202,7 @@ function Home() {
           <div className="hp-topbar">
             <Logo size={34} />
             <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              {spots.length} active idol{spots.length === 1 ? "" : "s"} ·{" "}
+              Track Vinayagar Chaturthi idols in Chennai ·{" "}
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
@@ -331,6 +331,7 @@ function Home() {
             <div>
               <Logo size={44} />
               <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                {!selectedSpot ? "Track Vinayagar Chaturthi idols in Chennai · " : null}
                 <button
                   type="button"
                   onClick={() => setMenuOpen(true)}
