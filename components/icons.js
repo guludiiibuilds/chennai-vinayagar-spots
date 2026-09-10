@@ -66,10 +66,12 @@ export function CloseIcon({ stroke = "var(--ink)", ...props }) {
 
 export function ShareIcon({ stroke = "var(--ink)", ...props }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" {...props}>
-      <path d="M12 3v11"></path>
-      <path d="m8 7 4-4 4 4"></path>
-      <path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round" {...props}>
+      <circle cx="18" cy="5" r="3" fill={stroke} stroke="none"></circle>
+      <circle cx="6" cy="12" r="3" fill={stroke} stroke="none"></circle>
+      <circle cx="18" cy="19" r="3" fill={stroke} stroke="none"></circle>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
     </svg>
   );
 }

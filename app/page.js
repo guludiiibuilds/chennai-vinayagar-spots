@@ -18,8 +18,6 @@ import { EmptyState } from "@/components/EmptyState";
 import { ViewModeDropdown } from "@/components/ViewModeDropdown";
 import Logo from "@/components/Logo";
 
-const NEARBY_KM = 5;
-
 const DESKTOP_BREAKPOINT = 768;
 
 const MapCanvas = dynamic(() => import("@/components/MapCanvas"), {
@@ -89,7 +87,7 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Distance-based features (nearest-first sorting, "within 5km" badges) are
+  // Distance-based features (nearest-first sorting, per-spot distance) are
   // core to browsing here, not an optional enhancement, so location isn't a
   // silent best-effort request anymore — the whole browse view is gated on
   // it (see the locationStatus !== "granted" branch below). beginLocating
@@ -132,7 +130,7 @@ function Home() {
     () =>
       spots.map((s) => {
         const distKm = userPos ? distanceKm(userPos, { lat: s.lat, lng: s.lng }) : null;
-        return { ...s, distKm, isNearby: distKm != null && distKm <= NEARBY_KM };
+        return { ...s, distKm };
       }),
     [spots, userPos]
   );

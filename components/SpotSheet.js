@@ -39,6 +39,7 @@ export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto })
           display: "grid",
           placeItems: "center",
           background: "rgba(255,255,255,.78)",
+          border: "1px solid var(--border-subtle)",
           backdropFilter: "saturate(180%) blur(14px)",
           WebkitBackdropFilter: "saturate(180%) blur(14px)",
         }}

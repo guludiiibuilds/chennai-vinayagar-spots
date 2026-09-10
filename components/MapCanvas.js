@@ -18,23 +18,15 @@ const CHENNAI_CENTER = [13.0067, 80.257];
 const PIN_ASSET = "/brand/locate.svg";
 const PIN_ASPECT = 1011 / 702;
 
-// Small corner badges on the pin itself, so "popular" and "nearby" idols
-// stand out while panning/zooming without opening each one — popular
-// (admin-flagged) gets a gold star at the top-right, nearby (within
-// NEARBY_KM of the visitor) gets a plain green dot at the top-left. Either,
-// both, or neither can show per spot.
+// Small corner badge on the pin itself, so "popular" idols stand out while
+// panning/zooming without opening each one — popular (admin-flagged) gets
+// a gold star at the top-right.
 function pinIcon(active, spot = {}) {
   const width = active ? 34 : 28;
   const height = Math.round(width * PIN_ASPECT);
-  const badges = `${
-    spot.is_popular
-      ? `<div style="position:absolute;top:-2px;right:-2px;width:15px;height:15px;border-radius:50%;background:var(--saffron-400);border:1.5px solid #fff;display:grid;place-items:center;font-size:9px;line-height:1;color:#fff">★</div>`
-      : ""
-  }${
-    spot.isNearby
-      ? `<div style="position:absolute;top:-2px;left:-2px;width:10px;height:10px;border-radius:50%;background:var(--green);border:1.5px solid #fff"></div>`
-      : ""
-  }`;
+  const badges = spot.is_popular
+    ? `<div style="position:absolute;top:-2px;right:-2px;width:15px;height:15px;border-radius:50%;background:var(--saffron-400);border:1.5px solid #fff;display:grid;place-items:center;font-size:9px;line-height:1;color:#fff">★</div>`
+    : "";
   return L.divIcon({
     className: "",
     html: `
@@ -47,12 +39,15 @@ function pinIcon(active, spot = {}) {
   });
 }
 
+// The visitor's own position uses the familiar maps-app blue dot rather
+// than the app's saffron accent — that color is reserved for pins/actions,
+// while "this is you" reads as a distinct, universally-recognized signal.
 const meIcon = L.divIcon({
   className: "",
   html: `
     <div style="position:relative;width:20px;height:20px">
-      <div style="position:absolute;inset:0;border-radius:50%;background:var(--accent);animation:pulseRing 2.4s ease-out infinite"></div>
-      <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;background:var(--accent);border:2.5px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,.25)"></div>
+      <div style="position:absolute;inset:0;border-radius:50%;background:var(--blue-500);animation:pulseRing 2.4s ease-out infinite"></div>
+      <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:50%;background:var(--blue-500);border:2.5px solid #ffffff;box-shadow:0 2px 6px rgba(0,0,0,.25)"></div>
     </div>`,
   iconSize: [20, 20],
   iconAnchor: [10, 10],
@@ -149,12 +144,15 @@ function MapControls({ userPos, onSearchClick }) {
 }
 
 // icon-circular: 44px, translucent chip over photography, no shadow —
-// elevation here comes from translucency + blur, not a drop-shadow.
+// elevation here comes from translucency + blur, not a drop-shadow. A
+// subtle border keeps the edge legible against busy or light-colored map
+// tiles the blur alone doesn't always separate from.
 const ctrlBtnStyle = {
   width: 44,
   height: 44,
   borderRadius: 9999,
   background: "rgba(255,255,255,.78)",
+  border: "1px solid var(--border-subtle)",
   backdropFilter: "saturate(180%) blur(14px)",
   WebkitBackdropFilter: "saturate(180%) blur(14px)",
   display: "grid",
