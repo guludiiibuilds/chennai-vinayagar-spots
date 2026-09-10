@@ -10,12 +10,12 @@ import "leaflet.markercluster";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
 
-// Custom pin artwork (teardrop + Vinayaka trunk-swirl silhouette), supplied
-// at 43x75 — roughly 2x the on-map display size, so it stays crisp on
+// Custom pin artwork (full-color Vinayaka idol inside a teardrop), supplied
+// at 702x1011 — well over 2x the on-map display size, so it stays crisp on
 // retina screens. Selection is signalled by scaling the whole marker up
-// rather than swapping colors, since the artwork is a single fixed color.
-const PIN_ASSET = "/pin-vinayaka.png";
-const PIN_ASPECT = 75 / 43;
+// rather than swapping colors.
+const PIN_ASSET = "/brand/locate.svg";
+const PIN_ASPECT = 1011 / 702;
 
 // Small corner badges on the pin itself, so "popular" and "nearby" idols
 // stand out while panning/zooming without opening each one — popular
