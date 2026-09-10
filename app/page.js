@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
 import { distanceKm, formatDistance } from "@/lib/geo";
-import { InfoIcon, CloseIcon } from "@/components/icons";
+import { CloseIcon } from "@/components/icons";
 import { SpotListCard } from "@/components/SpotCard";
 import MenuSheet from "@/components/MenuSheet";
 import SpotSheet from "@/components/SpotSheet";
@@ -200,14 +200,16 @@ function Home() {
       <div className="app-shell app-shell--home">
         <div className="app-frame app-frame--home">
           <div className="hp-topbar">
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-              <div>
-                <Logo size={24} />
-                <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>
-                  {spots.length} active idol{spots.length === 1 ? "" : "s"}
-                </div>
-              </div>
-              <IconButton variant="soft" size="sm" label="About" onClick={() => setMenuOpen(true)} icon={<InfoIcon />} />
+            <Logo size={24} />
+            <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              {spots.length} active idol{spots.length === 1 ? "" : "s"} ·{" "}
+              <button
+                type="button"
+                onClick={() => setMenuOpen(true)}
+                style={{ color: "var(--accent)", font: "inherit", letterSpacing: "inherit", textTransform: "inherit", background: "none", border: 0, padding: 0, cursor: "pointer" }}
+              >
+                About
+              </button>
             </div>
           </div>
 
@@ -326,16 +328,18 @@ function Home() {
               />
             </div>
           ) : (
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-              <div>
-                <Logo size={22} />
-                {!selectedSpot ? (
-                  <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>
-                    {spots.length} active idol{spots.length === 1 ? "" : "s"}
-                  </div>
-                ) : null}
+            <div>
+              <Logo size={22} />
+              <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                {!selectedSpot ? `${spots.length} active idol${spots.length === 1 ? "" : "s"} · ` : null}
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(true)}
+                  style={{ color: "var(--accent)", font: "inherit", letterSpacing: "inherit", textTransform: "inherit", background: "none", border: 0, padding: 0, cursor: "pointer" }}
+                >
+                  About
+                </button>
               </div>
-              <IconButton variant="soft" size="sm" label="About" onClick={() => setMenuOpen(true)} icon={<InfoIcon />} />
             </div>
           )}
 
