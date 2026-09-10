@@ -330,16 +330,18 @@ function Home() {
           ) : (
             <div>
               <Logo size={60} />
-              <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>
-                {!selectedSpot ? "Track Vinayagar Chaturthi idols in Chennai · " : null}
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen(true)}
-                  style={{ color: "var(--accent)", font: "inherit", letterSpacing: "inherit", textTransform: "inherit", background: "none", border: 0, padding: 0, cursor: "pointer" }}
-                >
-                  About
-                </button>
-              </div>
+              {!selectedSpot ? (
+                <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>
+                  Track Vinayagar Chaturthi idols in Chennai ·{" "}
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen(true)}
+                    style={{ color: "var(--accent)", font: "inherit", letterSpacing: "inherit", textTransform: "inherit", background: "none", border: 0, padding: 0, cursor: "pointer" }}
+                  >
+                    About
+                  </button>
+                </div>
+              ) : null}
             </div>
           )}
 
