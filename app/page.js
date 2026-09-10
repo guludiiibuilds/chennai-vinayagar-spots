@@ -329,9 +329,8 @@ function Home() {
             </div>
           ) : (
             <div>
-              <Logo size={32} />
+              <Logo size={44} />
               <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-                {!selectedSpot ? `${spots.length} active idol${spots.length === 1 ? "" : "s"} · ` : null}
                 <button
                   type="button"
                   onClick={() => setMenuOpen(true)}
