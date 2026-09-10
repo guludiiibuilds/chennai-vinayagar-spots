@@ -358,6 +358,7 @@ function Home() {
               onSelect={openSpot}
               selectedId={selectedId}
               focusSpot={selectedSpot}
+              focusVerticalFraction={selectedSpot ? 0.2 : undefined}
               onSearchClick={selectedSpot ? undefined : () => setSearchActive(true)}
             />
             {selectedSpot ? (

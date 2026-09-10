@@ -206,18 +206,40 @@ function AutoInvalidateSize() {
 // react-leaflet's `center`/`zoom` on MapContainer are only the initial view —
 // changing them after mount doesn't move an already-live map. This flies the
 // map to the selected spot imperatively whenever the selection changes.
-function FlyToSelection({ target, zoom }) {
+// `verticalFraction` re-centers on a point offset from the selected spot
+// (rather than the spot itself) so the pin lands at that fraction of the
+// container's height instead of dead-center — used to keep it clear of a
+// bottom sheet that covers the lower part of the map. Leaving it unset
+// centers normally, for layouts (e.g. desktop's sidebar detail) where
+// nothing overlays the map.
+function FlyToSelection({ target, zoom, verticalFraction }) {
   const map = useMap();
   useEffect(() => {
     if (target && target.lat != null && target.lng != null) {
-      map.flyTo([target.lat, target.lng], zoom, { duration: 0.6 });
+      let center = [target.lat, target.lng];
+      if (verticalFraction != null) {
+        const size = map.getSize();
+        const offsetY = size.y * (0.5 - verticalFraction);
+        center = map.unproject(map.project(center, zoom).add([0, offsetY]), zoom);
+      }
+      map.flyTo(center, zoom, { duration: 0.6 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target?.id]);
   return null;
 }
 
-export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusSpot, focusZoom = 15, initialZoom = 12, onSearchClick }) {
+export default function MapCanvas({
+  spots,
+  selectedId,
+  onSelect,
+  userPos,
+  focusSpot,
+  focusZoom = 15,
+  focusVerticalFraction,
+  initialZoom = 12,
+  onSearchClick,
+}) {
   const mapRef = useRef(null);
   const initialCenter = spots[0]?.lat != null ? [spots[0].lat, spots[0].lng] : CHENNAI_CENTER;
 
@@ -241,7 +263,7 @@ export default function MapCanvas({ spots, selectedId, onSelect, userPos, focusS
       <ClusteredMarkers spots={spots} selectedId={selectedId} onSelect={onSelect} />
       {userPos ? <Marker position={[userPos.lat, userPos.lng]} icon={meIcon} interactive={false} /> : null}
       {focusSpot ? null : <MapControls userPos={userPos} onSearchClick={onSearchClick} />}
-      {focusSpot ? <FlyToSelection target={focusSpot} zoom={focusZoom} /> : null}
+      {focusSpot ? <FlyToSelection target={focusSpot} zoom={focusZoom} verticalFraction={focusVerticalFraction} /> : null}
     </MapContainer>
   );
 }
