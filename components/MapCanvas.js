@@ -252,9 +252,10 @@ export default function MapCanvas({
       style={{ position: "absolute", inset: 0, zIndex: 0, background: "var(--paper)" }}
       ref={mapRef}
     >
-      {/* CARTO's "Positron" basemap: a light, low-saturation style with
-          minimal labels — reads as a calm surface for colorful pins to sit
-          on, unlike stock OSM tiles' busy default colors/road styling. */}
+      {/* CARTO's "Voyager" basemap: a warm, detailed style (buildings,
+          parks, water tinted) that still stays calm enough for colorful
+          pins to stand out, unlike stock OSM tiles' busier default
+          styling. */}
       <TileLayer url={CARTO_TILE_URL} attribution={CARTO_ATTRIBUTION} />
       <MinimalAttribution />
       <AutoInvalidateSize />
