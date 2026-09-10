@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { CARTO_TILE_URL, CARTO_ATTRIBUTION } from "@/lib/mapTiles";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
 
@@ -124,10 +125,7 @@ export default function LocationPicker({ initialCenter, initialZoom = 16, onCent
         style={{ position: "absolute", inset: 0, zIndex: 0, background: "var(--paper)" }}
         ref={mapRef}
       >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        />
+        <TileLayer url={CARTO_TILE_URL} attribution={CARTO_ATTRIBUTION} />
         <MinimalAttribution />
         <AutoInvalidateSize />
         <MoveTracker

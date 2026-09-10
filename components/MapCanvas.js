@@ -7,6 +7,7 @@ import L from "leaflet";
 // "leaflet" itself just set on window — must be imported after "leaflet" so
 // that global exists by the time this module's top-level code reads it.
 import "leaflet.markercluster";
+import { CARTO_TILE_URL, CARTO_ATTRIBUTION } from "@/lib/mapTiles";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
 
@@ -254,10 +255,7 @@ export default function MapCanvas({
       {/* CARTO's "Positron" basemap: a light, low-saturation style with
           minimal labels — reads as a calm surface for colorful pins to sit
           on, unlike stock OSM tiles' busy default colors/road styling. */}
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-      />
+      <TileLayer url={CARTO_TILE_URL} attribution={CARTO_ATTRIBUTION} />
       <MinimalAttribution />
       <AutoInvalidateSize />
       <ClusteredMarkers spots={spots} selectedId={selectedId} onSelect={onSelect} />
