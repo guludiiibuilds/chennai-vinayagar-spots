@@ -1,4 +1,4 @@
-const ASPECT = 120 / 55;
+const ASPECT = 2991 / 645;
 
 // Hand-lettered "Chennai Vinayagar" wordmark, exported from the design
 // system as a single vector (icon + type already fused into one mark, no
