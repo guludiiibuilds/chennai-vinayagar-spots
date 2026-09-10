@@ -362,10 +362,8 @@ function Home() {
               focusSpot={selectedSpot}
               focusVerticalFraction={selectedSpot ? 0.2 : undefined}
               onSearchClick={selectedSpot ? undefined : () => setSearchActive(true)}
+              onMapClick={selectedSpot ? closeSheet : undefined}
             />
-            {selectedSpot ? (
-              <div onClick={closeSheet} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: "60%", zIndex: 3 }} />
-            ) : null}
             {selectedSpot ? (
               <SpotSheet
                 spot={selectedSpot}

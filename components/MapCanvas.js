@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, useMap, useMapEvent } from "react-leaflet";
 import L from "leaflet";
 // Side-effect only: attaches L.markerClusterGroup to the Leaflet global that
 // "leaflet" itself just set on window — must be imported after "leaflet" so
@@ -204,6 +204,18 @@ function AutoInvalidateSize() {
   return null;
 }
 
+// Tapping the bare map (not a pin — markers stop click propagation) closes
+// the open spot sheet. This replaces an earlier plain overlay <div> that
+// sat on top of the visible map strip to catch that tap: it also caught
+// (and ate) pinch/drag gestures, since the browser had no way to know they
+// were meant for the map underneath — pinching there zoomed the whole page
+// instead of the map. Listening on the map's own click event keeps pinch
+// and drag working normally while still closing on a genuine tap.
+function MapClickHandler({ onMapClick }) {
+  useMapEvent("click", onMapClick);
+  return null;
+}
+
 // react-leaflet's `center`/`zoom` on MapContainer are only the initial view —
 // changing them after mount doesn't move an already-live map. This flies the
 // map to the selected spot imperatively whenever the selection changes.
@@ -240,6 +252,7 @@ export default function MapCanvas({
   focusVerticalFraction,
   initialZoom = 12,
   onSearchClick,
+  onMapClick,
 }) {
   const mapRef = useRef(null);
   const initialCenter = spots[0]?.lat != null ? [spots[0].lat, spots[0].lng] : CHENNAI_CENTER;
@@ -261,8 +274,9 @@ export default function MapCanvas({
       <AutoInvalidateSize />
       <ClusteredMarkers spots={spots} selectedId={selectedId} onSelect={onSelect} />
       {userPos ? <Marker position={[userPos.lat, userPos.lng]} icon={meIcon} interactive={false} /> : null}
-      {focusSpot ? null : <MapControls userPos={userPos} onSearchClick={onSearchClick} />}
+      <MapControls userPos={userPos} onSearchClick={onSearchClick} />
       {focusSpot ? <FlyToSelection target={focusSpot} zoom={focusZoom} verticalFraction={focusVerticalFraction} /> : null}
+      {onMapClick ? <MapClickHandler onMapClick={onMapClick} /> : null}
     </MapContainer>
   );
 }
