@@ -5,7 +5,7 @@ import { Button } from "./Button";
 import { IconButton } from "./IconButton";
 import { CloseIcon } from "./icons";
 
-// A popup, not a navigation: clicking "Spot a Vinayaka" on desktop stays
+// A popup, not a navigation: clicking "Spot a Vinayagar" on desktop stays
 // on the map — this explains why submitting needs a phone (camera + GPS)
 // and offers copying the link, but "Keep Exploring" just dismisses it
 // rather than sending anyone into a form that can't actually be used here.
@@ -71,7 +71,7 @@ export default function MobileOnlyPrompt({ onClose }) {
           </svg>
         </div>
         <h2 style={{ font: "600 19px/1.3 var(--font-display)", letterSpacing: "-.2px", color: "var(--ink)", marginTop: 16 }}>
-          Spotting a Vinayaka is mobile-only
+          Spotting a Vinayagar is mobile-only
         </h2>
         <p style={{ font: "400 13.5px/1.55 var(--font-body)", color: "var(--ink-soft)", marginTop: 8 }}>
           Submitting needs your phone&apos;s camera and location. Copy the link below to continue there.

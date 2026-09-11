@@ -11,7 +11,7 @@ import { CARTO_TILE_URL, CARTO_ATTRIBUTION } from "@/lib/mapTiles";
 
 const CHENNAI_CENTER = [13.0067, 80.257];
 
-// Custom pin artwork (full-color Vinayaka idol inside a teardrop), supplied
+// Custom pin artwork (full-color Vinayagar idol inside a teardrop), supplied
 // at 702x1011 — well over 2x the on-map display size, so it stays crisp on
 // retina screens. Selection is signalled by scaling the whole marker up
 // rather than swapping colors.

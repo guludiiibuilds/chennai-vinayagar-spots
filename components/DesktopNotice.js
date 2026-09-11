@@ -35,7 +35,7 @@ export default function DesktopNotice({ onBack }) {
           </svg>
         </div>
         <h2 style={{ font: "600 20px/1.3 var(--font-display)", letterSpacing: "-.2px", color: "var(--ink)", marginTop: 18 }}>
-          Spotting a Vinayaka is mobile-only
+          Spotting a Vinayagar is mobile-only
         </h2>
         <p style={{ font: "400 14px/1.55 var(--font-body)", color: "var(--ink-soft)", marginTop: 8, maxWidth: 300 }}>
           Submitting needs your phone&apos;s camera and location, so it only works there. Copy the link below to

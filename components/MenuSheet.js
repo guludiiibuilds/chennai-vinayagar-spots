@@ -7,7 +7,7 @@ import { IconButton } from "./IconButton";
 const FEEDBACK_FORM_URL = "https://forms.gle/sYnnzH4h9FL3hXJu5";
 
 const steps = [
-  "Spot a Vinayaka near you and submit a photo, name and location.",
+  "Spot a Vinayagar near you and submit a photo, name and location.",
   "A local volunteer checks it, usually within an hour. Until then, please explore other spots.",
   "Once approved, it appears on the map for everyone to visit.",
 ];
@@ -51,15 +51,15 @@ export default function MenuSheet({ open, onClose }) {
             label="Close menu"
             onClick={onClose}
             icon={<CloseIcon />}
-            style={{ borderRadius: 10, marginTop: -10 }}
+            style={{ width: 32, height: 32, borderRadius: 10, marginTop: -10 }}
           />
         </div>
         <div style={{ font: "400 14px/1.55 var(--font-body)", color: "var(--ink-soft)", marginTop: 6 }}>
-          A community-built map of Vinayaka Chaturthi idols across Chennai. No login needed to browse or submit.
+          A community-built map of Vinayagar Chaturthi idols across Chennai. No login needed to browse or submit.
         </div>
         <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 16 }}>
           {steps.map((text, i) => (
-            <div key={i} style={{ display: "flex", gap: 12 }}>
+            <div key={i} style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <div
                 style={{
                   flex: "none",
@@ -82,7 +82,7 @@ export default function MenuSheet({ open, onClose }) {
 
         <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
           <Button variant="primary" onClick={onClose} style={{ height: 50 }}>
-            Start Vinayaka Hopping
+            Start Vinayagar Hopping
           </Button>
           <Button
             variant="outline"

@@ -22,9 +22,9 @@ const mulish = Mulish({
 });
 
 export const metadata = {
-  title: "Chennai Vinayaka Spots",
+  title: "Chennai Vinayagar Spots",
   description:
-    "Find and share Vinayaka Chaturthi idols across Chennai — no login needed to browse or submit.",
+    "Find and share Vinayagar Chaturthi idols across Chennai — no login needed to browse or submit.",
 };
 
 export const viewport = {

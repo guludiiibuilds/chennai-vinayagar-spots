@@ -269,7 +269,7 @@ function Home() {
                     }
                     style={{ width: "100%" }}
                   >
-                    Spot a Vinayaka
+                    Spot a Vinayagar
                   </Button>
                 </div>
               ) : null}
@@ -466,7 +466,7 @@ function Home() {
               boxShadow: "var(--shadow-floating)",
             }}
           >
-            Spot a Vinayaka
+            Spot a Vinayagar
           </Button>
         ) : null}
 
