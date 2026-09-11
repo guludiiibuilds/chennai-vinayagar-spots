@@ -348,7 +348,7 @@ function Home() {
             </div>
           ) : (
             <div>
-              <Logo size={60} />
+              <Logo size={38} />
               {!selectedSpot ? (
                 <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>
                   Track Vinayagar Chaturthi idols in Chennai ·{" "}

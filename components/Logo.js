@@ -5,7 +5,7 @@
 // is the icon's square size in px; the wordmark scales off it.
 export default function Logo({ size = 40, showWordmark = true }) {
   return (
-    <div style={{ display: "inline-flex", alignItems: "center", gap: Math.round(size * 0.22) }}>
+    <div style={{ display: "inline-flex", alignItems: "center", gap: Math.round(size * 0.08) }}>
       <img
         src="/brand/logo.svg"
         alt={showWordmark ? "" : "Chennai Vinayagar"}
@@ -14,8 +14,17 @@ export default function Logo({ size = 40, showWordmark = true }) {
         style={{ display: "block", flex: "none" }}
       />
       {showWordmark ? (
-        <span style={{ font: `700 ${Math.round(size * 0.5)}px/1 var(--font-display)`, letterSpacing: "-0.01em", whiteSpace: "nowrap" }}>
-          <span style={{ color: "var(--ink)" }}>Chennai</span> <span style={{ color: "var(--accent)" }}>Vinayagar</span>
+        <span
+          style={{
+            fontFamily: "'Baloo 2', ui-rounded, 'SF Pro Rounded', 'Segoe UI', sans-serif",
+            fontSize: size,
+            lineHeight: 1.1,
+            letterSpacing: "-0.01em",
+            fontWeight: 700,
+            whiteSpace: "nowrap",
+          }}
+        >
+          <span style={{ color: "var(--ink)" }}>Chn</span><span style={{ color: "var(--accent)" }}>Vinayagar</span>
         </span>
       ) : null}
     </div>
