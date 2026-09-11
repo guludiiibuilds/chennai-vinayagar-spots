@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots, uploadSpotPhoto, submitSpot } from "@/lib/spots";
 import { DUPLICATE_RADIUS_KM, extractLatLngFromMapsLink, findNearestSpot, reverseGeocodeArea } from "@/lib/geo";
 import { compressImage } from "@/lib/image";
+import { useIsDesktop } from "@/lib/useIsDesktop";
 import { useToast } from "@/components/ToastProvider";
 import { BackIcon, CompassIcon, CheckIcon } from "@/components/icons";
 import DesktopNotice from "@/components/DesktopNotice";
@@ -13,8 +14,6 @@ import DuplicateSpotSheet from "@/components/DuplicateSpotSheet";
 import { Button } from "@/components/Button";
 import { IconButton } from "@/components/IconButton";
 import { TextField } from "@/components/TextField";
-
-const DESKTOP_BREAKPOINT = 1024;
 
 export default function SubmitPage() {
   return (
@@ -30,8 +29,7 @@ function SubmitForm() {
   const showToast = useToast();
   const fileInputRef = useRef(null);
 
-  const [isDesktop, setIsDesktop] = useState(false);
-  const [desktopNoticeDismissed, setDesktopNoticeDismissed] = useState(false);
+  const isDesktop = useIsDesktop(1024);
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [compressingPhoto, setCompressingPhoto] = useState(false);
@@ -100,13 +98,6 @@ function SubmitForm() {
       });
     }
   };
-
-  useEffect(() => {
-    const check = () => setIsDesktop(window.innerWidth >= DESKTOP_BREAKPOINT);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
 
   // Prefill Area from the captured GPS point so submitters (and the admin
   // reviewer) don't have to type the neighbourhood by hand — never
@@ -206,6 +197,10 @@ function SubmitForm() {
     performSubmit();
   };
 
+  if (isDesktop) {
+    return <DesktopNotice onBack={() => router.push("/")} />;
+  }
+
   if (done) {
     return (
       <div className="app-shell">
@@ -242,10 +237,6 @@ function SubmitForm() {
   return (
     <div className="app-shell">
       <div className="app-frame" style={{ animation: "fadeUp .28s ease both" }}>
-        {isDesktop && !desktopNoticeDismissed ? (
-          <DesktopNotice onContinue={() => setDesktopNoticeDismissed(true)} />
-        ) : null}
-
         {showLocationSheet ? (
           <LocationConfirmSheet
             initialCenter={loc}

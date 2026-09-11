@@ -1,10 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useIsDesktop } from "@/lib/useIsDesktop";
+import DesktopNotice from "@/components/DesktopNotice";
 import LocationConfirmSheet from "@/components/LocationConfirmSheet";
 
 export default function ConfirmLocationPage() {
   const router = useRouter();
+  const isDesktop = useIsDesktop(1024);
 
   const confirm = (center, area) => {
     if (!center) return;
@@ -12,6 +15,10 @@ export default function ConfirmLocationPage() {
     if (area) params.set("area", area);
     router.push(`/submit?${params.toString()}`);
   };
+
+  if (isDesktop) {
+    return <DesktopNotice onBack={() => router.push("/")} />;
+  }
 
   return (
     <div className="app-shell">

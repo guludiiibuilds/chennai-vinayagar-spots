@@ -232,27 +232,10 @@ function Home() {
                     <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
                   ))}
                   {!loading && filtered.length === 0 ? (
-                    <EmptyState icon="🔍" title="No spots match that search yet" description="Know one? Add it below." />
+                    <EmptyState icon="🔍" title="No spots match that search yet" description="Know one? Add it from your phone." />
                   ) : null}
                 </div>
               )}
-
-              {!selectedSpot ? (
-                <div className="hp-sidebar-footer">
-                  <Button
-                    variant="primary"
-                    onClick={() => router.push("/submit/location")}
-                    icon={
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
-                        <path d="M12 5v14M5 12h14"></path>
-                      </svg>
-                    }
-                    style={{ width: "100%" }}
-                  >
-                    Spot a Vinayaka
-                  </Button>
-                </div>
-              ) : null}
             </div>
 
             <div className="hp-map-pane">
