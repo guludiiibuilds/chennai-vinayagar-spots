@@ -379,6 +379,29 @@ function Home() {
           ) : null}
         </header>
 
+        {/* Normal document flow, not position:absolute — so it always stacks
+            directly under the header at whatever height the header actually
+            is (e.g. with or without the filter-chip row), instead of a
+            hardcoded top offset that silently drifts out of sync whenever
+            the header's contents change. */}
+        {loadError ? (
+          <div
+            style={{
+              flex: "none",
+              margin: "10px 14px 0",
+              padding: "10px 14px",
+              borderRadius: "var(--radius-md)",
+              background: "var(--card)",
+              border: "1px solid var(--line-strong)",
+              borderLeft: "3px solid var(--pin)",
+              color: "var(--ink-soft)",
+              font: "400 12px/1.4 var(--font-body)",
+            }}
+          >
+            Couldn&apos;t load spots ({loadError}). Check the Supabase project is reachable and the schema has been applied.
+          </div>
+        ) : null}
+
         {mode === "map" ? (
           <div style={{ position: "relative", zIndex: 1, flex: 1, overflow: "hidden", background: "var(--paper)" }}>
             <MapCanvas
@@ -391,6 +414,16 @@ function Home() {
               onSearchClick={selectedSpot ? undefined : () => setSearchActive(true)}
               onMapClick={selectedSpot ? closeSheet : undefined}
             />
+            {/* The map has no rows of its own to show a "no matches" message
+                in, unlike list mode — without this, a search or filter with
+                zero results just looks like the map silently broke. */}
+            {!loading && filtered.length === 0 && !selectedSpot ? (
+              <div style={{ position: "absolute", left: 14, right: 14, top: "50%", transform: "translateY(-50%)", zIndex: 8 }}>
+                <div style={{ background: "var(--card)", borderRadius: "var(--radius-lg)", border: "1px solid var(--line-strong)", boxShadow: "var(--shadow-elevated)" }}>
+                  <EmptyState {...emptyStateProps} />
+                </div>
+              </div>
+            ) : null}
             {selectedSpot ? (
               <SpotSheet
                 spot={selectedSpot}
@@ -408,27 +441,6 @@ function Home() {
             {!loading && filtered.length === 0 ? <EmptyState {...emptyStateProps} /> : null}
           </div>
         )}
-
-        {loadError ? (
-          <div
-            style={{
-              position: "absolute",
-              left: 14,
-              right: 14,
-              top: 132,
-              zIndex: 20,
-              padding: "10px 14px",
-              borderRadius: "var(--radius-md)",
-              background: "var(--card)",
-              border: "1px solid var(--line-strong)",
-              borderLeft: "3px solid var(--pin)",
-              color: "var(--ink-soft)",
-              font: "400 12px/1.4 var(--font-body)",
-            }}
-          >
-            Couldn&apos;t load spots ({loadError}). Check the Supabase project is reachable and the schema has been applied.
-          </div>
-        ) : null}
 
         {!selectedSpot ? (
           <Button
