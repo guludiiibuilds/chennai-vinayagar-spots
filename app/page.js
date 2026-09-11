@@ -19,7 +19,11 @@ import { ViewModeDropdown } from "@/components/ViewModeDropdown";
 import MobileOnlyPrompt from "@/components/MobileOnlyPrompt";
 import Logo from "@/components/Logo";
 
-const DESKTOP_BREAKPOINT = 768;
+// Matches the submit flow's own desktop check (lib/useIsDesktop's default)
+// so browsing and submitting switch to "desktop" behavior together —
+// tablets stay on the full mobile experience (single-column, map/list
+// toggle, and a working submit flow) right up to that same width.
+const DESKTOP_BREAKPOINT = 1024;
 
 const MapCanvas = dynamic(() => import("@/components/MapCanvas"), {
   ssr: false,
