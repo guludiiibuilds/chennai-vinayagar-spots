@@ -266,7 +266,7 @@ function SubmitForm() {
 
         <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "18px 18px 8px", display: "flex", flexDirection: "column", gap: 18 }}>
           <div>
-            <FieldLabel>Vinayaka Photo</FieldLabel>
+            <FieldLabel required>Vinayaka Photo</FieldLabel>
             <input ref={fileInputRef} type="file" accept="image/*" onChange={onPhotoChange} style={{ display: "none" }} />
             <button
               onClick={pickPhoto}
@@ -304,14 +304,18 @@ function SubmitForm() {
           </div>
 
           <TextField
-            label="Vinayaka Name"
+            label={
+              <>
+                Vinayaka Name <span style={{ color: "var(--color-error)" }}>*</span>
+              </>
+            }
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Kapaleeshwarar Street Idol"
           />
 
           <div>
-            <FieldLabel>Location</FieldLabel>
+            <FieldLabel required>Location</FieldLabel>
             <button
               onClick={() => setShowLocationSheet(true)}
               style={{
@@ -413,10 +417,11 @@ function SubmitForm() {
   );
 }
 
-function FieldLabel({ children }) {
+function FieldLabel({ children, required }) {
   return (
     <div style={{ font: "700 13px/1.3 var(--font-body)", letterSpacing: "0.02em", color: "var(--ink-soft)", marginBottom: 9 }}>
       {children}
+      {required ? <span style={{ color: "var(--color-error)" }}> *</span> : null}
     </div>
   );
 }
