@@ -220,7 +220,7 @@ function Home() {
       <div className="app-shell app-shell--home">
         <div className="app-frame app-frame--home">
           <div className="hp-topbar">
-            <Logo size={34} />
+            <Logo size={28} />
             <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>
               Track Vinayagar Chaturthi idols in Chennai ·{" "}
               <button
@@ -348,7 +348,7 @@ function Home() {
             </div>
           ) : (
             <div>
-              <Logo size={38} />
+              <Logo size={28} />
               {!selectedSpot ? (
                 <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>
                   Track Vinayagar Chaturthi idols in Chennai ·{" "}
