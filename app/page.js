@@ -16,6 +16,8 @@ import { IconButton } from "@/components/IconButton";
 import { SearchBar } from "@/components/SearchBar";
 import { EmptyState } from "@/components/EmptyState";
 import { ViewModeDropdown } from "@/components/ViewModeDropdown";
+import { Chip } from "@/components/Chip";
+import { PinPlaceIcon } from "@/components/icons";
 import MobileOnlyPrompt from "@/components/MobileOnlyPrompt";
 import Logo from "@/components/Logo";
 
@@ -24,6 +26,9 @@ import Logo from "@/components/Logo";
 // tablets stay on the full mobile experience (single-column, map/list
 // toggle, and a working submit flow) right up to that same width.
 const DESKTOP_BREAKPOINT = 1024;
+
+// "Near me" filter radius — tight enough to stay meaningful in a dense city.
+const NEAR_RADIUS_KM = 2;
 
 const MapCanvas = dynamic(() => import("@/components/MapCanvas"), {
   ssr: false,
@@ -54,6 +59,8 @@ function Home() {
   const [isDesktop, setIsDesktop] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
   const [mobileOnlyPromptOpen, setMobileOnlyPromptOpen] = useState(false);
+  const [filterMode, setFilterMode] = useState(null); // null | "near" | "popular" — exclusive, tap again to clear
+  const toggleFilter = (value) => setFilterMode((m) => (m === value ? null : value));
   const searchInputWrapRef = useRef(null);
 
   useEffect(() => {
@@ -143,9 +150,18 @@ function Home() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return spotsWithDist;
-    return spotsWithDist.filter((s) => s.name.toLowerCase().includes(q) || s.area.toLowerCase().includes(q));
-  }, [spotsWithDist, query]);
+    let list = spotsWithDist;
+    if (q) list = list.filter((s) => s.name.toLowerCase().includes(q) || s.area.toLowerCase().includes(q));
+    if (filterMode === "near") list = list.filter((s) => s.distKm != null && s.distKm <= NEAR_RADIUS_KM);
+    if (filterMode === "popular") list = list.filter((s) => s.is_popular);
+    return list;
+  }, [spotsWithDist, query, filterMode]);
+
+  const emptyStateProps = filterMode === "near"
+    ? { icon: "📍", title: `No spots within ${NEAR_RADIUS_KM}km yet`, description: "Clear the filter to see every spot." }
+    : filterMode === "popular"
+    ? { icon: "★", title: "No popular spots yet", description: "Check back soon, or clear the filter." }
+    : { icon: "🔍", title: "No spots match that search yet", description: "Know one? Add it below." };
 
   // List views specifically show nearest-first; the map doesn't care about
   // array order since pins are placed by lat/lng, not list position.
@@ -237,9 +253,7 @@ function Home() {
                   {nearestFirst.map((s) => (
                     <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
                   ))}
-                  {!loading && filtered.length === 0 ? (
-                    <EmptyState icon="🔍" title="No spots match that search yet" description="Know one? Add it below." />
-                  ) : null}
+                  {!loading && filtered.length === 0 ? <EmptyState {...emptyStateProps} /> : null}
                 </div>
               )}
 
@@ -352,8 +366,15 @@ function Home() {
           )}
 
           {!selectedSpot ? (
-            <div style={{ marginTop: 14 }}>
+            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, overflowX: "auto" }}>
               <ViewModeDropdown mode={mode} onChange={setMode} />
+              <span style={{ width: 1, height: 20, background: "var(--line-strong)", flex: "none" }} />
+              <Chip selected={filterMode === "near"} icon={<PinPlaceIcon stroke="currentColor" />} onClick={() => toggleFilter("near")}>
+                Near me
+              </Chip>
+              <Chip selected={filterMode === "popular"} icon={<span style={{ fontSize: 11 }}>★</span>} onClick={() => toggleFilter("popular")}>
+                Popular
+              </Chip>
             </div>
           ) : null}
         </header>
@@ -384,9 +405,7 @@ function Home() {
             {nearestFirst.map((s) => (
               <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
             ))}
-            {!loading && filtered.length === 0 ? (
-              <EmptyState icon="🔍" title="No spots match that search yet" description="Know one? Add it below." />
-            ) : null}
+            {!loading && filtered.length === 0 ? <EmptyState {...emptyStateProps} /> : null}
           </div>
         )}
 

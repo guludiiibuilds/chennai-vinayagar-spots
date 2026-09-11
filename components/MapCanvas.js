@@ -18,21 +18,17 @@ const CHENNAI_CENTER = [13.0067, 80.257];
 const PIN_ASSET = "/brand/locate.svg";
 const PIN_ASPECT = 1011 / 702;
 
-// Small corner badge on the pin itself, so "popular" idols stand out while
-// panning/zooming without opening each one — popular (admin-flagged) gets
-// a gold star at the top-right.
-function pinIcon(active, spot = {}) {
+// "Popular" is admin-flagged but deliberately invisible on the map itself
+// (and everywhere else spots render) — it only powers the "Popular" filter
+// chip on the home screen, so the pin stays plain.
+function pinIcon(active) {
   const width = active ? 34 : 28;
   const height = Math.round(width * PIN_ASPECT);
-  const badges = spot.is_popular
-    ? `<div style="position:absolute;top:-2px;right:-2px;width:15px;height:15px;border-radius:50%;background:var(--saffron-400);border:1.5px solid #fff;display:grid;place-items:center;font-size:9px;line-height:1;color:#fff">★</div>`
-    : "";
   return L.divIcon({
     className: "",
     html: `
       <div style="position:relative;animation:pinDrop .5s cubic-bezier(.2,.9,.3,1.2) both;filter:drop-shadow(0 2px 5px rgba(0,0,0,.3))">
         <img src="${PIN_ASSET}" width="${width}" height="${height}" style="display:block" />
-        ${badges}
       </div>`,
     iconSize: [width, height],
     iconAnchor: [width / 2, height],
@@ -107,7 +103,7 @@ function ClusteredMarkers({ spots, selectedId, onSelect }) {
     spots
       .filter((s) => s.lat != null && s.lng != null)
       .forEach((s) => {
-        const marker = L.marker([s.lat, s.lng], { icon: pinIcon(s.id === selectedId, s) });
+        const marker = L.marker([s.lat, s.lng], { icon: pinIcon(s.id === selectedId) });
         if (onSelect) marker.on("click", () => onSelect(s));
         cluster.addLayer(marker);
       });
