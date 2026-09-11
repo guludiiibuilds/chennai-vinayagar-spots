@@ -448,26 +448,26 @@ function Home() {
         )}
 
         {!selectedSpot ? (
-          <Button
-            variant="primary"
-            onClick={() => router.push("/submit/location")}
-            icon={
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
-                <path d="M12 5v14M5 12h14"></path>
-              </svg>
-            }
-            style={{
-              position: "absolute",
-              left: 14,
-              right: 14,
-              bottom: 16,
-              zIndex: 8,
-              height: 50,
-              boxShadow: "var(--shadow-floating)",
-            }}
-          >
-            Spot a Vinayagar
-          </Button>
+          <div style={{ position: "absolute", left: 0, right: 0, bottom: 16, zIndex: 8, display: "flex", justifyContent: "center" }}>
+            <Button
+              variant="primary"
+              onClick={() => router.push("/submit/location")}
+              icon={
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+              }
+              style={{
+                height: 50,
+                paddingLeft: 28,
+                paddingRight: 28,
+                whiteSpace: "nowrap",
+                boxShadow: "var(--shadow-floating)",
+              }}
+            >
+              Spot a Vinayagar
+            </Button>
+          </div>
         ) : null}
 
         <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />
