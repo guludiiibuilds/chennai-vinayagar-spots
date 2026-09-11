@@ -3,6 +3,7 @@
 import { Fragment } from "react";
 import { renderRichText } from "@/lib/richtext";
 import { googleMapsUrl } from "@/lib/geo";
+import { shareSpot } from "@/lib/share";
 import { CloseIcon, ShareIcon, NavigateIcon, PhotoIcon, PinPlaceIcon } from "./icons";
 import { Button } from "./Button";
 import { IconButton } from "./IconButton";
@@ -10,14 +11,7 @@ import { IconButton } from "./IconButton";
 export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto }) {
   if (!spot) return null;
 
-  const share = () => {
-    const url = typeof window !== "undefined" ? `${window.location.origin}/?spot=${spot.id}` : "";
-    if (navigator.share) {
-      navigator.share({ title: spot.name, url }).catch(() => {});
-    } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).catch(() => {});
-    }
-  };
+  const share = () => shareSpot(spot);
 
   return (
     <Fragment>
