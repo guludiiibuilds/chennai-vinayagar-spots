@@ -164,9 +164,18 @@
   /* Component-library aliases — the shared Button/Badge/Chip/TextField/etc.
      components (components/*.js) were authored against this naming scheme
      directly; every alias just repoints to a value already defined above,
-     so there is exactly one source of truth per color/size, never two. */
-  --color-brand-primary: var(--accent);
-  --color-brand-primary-hover: var(--accent-hover);
+     so there is exactly one source of truth per color/size, never two.
+
+     --color-brand-primary is deliberately NOT var(--accent) here, unlike
+     the other aliases below — it's what solid-fill buttons/icon-buttons
+     paint white text and icons on top of, and vermillion-500 (--accent)
+     only clears ~3.6:1 there, under WCAG AA's 4.5:1 for normal text.
+     vermillion-600 clears ~4.6:1. Everywhere else --accent is used
+     directly as icon-stroke or link-text color against light backgrounds,
+     which is a different, already-passing pairing — so only this
+     solid-fill alias needed to move, not the underlying --accent token. */
+  --color-brand-primary: var(--vermillion-600);
+  --color-brand-primary-hover: var(--vermillion-700);
   --color-brand-secondary: var(--navy-700);
   --color-brand-secondary-hover: var(--navy-800);
   --color-brand-accent: var(--saffron-400);

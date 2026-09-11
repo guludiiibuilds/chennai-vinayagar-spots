@@ -2,7 +2,11 @@
 
 import React from "react";
 
-const SIZES = { sm: 32, md: 40, lg: 48 };
+// md is the floor for anything meant to be tapped directly (44px, the
+// WCAG/Apple-HIG minimum touch target) — sm stays available for an icon
+// riding inside an already-large tappable row, never as the tap surface
+// itself.
+const SIZES = { sm: 32, md: 44, lg: 48 };
 const VARIANTS = {
   filled: { background: "var(--color-brand-primary)", color: "#fff" },
   soft: { background: "var(--cream-200)", color: "var(--navy-700)" },

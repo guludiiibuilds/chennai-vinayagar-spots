@@ -49,7 +49,6 @@ export default function MobileOnlyPrompt({ onClose }) {
       >
         <IconButton
           variant="soft"
-          size="sm"
           label="Close"
           onClick={onClose}
           icon={<CloseIcon />}

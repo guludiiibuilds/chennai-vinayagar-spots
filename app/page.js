@@ -338,7 +338,6 @@ function Home() {
               </div>
               <IconButton
                 variant="soft"
-                size="sm"
                 label="Close search"
                 onClick={() => {
                   setSearchActive(false);

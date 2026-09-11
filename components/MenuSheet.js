@@ -48,7 +48,6 @@ export default function MenuSheet({ open, onClose }) {
           </div>
           <IconButton
             variant="soft"
-            size="sm"
             label="Close menu"
             onClick={onClose}
             icon={<CloseIcon />}
