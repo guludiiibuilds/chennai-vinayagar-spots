@@ -366,7 +366,13 @@ function Home() {
           )}
 
           {!selectedSpot ? (
-            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, overflowX: "auto" }}>
+            // No overflowX here: it clips ViewModeDropdown's absolutely-
+            // positioned popup out of existence, since overflow-x on
+            // anything but "visible" forces overflow-y to clip too — the
+            // whole Map/List menu silently stopped rendering. This row's
+            // contents fit comfortably down to a 360px-wide phone without
+            // needing to scroll.
+            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <ViewModeDropdown mode={mode} onChange={setMode} />
               <span style={{ width: 1, height: 20, background: "var(--line-strong)", flex: "none" }} />
               <Chip selected={filterMode === "near"} icon={<PinPlaceIcon stroke="currentColor" />} onClick={() => toggleFilter("near")}>
