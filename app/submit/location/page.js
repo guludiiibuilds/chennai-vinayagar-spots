@@ -21,8 +21,8 @@ export default function ConfirmLocationPage() {
   }
 
   return (
-    <div className="app-shell">
-      <div className="app-frame" style={{ animation: "fadeUp .28s ease both" }}>
+    <div className="app-shell app-shell--full">
+      <div className="app-frame app-frame--full" style={{ animation: "fadeUp .28s ease both" }}>
         <LocationConfirmSheet onConfirm={confirm} onClose={() => router.push("/")} onSkip={() => router.push("/submit")} />
       </div>
     </div>

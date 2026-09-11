@@ -377,16 +377,19 @@ textarea {
   }
 }
 
-/* Home page only: once there's room for it, stop floating a phone-width
-   card on blank paper and let the app fill the screen edge to edge —
-   applies at both this breakpoint (still the single-column layout, just
-   full-bleed) and the wider one where it switches to sidebar+map. */
+/* Opt-in per page (via the --full modifier, or --home specifically for
+   the home page): once there's room for it, stop floating a phone-width
+   card on blank paper and let the app fill the screen edge to edge — the
+   submit flow and the home page's single-column layout both want this on
+   tablet, not just the wider sidebar+map layout. */
 @media (min-width: 768px) {
-  .app-shell--home {
+  .app-shell--home,
+  .app-shell--full {
     padding: 0;
     background: var(--paper);
   }
-  .app-frame--home {
+  .app-frame--home,
+  .app-frame--full {
     max-width: none;
     width: 100%;
     height: 100vh;

@@ -203,8 +203,8 @@ function SubmitForm() {
 
   if (done) {
     return (
-      <div className="app-shell">
-        <div className="app-frame" style={successFrameStyle}>
+      <div className="app-shell app-shell--full">
+        <div className="app-frame app-frame--full" style={successFrameStyle}>
           <div
             style={{
               width: 78,
@@ -235,8 +235,8 @@ function SubmitForm() {
   }
 
   return (
-    <div className="app-shell">
-      <div className="app-frame" style={{ animation: "fadeUp .28s ease both" }}>
+    <div className="app-shell app-shell--full">
+      <div className="app-frame app-frame--full" style={{ animation: "fadeUp .28s ease both" }}>
         {showLocationSheet ? (
           <LocationConfirmSheet
             initialCenter={loc}
