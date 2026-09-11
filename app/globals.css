@@ -453,9 +453,12 @@ textarea {
 }
 
 /* Reserved for photography only — the single drop-shadow in the system,
-   used when a spot photo needs to read as an object resting on a surface. */
+   used when a spot photo needs to read as an object resting on a surface.
+   Kept in the same soft, navy-tinted family as --shadow-card/--shadow-lg
+   rather than a stark black — that read as a heavy dark halo, especially
+   over photos with dark content of their own near the edge. */
 .photo-shadow {
-  box-shadow: 3px 5px 30px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 6px 18px rgba(20, 33, 61, 0.16);
 }
 
 /* OpenStreetMap's tile usage policy requires visible attribution — this
