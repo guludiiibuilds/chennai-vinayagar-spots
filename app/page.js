@@ -297,8 +297,8 @@ function Home() {
   }
 
   return (
-    <div className="app-shell">
-      <div className="app-frame">
+    <div className="app-shell app-shell--home">
+      <div className="app-frame app-frame--home">
         <header
           style={{
             position: "relative",

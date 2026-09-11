@@ -377,9 +377,10 @@ textarea {
   }
 }
 
-/* Home page only: once there's room for a real sidebar+map layout, stop
-   floating a phone-width card on blank paper and let the app fill the
-   screen edge to edge, like a desktop map app. */
+/* Home page only: once there's room for it, stop floating a phone-width
+   card on blank paper and let the app fill the screen edge to edge —
+   applies at both this breakpoint (still the single-column layout, just
+   full-bleed) and the wider one where it switches to sidebar+map. */
 @media (min-width: 768px) {
   .app-shell--home {
     padding: 0;
