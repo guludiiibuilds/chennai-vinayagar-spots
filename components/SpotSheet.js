@@ -105,6 +105,13 @@ export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto })
             {spot.name}
           </h2>
 
+          {spot.landmark ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 7, font: "400 13.5px var(--font-body)", color: "var(--ink-soft)" }}>
+              <PinPlaceIcon width={13} height={13} />
+              Near {spot.landmark}
+            </div>
+          ) : null}
+
           {spot.about ? (
             <div style={{ font: "400 15px/1.5 var(--font-body)", color: "var(--ink-soft)", letterSpacing: "-.2px", marginTop: 14 }}>
               {renderRichText(spot.about)}

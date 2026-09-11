@@ -45,6 +45,7 @@ function SubmitForm() {
   const [mapsLink, setMapsLink] = useState("");
   const [area, setArea] = useState(() => searchParams.get("area") || "");
   const arrivedWithArea = useRef(!!searchParams.get("area"));
+  const [landmark, setLandmark] = useState("");
   const [about, setAbout] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(null); // submitted spot name
@@ -158,6 +159,7 @@ function SubmitForm() {
       const spot = await submitSpot({
         name: name.trim(),
         area: area.trim(),
+        landmark: landmark.trim(),
         about: about.trim(),
         lat: derived?.lat ?? null,
         lng: derived?.lng ?? null,
@@ -374,6 +376,18 @@ function SubmitForm() {
             value={area}
             onChange={(e) => setArea(e.target.value)}
             placeholder="e.g. Mylapore"
+          />
+
+          <TextField
+            label={
+              <>
+                Landmark <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span>
+              </>
+            }
+            value={landmark}
+            onChange={(e) => setLandmark(e.target.value)}
+            placeholder="e.g. Tower Park bus stop"
+            helper="Helps others spot it on foot — shown on the idol's page."
           />
 
           <TextField
