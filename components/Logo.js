@@ -1,17 +1,23 @@
-const ASPECT = 2991 / 645;
-
-// Hand-lettered "Chennai Vinayagar" wordmark, exported from the design
-// system as a single vector (icon + type already fused into one mark, no
-// separate glyph to lay out) — rendered at a fixed aspect ratio from its
-// own height.
-export default function Logo({ size = 22 }) {
+// The SVG is icon-only (a mango-shaped Ganesha mark) — the "Chennai
+// Vinayagar" wordmark is set here in the app's own display font instead of
+// baked into the artwork, so it stays crisp at any size and shares type
+// with the rest of the UI rather than shipping a second typeface. `size`
+// is the icon's square size in px; the wordmark scales off it.
+export default function Logo({ size = 40, showWordmark = true }) {
   return (
-    <img
-      src="/brand/logo.svg"
-      alt="Chennai Vinayagar"
-      height={size}
-      width={Math.round(size * ASPECT)}
-      style={{ display: "block" }}
-    />
+    <div style={{ display: "inline-flex", alignItems: "center", gap: Math.round(size * 0.22) }}>
+      <img
+        src="/brand/logo.svg"
+        alt={showWordmark ? "" : "Chennai Vinayagar"}
+        width={size}
+        height={size}
+        style={{ display: "block", flex: "none" }}
+      />
+      {showWordmark ? (
+        <span style={{ font: `700 ${Math.round(size * 0.5)}px/1 var(--font-display)`, letterSpacing: "-0.01em", whiteSpace: "nowrap" }}>
+          <span style={{ color: "var(--ink)" }}>Chennai</span> <span style={{ color: "var(--accent)" }}>Vinayagar</span>
+        </span>
+      ) : null}
+    </div>
   );
 }
