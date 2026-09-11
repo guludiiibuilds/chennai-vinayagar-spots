@@ -84,6 +84,12 @@ function ClusteredMarkers({ spots, selectedId, onSelect }) {
       maxClusterRadius: 60,
       showCoverageOnHover: false,
       spiderfyOnMaxZoom: true,
+      // Keeps the "spread pins apart at max zoom" behavior for
+      // hard-to-separate overlapping spots, but drops the thin grey lines
+      // radiating out from the cluster center that plugin draws by
+      // default — they read as stray/broken lines next to this app's
+      // colorful illustrated pins.
+      spiderLegPolylineOptions: { weight: 0, opacity: 0 },
       iconCreateFunction: clusterIcon,
     });
     clusterRef.current = cluster;
