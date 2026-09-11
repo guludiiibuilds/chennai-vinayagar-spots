@@ -28,12 +28,12 @@ export default function DuplicateSpotWarning({ spot, onCancel, onContinue }) {
           </div>
         </div>
       </div>
-      <div style={{ display: "flex", gap: 9, marginTop: 18 }}>
-        <Button variant="outline" onClick={onCancel} style={{ flex: 1, height: 48 }}>
-          Cancel
-        </Button>
-        <Button variant="primary" onClick={onContinue} style={{ flex: 1, height: 48 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 18 }}>
+        <Button variant="primary" onClick={onContinue} style={{ height: 48 }}>
           It&apos;s different, continue
+        </Button>
+        <Button variant="outline" onClick={onCancel} style={{ height: 48 }}>
+          Cancel
         </Button>
       </div>
     </div>
