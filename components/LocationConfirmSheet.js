@@ -8,7 +8,7 @@ import { useToast } from "@/components/ToastProvider";
 import { CloseIcon, CheckIcon } from "@/components/icons";
 import { Button } from "@/components/Button";
 import { IconButton } from "@/components/IconButton";
-import DuplicateSpotSheet from "@/components/DuplicateSpotSheet";
+import DuplicateSpotWarning from "@/components/DuplicateSpotWarning";
 
 const LocationPicker = dynamic(() => import("@/components/LocationPicker"), {
   ssr: false,
@@ -153,45 +153,50 @@ export default function LocationConfirmSheet({
         }}
       >
         <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--line-strong)", margin: "0 auto 12px" }} />
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-          <div>
-            <div style={{ font: "600 19px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>{title}</div>
-            <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 3 }}>{subtitle}</div>
-          </div>
-          <IconButton variant="soft" size="sm" label="Close" onClick={onClose} icon={<CloseIcon />} style={{ borderRadius: 10 }} />
-        </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 11, marginTop: 14 }}>
-          <div style={{ flex: "none", width: 38, height: 38, borderRadius: "var(--radius-sm)", background: "var(--green-tint)", display: "grid", placeItems: "center" }}>
-            <CheckIcon width={18} height={18} strokeWidth={3} />
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ font: "600 14px var(--font-body)", color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {!center ? "Finding your location…" : areaLoading ? "Looking up area…" : area || "Location set"}
+        {duplicateWarning ? (
+          <DuplicateSpotWarning
+            spot={duplicateWarning.spot}
+            onCancel={() => setDuplicateWarning(null)}
+            onContinue={duplicateWarning.onContinue}
+          />
+        ) : (
+          <>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+              <div>
+                <div style={{ font: "600 19px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>{title}</div>
+                <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 3 }}>{subtitle}</div>
+              </div>
+              <IconButton variant="soft" size="sm" label="Close" onClick={onClose} icon={<CloseIcon />} style={{ borderRadius: 10 }} />
             </div>
-            <div style={{ font: "400 12px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>
-              {center ? `${center.lat.toFixed(4)}° N, ${center.lng.toFixed(4)}° E` : ""}
-            </div>
-          </div>
-        </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 14 }}>
-          <Button variant="primary" onClick={handleConfirmClick} disabled={!center} style={{ height: 50 }}>
-            {confirmLabel}
-          </Button>
-          {onSkip ? (
-            <Button variant="outline" onClick={onSkip} style={{ height: 46 }}>
-              Set Location Manually Instead
-            </Button>
-          ) : null}
-        </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 11, marginTop: 14 }}>
+              <div style={{ flex: "none", width: 38, height: 38, borderRadius: "var(--radius-sm)", background: "var(--green-tint)", display: "grid", placeItems: "center" }}>
+                <CheckIcon width={18} height={18} strokeWidth={3} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ font: "600 14px var(--font-body)", color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {!center ? "Finding your location…" : areaLoading ? "Looking up area…" : area || "Location set"}
+                </div>
+                <div style={{ font: "400 12px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 2 }}>
+                  {center ? `${center.lat.toFixed(4)}° N, ${center.lng.toFixed(4)}° E` : ""}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 14 }}>
+              <Button variant="primary" onClick={handleConfirmClick} disabled={!center} style={{ height: 50 }}>
+                {confirmLabel}
+              </Button>
+              {onSkip ? (
+                <Button variant="outline" onClick={onSkip} style={{ height: 46 }}>
+                  Set Location Manually Instead
+                </Button>
+              ) : null}
+            </div>
+          </>
+        )}
       </div>
-
-      <DuplicateSpotSheet
-        spot={duplicateWarning?.spot}
-        onCancel={() => setDuplicateWarning(null)}
-        onContinue={duplicateWarning?.onContinue}
-      />
     </div>
   );
 }
