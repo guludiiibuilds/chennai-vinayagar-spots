@@ -174,7 +174,9 @@ function Home() {
   // that case (no prompt shown, since the browser already has an answer)
   // and the action proceeds right away, exactly as if it had been granted
   // the whole time.
-  const requireLocation = (key, action) => {
+  // staysOnPage: false is for an action that navigates away on success
+  // (the FAB) — see the comment below on why that matters.
+  const requireLocation = (key, action, { staysOnPage = true } = {}) => {
     if (locationStatus === "granted") {
       action();
       return;
@@ -187,11 +189,18 @@ function Home() {
     // which can auto-dismiss well before a slow fetch actually resolves.
     setLocatingFor(key);
     beginLocating((status) => {
-      setLocatingFor(null);
       if (status === "granted") {
+        // Only clear the loading state here for an action that stays on
+        // this screen (e.g. "Near me"). router.push doesn't swap the
+        // route synchronously, so clearing it for a navigating action
+        // (the FAB) would flash the control back to its resting label for
+        // a frame before Confirm Location actually replaces this screen —
+        // exactly the "main screen flashes first" glitch this avoids.
+        if (staysOnPage) setLocatingFor(null);
         action();
         return;
       }
+      setLocatingFor(null);
       showToast(
         status === "blocked"
           ? "Location is blocked for this site — allow it in your browser settings, then try again."
@@ -522,7 +531,7 @@ function Home() {
           <div style={{ position: "absolute", left: 0, right: 0, bottom: 16, zIndex: 8, display: "flex", justifyContent: "center" }}>
             <Button
               variant="primary"
-              onClick={() => requireLocation("fab", goToSubmitLocation)}
+              onClick={() => requireLocation("fab", goToSubmitLocation, { staysOnPage: false })}
               loading={locatingFor === "fab"}
               icon={
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
