@@ -112,54 +112,75 @@ function Home() {
   // the one place that actually calls the geolocation API; a permission
   // error's code 1 (PERMISSION_DENIED) means the browser won't prompt
   // again on its own, so that's the only case marked "blocked" rather
-  // than left "unknown".
-  const beginLocating = () => {
+  // than left "unknown". onDone (optional) gets the resulting status —
+  // callers that need to react to the outcome can't just read
+  // `locationStatus` afterward, since the setState above hasn't applied
+  // yet in that same tick.
+  const beginLocating = (onDone) => {
     if (!navigator.geolocation) {
       setLocationStatus("blocked");
+      onDone?.("blocked");
       return;
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setLocationStatus("granted");
+        onDone?.("granted");
       },
-      (err) => setLocationStatus(err?.code === 1 ? "blocked" : "unknown"),
+      (err) => {
+        const next = err?.code === 1 ? "blocked" : "unknown";
+        setLocationStatus(next);
+        onDone?.(next);
+      },
       { enableHighAccuracy: true, timeout: 8000 }
     );
   };
 
-  // Gate for any action that needs a real position (the FAB, "Near me"):
-  // runs it immediately if location is already granted, otherwise asks for
-  // it (a real native prompt, unless the browser already recorded a
-  // denial) and tells the visitor why instead of performing the action.
+  // Gate for any action that needs a real position (the FAB, "Near me").
+  // Runs it immediately if location is already known to be granted;
+  // otherwise it always genuinely asks the browser first — never just
+  // shows a "not enabled" message off a stale guess — and only reports a
+  // problem if that request actually fails. This matters because the
+  // up-front Permissions API check below isn't reliable everywhere (Safari
+  // doesn't support querying the geolocation permission at all), so
+  // `locationStatus` can still read "unknown" here even when location is
+  // genuinely already granted; asking directly resolves near-instantly in
+  // that case (no prompt shown, since the browser already has an answer)
+  // and the action proceeds right away, exactly as if it had been granted
+  // the whole time.
   const requireLocation = (action) => {
     if (locationStatus === "granted") {
       action();
       return;
     }
-    showToast(
-      locationStatus === "blocked"
-        ? "Location is blocked for this site — allow it in your browser settings, then try again."
-        : "Turn on location to use this, then try again."
-    );
-    beginLocating();
+    beginLocating((status) => {
+      if (status === "granted") {
+        action();
+        return;
+      }
+      showToast(
+        status === "blocked"
+          ? "Location is blocked for this site — allow it in your browser settings, then try again."
+          : "Turn on location to use this, then try again."
+      );
+    });
   };
 
   useEffect(() => {
-    // Checks the browser's current permission state without prompting, so
-    // the page never surprises a first-time visitor with a location popup
-    // before they've done anything — only requireLocation above does that,
-    // on demand. If it's already granted, beginLocating resolves silently
-    // (no prompt, since the answer is already known); anything else is
-    // left "unknown" so the browser still gets a real chance to ask later.
+    // Best-effort silent check so a returning visitor sees distances/"Near
+    // me" work without needing to tap anything first — but it's not load-
+    // bearing for correctness (requireLocation above never trusts a stale
+    // "not granted" reading), only for this opportunistic early fetch. Not
+    // supported in every browser (notably Safari, for geolocation), in
+    // which case this just quietly does nothing and the first real
+    // location-requiring tap handles it instead.
     let cancelled = false;
     if (navigator.permissions?.query) {
       navigator.permissions
         .query({ name: "geolocation" })
         .then((result) => {
-          if (cancelled) return;
-          if (result.state === "granted") beginLocating();
-          else if (result.state === "denied") setLocationStatus("blocked");
+          if (!cancelled && result.state === "granted") beginLocating();
         })
         .catch(() => {});
     }
