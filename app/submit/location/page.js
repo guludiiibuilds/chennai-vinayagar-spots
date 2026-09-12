@@ -41,12 +41,7 @@ function ConfirmLocation() {
   return (
     <div className="app-shell app-shell--full">
       <div className="app-frame app-frame--full" style={{ animation: "fadeUp .28s ease both" }}>
-        <LocationConfirmSheet
-          initialCenter={initialCenter}
-          onConfirm={confirm}
-          onClose={() => router.push("/")}
-          onSkip={() => router.push("/submit")}
-        />
+        <LocationConfirmSheet initialCenter={initialCenter} onConfirm={confirm} onClose={() => router.push("/")} />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots, uploadSpotPhoto, submitSpot } from "@/lib/spots";
-import { DUPLICATE_RADIUS_KM, extractLatLngFromMapsLink, findNearestSpot, reverseGeocodeArea } from "@/lib/geo";
+import { DUPLICATE_RADIUS_KM, findNearestSpot, reverseGeocodeArea } from "@/lib/geo";
 import { compressImage } from "@/lib/image";
 import { useIsDesktop } from "@/lib/useIsDesktop";
 import { useToast } from "@/components/ToastProvider";
@@ -42,7 +42,6 @@ function SubmitForm() {
     return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
   });
   const [showLocationSheet, setShowLocationSheet] = useState(false);
-  const [mapsLink, setMapsLink] = useState("");
   const [area, setArea] = useState(() => searchParams.get("area") || "");
   const arrivedWithArea = useRef(!!searchParams.get("area"));
   const [about, setAbout] = useState("");
@@ -59,7 +58,7 @@ function SubmitForm() {
     return Number.isFinite(lat) && Number.isFinite(lng);
   });
 
-  const canSubmit = !!(photoFile && name.trim() && (loc || mapsLink.trim())) && !submitting;
+  const canSubmit = !!(photoFile && name.trim() && loc) && !submitting;
 
   // Best-effort: used only to warn about a likely duplicate, so a failed
   // fetch here just means that check gets silently skipped.
@@ -114,28 +113,6 @@ function SubmitForm() {
     };
   }, [loc]);
 
-  // Runs the same nearby-spot check the map picker runs at confirm-time,
-  // but for the pasted-link path — as soon as the link is parseable,
-  // rather than waiting until final submit.
-  const lookupAreaFromMapsLink = async () => {
-    const derived = extractLatLngFromMapsLink(mapsLink.trim());
-    if (derived && !duplicateConfirmed) {
-      const nearest = findNearestSpot(derived, existingSpots);
-      if (nearest && nearest.distKm <= DUPLICATE_RADIUS_KM) {
-        setDuplicateWarning({
-          spot: nearest,
-          onContinue: () => {
-            setDuplicateConfirmed(true);
-            setDuplicateWarning(null);
-          },
-        });
-      }
-    }
-    if (area.trim() || loc || !derived) return;
-    const foundName = await reverseGeocodeArea(derived.lat, derived.lng);
-    if (foundName) setArea((prev) => (prev.trim() ? prev : foundName));
-  };
-
   // LocationConfirmSheet already ran this same check before calling
   // onConfirm, so a location arriving here has already been vetted (either
   // clear, or explicitly confirmed as a different idol).
@@ -147,21 +124,16 @@ function SubmitForm() {
     setDuplicateConfirmed(true);
   };
 
-  const deriveLocation = () => loc || extractLatLngFromMapsLink(mapsLink.trim());
-
   const performSubmit = async () => {
     setSubmitting(true);
     try {
       const photoUrl = photoFile ? await uploadSpotPhoto(photoFile) : null;
-      const link = mapsLink.trim();
-      const derived = deriveLocation();
       const spot = await submitSpot({
         name: name.trim(),
         area: area.trim(),
         about: about.trim(),
-        lat: derived?.lat ?? null,
-        lng: derived?.lng ?? null,
-        mapsLink: link || null,
+        lat: loc?.lat ?? null,
+        lng: loc?.lng ?? null,
         photoUrl,
       });
       setDone(spot.name);
@@ -172,8 +144,7 @@ function SubmitForm() {
     }
   };
 
-  // Safety net for whichever earlier check never actually ran (e.g. a
-  // pasted link submitted without the field ever losing focus) — everything
+  // Safety net for whichever earlier check never actually ran — everything
   // else has already been vetted by the time this fires.
   const submit = () => {
     if (!canSubmit) {
@@ -181,7 +152,7 @@ function SubmitForm() {
       return;
     }
     if (!duplicateConfirmed) {
-      const nearest = findNearestSpot(deriveLocation(), existingSpots);
+      const nearest = findNearestSpot(loc, existingSpots);
       if (nearest && nearest.distKm <= DUPLICATE_RADIUS_KM) {
         setDuplicateWarning({
           spot: nearest,
@@ -338,35 +309,6 @@ function SubmitForm() {
                 {loc ? <CheckIcon width={18} height={18} strokeWidth={3} /> : null}
               </div>
             </button>
-            <div style={{ font: "400 11.5px/1.5 var(--font-body)", color: "var(--muted)", marginTop: 8, padding: "0 2px" }}>
-              Or paste a Google Maps link instead
-            </div>
-            {/* Plain input, not TextField: needs an onBlur handler (to look
-                up the area from the pasted link) that TextField's fixed
-                props don't expose. */}
-            <input
-              className="field-input"
-              value={mapsLink}
-              onChange={(e) => {
-                setMapsLink(e.target.value);
-                setDuplicateWarning(null);
-                setDuplicateConfirmed(false);
-              }}
-              onBlur={lookupAreaFromMapsLink}
-              placeholder="https://maps.app.goo.gl/…"
-              style={{
-                width: "100%",
-                height: 46,
-                marginTop: 7,
-                borderRadius: "var(--radius-md)",
-                border: "1px solid var(--line)",
-                background: "var(--card)",
-                padding: "0 13px",
-                font: "400 16px var(--font-body)",
-                color: "var(--ink)",
-                outline: 0,
-              }}
-            />
           </div>
 
           <TextField

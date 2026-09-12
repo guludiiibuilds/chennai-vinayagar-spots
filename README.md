@@ -33,7 +33,7 @@ Implements the design in `../Chennai Vinayagar Spots.dc.html` (see `../README.md
 
 - **Home** (`/`) — map/list toggle, search by name/area, live geolocation ("me" marker + distance), carousel of spots over the map, "Spot a Vinayaka" FAB.
 - **Spot detail** (bottom sheet on `/`) — photo, approved badge, description, submitter, mini map, share, "Open in Google Maps" (deep-links with the spot's coordinates).
-- **Submit** (`/submit`) — optional photo upload (to Supabase Storage), name, location via GPS or a pasted Google Maps link (best-effort coordinate extraction), Area auto-filled from that location via free OpenStreetMap reverse geocoding (editable), optional description with a bold/italic/bullet-list toolbar. New spots are inserted as `pending`.
+- **Submit** (`/submit`) — optional photo upload (to Supabase Storage), name, location via a draggable map pin (GPS-seeded, falls back to a Chennai-center starting point), Area auto-filled from that location via free OpenStreetMap reverse geocoding (editable), optional description with a bold/italic/bullet-list toolbar. New spots are inserted as `pending`.
 - **Menu sheet** — about text, how-it-works, share app, report an issue.
 - **Admin review queue** (`/admin`) — password-gated, not linked from anywhere in the public app or listed in `robots.txt`. Lists submitted spots by status (Pending/Approved/Rejected), lets a moderator fill in/correct area, then Approve, Reject, move back to Pending, or permanently Delete. See below for how auth works.
 

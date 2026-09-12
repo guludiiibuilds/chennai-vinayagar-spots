@@ -53,7 +53,6 @@ export default function LocationConfirmSheet({
   confirmLabel = "Confirm Location",
   onConfirm,
   onClose,
-  onSkip,
 }) {
   const showToast = useToast();
   const [center, setCenter] = useState(initialCenter);
@@ -201,11 +200,6 @@ export default function LocationConfirmSheet({
               <Button variant="primary" onClick={handleConfirmClick} disabled={!center} style={{ height: 50 }}>
                 {confirmLabel}
               </Button>
-              {onSkip ? (
-                <Button variant="outline" onClick={onSkip} style={{ height: 46 }}>
-                  Set Location Manually Instead
-                </Button>
-              ) : null}
             </div>
           </>
         )}
