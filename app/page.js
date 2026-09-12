@@ -133,7 +133,14 @@ function Home() {
         setLocationStatus(next);
         onDone?.(next);
       },
-      { enableHighAccuracy: true, timeout: 8000 }
+      // enableHighAccuracy forces a GPS-only fix — on Android especially, a
+      // cold GPS lock (first request in a session, or indoors) routinely
+      // takes longer than this timeout, so the first tap on the FAB/"Near
+      // me" would fail and only a retry (once the GPS chip had warmed up in
+      // the background) would succeed. A network-based fix resolves in a
+      // second or two and is plenty precise for a 2km "near me" radius or
+      // seeding the draggable map pin — nothing here needs GPS-grade accuracy.
+      { enableHighAccuracy: false, timeout: 10000 }
     );
   };
 

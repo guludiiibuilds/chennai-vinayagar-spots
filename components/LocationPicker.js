@@ -105,7 +105,10 @@ export default function LocationPicker({ initialCenter, initialZoom = 16, onCent
         mapRef.current?.flyTo([p.coords.latitude, p.coords.longitude], 17, { duration: 0.6 });
       },
       () => setLocating(false),
-      { enableHighAccuracy: true, timeout: 10000 }
+      // See the matching comment in app/page.js's beginLocating — a
+      // network-based fix avoids the risk of a slow/timed-out cold GPS
+      // lock, and the pin gets dragged into place manually anyway.
+      { enableHighAccuracy: false, timeout: 10000 }
     );
   };
 

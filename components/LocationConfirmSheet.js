@@ -26,7 +26,11 @@ function getCurrentPosition() {
     navigator.geolocation.getCurrentPosition(
       (p) => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }),
       (err) => reject(err),
-      { enableHighAccuracy: true, timeout: 8000 }
+      // See the matching comment in app/page.js's beginLocating — GPS-only
+      // fixes (enableHighAccuracy: true) can take longer than this timeout
+      // on a cold lock, and the pin here gets manually dragged into place
+      // anyway, so a faster network-based fix is the better tradeoff.
+      { enableHighAccuracy: false, timeout: 10000 }
     );
   });
 }
