@@ -15,6 +15,7 @@ import { Button } from "@/components/Button";
 import { IconButton } from "@/components/IconButton";
 import { SearchBar } from "@/components/SearchBar";
 import { EmptyState } from "@/components/EmptyState";
+import { useToast } from "@/components/ToastProvider";
 import { ViewModeDropdown } from "@/components/ViewModeDropdown";
 import { Chip } from "@/components/Chip";
 import { PinPlaceIcon } from "@/components/icons";
@@ -53,7 +54,13 @@ function Home() {
   const [mode, setMode] = useState("map");
   const [menuOpen, setMenuOpen] = useState(false);
   const [userPos, setUserPos] = useState(null);
-  const [locationStatus, setLocationStatus] = useState("checking"); // "checking" | "granted" | "denied"
+  // "unknown" — not yet granted, but the browser hasn't been asked (or its
+  // answer isn't known yet) so an action that needs location can still
+  // trigger a real permission prompt. "blocked" — the browser has already
+  // recorded a denial for this site, so requesting again silently no-ops;
+  // only the user changing their browser's site settings fixes that.
+  const [locationStatus, setLocationStatus] = useState("unknown"); // "unknown" | "granted" | "blocked"
+  const showToast = useToast();
   const [selectedId, setSelectedId] = useState(null);
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -100,15 +107,15 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Distance-based features (nearest-first sorting, per-spot distance) are
-  // core to browsing here, not an optional enhancement, so location isn't a
-  // silent best-effort request anymore — the whole browse view is gated on
-  // it (see the locationStatus !== "granted" branch below). beginLocating
-  // only ever sets state from the async geolocation callbacks, so the mount
-  // effect below can call it without tripping over synchronous setState.
+  // Browsing (map/list) never blocks on location — distance labels and
+  // "Near me" just stay unavailable until it's granted. beginLocating is
+  // the one place that actually calls the geolocation API; a permission
+  // error's code 1 (PERMISSION_DENIED) means the browser won't prompt
+  // again on its own, so that's the only case marked "blocked" rather
+  // than left "unknown".
   const beginLocating = () => {
     if (!navigator.geolocation) {
-      setLocationStatus("denied");
+      setLocationStatus("blocked");
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -116,27 +123,49 @@ function Home() {
         setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setLocationStatus("granted");
       },
-      () => setLocationStatus("denied"),
+      (err) => setLocationStatus(err?.code === 1 ? "blocked" : "unknown"),
       { enableHighAccuracy: true, timeout: 8000 }
     );
   };
 
-  // Retry entry point for the "Enable Location" button: resets the status
-  // to "checking" first, since by the time it's clicked the state is
-  // "denied", not the mount-time default.
-  const requestLocation = () => {
-    setLocationStatus("checking");
+  // Gate for any action that needs a real position (the FAB, "Near me"):
+  // runs it immediately if location is already granted, otherwise asks for
+  // it (a real native prompt, unless the browser already recorded a
+  // denial) and tells the visitor why instead of performing the action.
+  const requireLocation = (action) => {
+    if (locationStatus === "granted") {
+      action();
+      return;
+    }
+    showToast(
+      locationStatus === "blocked"
+        ? "Location is blocked for this site — allow it in your browser settings, then try again."
+        : "Turn on location to use this, then try again."
+    );
     beginLocating();
   };
 
   useEffect(() => {
-    // beginLocating only sets state synchronously in its "no geolocation
-    // API" bailout branch — everything else resolves through the async
-    // getCurrentPosition callbacks, which is the pattern this rule wants;
-    // it just can't see the branch is a rare environment check, not a
-    // render-cascade risk.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    beginLocating();
+    // Checks the browser's current permission state without prompting, so
+    // the page never surprises a first-time visitor with a location popup
+    // before they've done anything — only requireLocation above does that,
+    // on demand. If it's already granted, beginLocating resolves silently
+    // (no prompt, since the answer is already known); anything else is
+    // left "unknown" so the browser still gets a real chance to ask later.
+    let cancelled = false;
+    if (navigator.permissions?.query) {
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then((result) => {
+          if (cancelled) return;
+          if (result.state === "granted") beginLocating();
+          else if (result.state === "denied") setLocationStatus("blocked");
+        })
+        .catch(() => {});
+    }
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const spotsWithDist = useMemo(
@@ -177,43 +206,6 @@ function Home() {
     setSelectedId(null);
     setPhotoViewerOpen(false);
   };
-
-  if (locationStatus !== "granted") {
-    return (
-      <div className="app-shell">
-        <div className="app-frame" style={{ alignItems: "center", justifyContent: "center", padding: 32, textAlign: "center" }}>
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: "50%",
-              background: "var(--accent-tint)",
-              display: "grid",
-              placeItems: "center",
-            }}
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-          </div>
-          <h1 style={{ font: "600 20px/1.3 var(--font-display)", color: "var(--ink)", marginTop: 18 }}>
-            Turn on location to continue
-          </h1>
-          <p style={{ font: "400 14px/1.55 var(--font-body)", color: "var(--ink-soft)", marginTop: 8, maxWidth: 300 }}>
-            Distances, nearby idols, and the map all need to know roughly where you are. Nothing is shared — it stays on your
-            device.
-          </p>
-          <Button variant="primary" onClick={requestLocation} loading={locationStatus === "checking"} style={{ marginTop: 22, height: 48, width: "100%", maxWidth: 260 }}>
-            {locationStatus === "checking" ? "Checking…" : "Enable Location"}
-          </Button>
-          <div style={{ font: "400 12px/1.5 var(--font-body)", color: "var(--muted)", marginTop: 14, maxWidth: 280 }}>
-            If nothing happens, allow location access for this site in your browser&apos;s settings, then try again.
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (isDesktop) {
     return (
@@ -374,7 +366,7 @@ function Home() {
             <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <ViewModeDropdown mode={mode} onChange={setMode} />
               <span style={{ width: 1, height: 20, background: "var(--line-strong)", flex: "none" }} />
-              <Chip selected={filterMode === "near"} icon={<PinPlaceIcon stroke="currentColor" />} onClick={() => toggleFilter("near")}>
+              <Chip selected={filterMode === "near"} icon={<PinPlaceIcon stroke="currentColor" />} onClick={() => requireLocation(() => toggleFilter("near"))}>
                 Near me
               </Chip>
               <Chip selected={filterMode === "popular"} icon={<span style={{ fontSize: 11 }}>★</span>} onClick={() => toggleFilter("popular")}>
@@ -452,7 +444,7 @@ function Home() {
           <div style={{ position: "absolute", left: 0, right: 0, bottom: 16, zIndex: 8, display: "flex", justifyContent: "center" }}>
             <Button
               variant="primary"
-              onClick={() => router.push("/submit/location")}
+              onClick={() => requireLocation(() => router.push("/submit/location"))}
               icon={
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
                   <path d="M12 5v14M5 12h14"></path>

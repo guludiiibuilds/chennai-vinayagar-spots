@@ -33,27 +33,30 @@ export default function ToastProvider({ children }) {
     <ToastContext.Provider value={showToast}>
       {children}
       {message ? (
-        <div
-          role="status"
-          style={{
-            position: "fixed",
-            left: "50%",
-            transform: "translateX(-50%)",
-            bottom: 24,
-            zIndex: 60,
-            width: "calc(100% - 32px)",
-            maxWidth: 420,
-            padding: "13px 15px",
-            borderRadius: 14,
-            background: "var(--ink)",
-            color: "#fff6e6",
-            font: "500 12.5px/1.4 var(--font-body)",
-            boxShadow: "0 12px 30px -10px rgba(0,0,0,.6)",
-            animation: "fadeUp .25s ease both",
-            textAlign: "center",
-          }}
-        >
-          {message}
+        // A full-width flex wrapper centers this instead of the more usual
+        // left:50%+translateX(-50%) trick — the fadeUp animation below
+        // (shared with every other sheet/panel in the app) animates the
+        // `transform` property itself, so an inline translateX would get
+        // silently overwritten by the animation's own end-state transform
+        // the moment it finishes, leaving the toast pinned to the left
+        // half of the screen instead of centered.
+        <div style={{ position: "fixed", left: 0, right: 0, bottom: 24, zIndex: 60, display: "flex", justifyContent: "center", padding: "0 16px" }}>
+          <div
+            role="status"
+            style={{
+              maxWidth: 420,
+              padding: "13px 15px",
+              borderRadius: 14,
+              background: "var(--ink)",
+              color: "#fff6e6",
+              font: "500 12.5px/1.4 var(--font-body)",
+              boxShadow: "0 12px 30px -10px rgba(0,0,0,.6)",
+              animation: "fadeUp .25s ease both",
+              textAlign: "center",
+            }}
+          >
+            {message}
+          </div>
         </div>
       ) : null}
     </ToastContext.Provider>
