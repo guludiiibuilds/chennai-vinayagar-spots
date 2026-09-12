@@ -253,6 +253,7 @@ export default function MapCanvas({
   initialZoom = 12,
   onSearchClick,
   onMapClick,
+  showControls = true,
 }) {
   const mapRef = useRef(null);
   const initialCenter = spots[0]?.lat != null ? [spots[0].lat, spots[0].lng] : CHENNAI_CENTER;
@@ -274,7 +275,7 @@ export default function MapCanvas({
       <AutoInvalidateSize />
       <ClusteredMarkers spots={spots} selectedId={selectedId} onSelect={onSelect} />
       {userPos ? <Marker position={[userPos.lat, userPos.lng]} icon={meIcon} interactive={false} /> : null}
-      <MapControls userPos={userPos} onSearchClick={onSearchClick} />
+      {showControls ? <MapControls userPos={userPos} onSearchClick={onSearchClick} /> : null}
       {focusSpot ? <FlyToSelection target={focusSpot} zoom={focusZoom} verticalFraction={focusVerticalFraction} /> : null}
       {onMapClick ? <MapClickHandler onMapClick={onMapClick} /> : null}
     </MapContainer>

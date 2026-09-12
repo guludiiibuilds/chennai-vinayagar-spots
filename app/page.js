@@ -418,6 +418,7 @@ function Home() {
               focusVerticalFraction={selectedSpot ? 0.2 : undefined}
               onSearchClick={selectedSpot ? undefined : () => setSearchActive(true)}
               onMapClick={selectedSpot ? closeSheet : undefined}
+              showControls={!selectedSpot}
             />
             {/* The map has no rows of its own to show a "no matches" message
                 in, unlike list mode — without this, a search or filter with
