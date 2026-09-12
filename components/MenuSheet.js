@@ -95,7 +95,7 @@ export default function MenuSheet({ open, onClose }) {
         </div>
 
         <div style={{ marginTop: 18, font: "400 12px/1.6 var(--font-body)", color: "var(--muted)", textAlign: "center" }}>
-          Built by <a href="https://www.linkedin.com/in/gurunivashr/">Guru Nivash</a>, for the Chennai community&nbsp;❤️
+          Built by <a href="https://x.com/gurunivashr?s=11">Guru Nivash</a>, for the Chennai community&nbsp;❤️
         </div>
       </div>
     </div>

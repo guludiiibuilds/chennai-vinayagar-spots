@@ -1,7 +1,7 @@
 import { requireAdmin } from "@/lib/adminAuth";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
-const EDITABLE_FIELDS = ["name", "area", "landmark", "about", "maps_link", "is_popular"];
+const EDITABLE_FIELDS = ["name", "area", "about", "maps_link", "is_popular"];
 const ACTIONS = {
   approve: { status: "approved", stampApprovedAt: true },
   reject: { status: "rejected" },

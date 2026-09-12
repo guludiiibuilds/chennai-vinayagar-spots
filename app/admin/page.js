@@ -118,7 +118,6 @@ export default function AdminPage() {
       body: JSON.stringify({
         name: spot.name,
         area: spot.area,
-        landmark: spot.landmark,
         about: spot.about,
         maps_link: spot.maps_link,
         is_popular: spot.is_popular,
@@ -314,10 +313,7 @@ function SpotReviewCard({ spot, onChange, onSave, onAction, onDelete }) {
           <Field label="Name" value={spot.name} onChange={(v) => onChange({ name: v })} flex={2} />
           <Field label="Area" value={spot.area} onChange={(v) => onChange({ area: v })} flex={1} />
         </div>
-        <div style={{ display: "flex", gap: 10 }}>
-          <Field label="Landmark" value={spot.landmark} onChange={(v) => onChange({ landmark: v })} flex={1} />
-          <Field label="Maps link" value={spot.maps_link || ""} onChange={(v) => onChange({ maps_link: v })} flex={1} />
-        </div>
+        <Field label="Maps link" value={spot.maps_link || ""} onChange={(v) => onChange({ maps_link: v })} />
         <TextField label="About" value={spot.about || ""} onChange={(e) => onChange({ about: e.target.value })} multiline />
 
         <div>
