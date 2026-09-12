@@ -32,7 +32,10 @@ function getCurrentPosition() {
       // anyway, so a faster network-based fix is the better tradeoff.
       // maximumAge accepts a position the OS already has cached (very
       // likely on Android) instead of forcing a brand new fix every call.
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 }
+      // timeout is generous because it counts time spent on the browser's
+      // own native permission dialog too — see the fuller comment in
+      // app/page.js's beginLocating.
+      { enableHighAccuracy: false, timeout: 30000, maximumAge: 5 * 60 * 1000 }
     );
   });
 }

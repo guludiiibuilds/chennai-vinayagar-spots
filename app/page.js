@@ -139,19 +139,26 @@ function Home() {
       },
       // enableHighAccuracy forces a GPS-only fix — on Android especially, a
       // cold GPS lock (first request in a session, or indoors) routinely
-      // takes longer than this timeout, so the first tap on the FAB/"Near
-      // me" would fail and only a retry (once the GPS chip had warmed up in
-      // the background) would succeed. A network-based fix resolves in a
-      // second or two and is plenty precise for a 2km "near me" radius or
-      // seeding the draggable map pin — nothing here needs GPS-grade accuracy.
-      // maximumAge matters just as much: it defaults to 0, which forces a
-      // brand new fix every single call even though the OS (Android's fused
-      // location provider in particular) very likely already has one cached
-      // from minutes ago — accepting that cached fix is what actually makes
-      // this resolve near-instantly instead of running the full request
-      // (and, on a device with no fresh-enough fix at all, the full timeout)
-      // every time.
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 }
+      // takes longer than a short timeout, so the first tap on the FAB/
+      // "Near me" would fail and only a retry (once the GPS chip had warmed
+      // up in the background) would succeed. A network-based fix resolves
+      // in a second or two and is plenty precise for a 2km "near me" radius
+      // or seeding the draggable map pin — nothing here needs GPS-grade
+      // accuracy. maximumAge matters just as much: it defaults to 0, which
+      // forces a brand new fix every single call even though the OS
+      // (Android's fused location provider in particular) very likely
+      // already has one cached from minutes ago.
+      //
+      // timeout is deliberately generous (not the usual few seconds): the
+      // clock starts the moment this fires, and on a first-ever request
+      // that includes however long the visitor takes to read and respond
+      // to the browser's own native permission dialog — which is easily
+      // 10+ seconds for a first-time "Allow only this time / While using
+      // the app / Don't allow" prompt. A short timeout was firing (and
+      // showing this as a failure) *while they were still deciding*, so
+      // tapping Allow moments later did nothing visible, making it look
+      // like the app was broken or ignoring a grant that had just happened.
+      { enableHighAccuracy: false, timeout: 30000, maximumAge: 5 * 60 * 1000 }
     );
   };
 
@@ -187,7 +194,12 @@ function Home() {
       showToast(
         status === "blocked"
           ? "Location is blocked for this site — allow it in your browser settings, then try again."
-          : "Turn on location to use this, then try again."
+          // "unknown" here isn't necessarily "off" — it's whatever
+          // getCurrentPosition's error callback reported that isn't an
+          // outright permission denial, which includes simply timing out.
+          // Claiming it's "not enabled" would be actively wrong if the
+          // real cause was a slow fix, so this stays neutral instead.
+          : "Couldn't get your location — please try again."
       );
     });
   };
