@@ -475,9 +475,12 @@ textarea {
    used when a spot photo needs to read as an object resting on a surface.
    Kept in the same soft, navy-tinted family as --shadow-card/--shadow-lg
    rather than a stark black — that read as a heavy dark halo, especially
-   over photos with dark content of their own near the edge. */
+   over photos with dark content of their own near the edge. Kept tight
+   (small offset/blur, low opacity) since the photo sits only 14px above
+   the spot name on SpotSheet/SpotPanel — a bigger spread bled into that
+   text instead of staying a subtle lift under the photo. */
 .photo-shadow {
-  box-shadow: 0 6px 18px rgba(20, 33, 61, 0.16);
+  box-shadow: 0 2px 6px rgba(20, 33, 61, 0.12);
 }
 
 /* OpenStreetMap's tile usage policy requires visible attribution — this
