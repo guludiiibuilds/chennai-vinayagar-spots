@@ -140,7 +140,14 @@ function Home() {
       // the background) would succeed. A network-based fix resolves in a
       // second or two and is plenty precise for a 2km "near me" radius or
       // seeding the draggable map pin — nothing here needs GPS-grade accuracy.
-      { enableHighAccuracy: false, timeout: 10000 }
+      // maximumAge matters just as much: it defaults to 0, which forces a
+      // brand new fix every single call even though the OS (Android's fused
+      // location provider in particular) very likely already has one cached
+      // from minutes ago — accepting that cached fix is what actually makes
+      // this resolve near-instantly instead of running the full request
+      // (and, on a device with no fresh-enough fix at all, the full timeout)
+      // every time.
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 }
     );
   };
 

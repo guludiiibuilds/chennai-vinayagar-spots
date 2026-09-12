@@ -30,7 +30,9 @@ function getCurrentPosition() {
       // fixes (enableHighAccuracy: true) can take longer than this timeout
       // on a cold lock, and the pin here gets manually dragged into place
       // anyway, so a faster network-based fix is the better tradeoff.
-      { enableHighAccuracy: false, timeout: 10000 }
+      // maximumAge accepts a position the OS already has cached (very
+      // likely on Android) instead of forcing a brand new fix every call.
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 }
     );
   });
 }

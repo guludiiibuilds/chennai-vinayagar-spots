@@ -108,7 +108,9 @@ export default function LocationPicker({ initialCenter, initialZoom = 16, onCent
       // See the matching comment in app/page.js's beginLocating — a
       // network-based fix avoids the risk of a slow/timed-out cold GPS
       // lock, and the pin gets dragged into place manually anyway.
-      { enableHighAccuracy: false, timeout: 10000 }
+      // maximumAge accepts a position the OS already has cached instead of
+      // forcing a brand new fix every tap.
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60 * 1000 }
     );
   };
 
