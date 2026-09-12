@@ -170,12 +170,18 @@
      the other aliases below — it's what solid-fill buttons/icon-buttons
      paint white text and icons on top of, and vermillion-500 (--accent)
      only clears ~3.6:1 there, under WCAG AA's 4.5:1 for normal text.
-     vermillion-600 clears ~4.6:1. Everywhere else --accent is used
-     directly as icon-stroke or link-text color against light backgrounds,
-     which is a different, already-passing pairing — so only this
-     solid-fill alias needed to move, not the underlying --accent token. */
-  --color-brand-primary: var(--vermillion-600);
-  --color-brand-primary-hover: var(--vermillion-700);
+     Everywhere else --accent is used directly as icon-stroke or link-text
+     color against light backgrounds, a different, already-passing pairing
+     — so only this solid-fill alias needed to move, not --accent itself.
+
+     #dd4d23 is a deliberate midpoint between vermillion-500 (#e8562a) and
+     -600 (#d1441c): full -600 clears AA at ~4.6:1 but reads noticeably
+     duller/flatter as a CTA fill; -500 is the vibrant on-brand shade but
+     only ~3.6:1. This lands at ~4.1:1 — still short of the textbook 4.5:1
+     floor, but a real, deliberate step up from -500, chosen over the pure
+     AA-safe option for how it actually reads as a primary action color. */
+  --color-brand-primary: #dd4d23;
+  --color-brand-primary-hover: var(--vermillion-600);
   --color-brand-secondary: var(--navy-700);
   --color-brand-secondary-hover: var(--navy-800);
   --color-brand-accent: var(--saffron-400);
@@ -189,7 +195,7 @@
   --color-text-secondary: var(--ink-soft);
   --color-text-muted: var(--muted);
 
-  --text-button-size: 15px;
+  --text-button-size: 16px;
   --text-button-weight: 700;
   --text-button-ls: normal;
   --text-badge-size: 11px;
