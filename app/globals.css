@@ -480,24 +480,19 @@ textarea {
   box-shadow: 0 6px 18px rgba(20, 33, 61, 0.16);
 }
 
-/* OpenStreetMap's tile usage policy requires visible attribution, but
-   nothing says it has to run the full width of the screen — this rotates
-   Leaflet's default control into a slim vertical tab tucked in the bottom
-   corner instead (the "Leaflet" library credit itself is dropped in code,
-   via attributionControl.setPrefix(false) in MapCanvas.js/LocationPicker.js).
-   writing-mode stacks the glyphs into a column; the 180deg flip makes that
-   column read bottom-to-top instead of top-to-bottom, which is the more
-   natural direction for a tab hugging the bottom-right corner. */
+/* OpenStreetMap's tile usage policy requires visible attribution — this
+   keeps Leaflet's default control as minimal as that allows: no background
+   pill, tiny type, and muted text/links so it reads as faint fine print
+   rather than app chrome (the "Leaflet" library credit itself is dropped
+   in code, via attributionControl.setPrefix(false) in
+   MapCanvas.js/LocationPicker.js). */
 .leaflet-control-attribution {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
   font-size: 8px;
-  line-height: 1.5;
-  padding: 5px 3px;
-  max-height: 140px;
-  border-radius: var(--radius-sm) 0 0 0;
-  background: rgba(255, 255, 255, 0.55);
+  line-height: 1.4;
+  padding: 1px 4px;
+  background: transparent;
   color: var(--muted);
+  opacity: 0.7;
 }
 .leaflet-control-attribution a {
   color: var(--muted);
