@@ -61,7 +61,7 @@ export function Button({ variant = "primary", size = "md", icon, iconRight, disa
   );
 }
 
-function Spinner() {
+export function Spinner() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" style={{ animation: "cv-spin 0.8s linear infinite" }}>
       <style>{"@keyframes cv-spin{to{transform:rotate(360deg)}}"}</style>

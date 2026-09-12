@@ -60,6 +60,10 @@ function Home() {
   // recorded a denial for this site, so requesting again silently no-ops;
   // only the user changing their browser's site settings fixes that.
   const [locationStatus, setLocationStatus] = useState("unknown"); // "unknown" | "granted" | "blocked"
+  // Which requireLocation-gated control is currently waiting on a position
+  // — not just a plain boolean, so tapping the FAB doesn't also spin the
+  // unrelated "Near me" chip (and vice versa).
+  const [locatingFor, setLocatingFor] = useState(null); // null | "fab" | "near"
   const showToast = useToast();
   const [selectedId, setSelectedId] = useState(null);
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
@@ -163,12 +167,19 @@ function Home() {
   // that case (no prompt shown, since the browser already has an answer)
   // and the action proceeds right away, exactly as if it had been granted
   // the whole time.
-  const requireLocation = (action) => {
+  const requireLocation = (key, action) => {
     if (locationStatus === "granted") {
       action();
       return;
     }
+    // Visible feedback for the gap while beginLocating resolves — a tap
+    // that silently does nothing for a second or two (or longer, on a
+    // device with no cached fix — see beginLocating's maximumAge comment)
+    // reads as broken, not "working on it".
+    setLocatingFor(key);
+    showToast("Fetching your location…");
     beginLocating((status) => {
+      setLocatingFor(null);
       if (status === "granted") {
         action();
         return;
@@ -411,7 +422,12 @@ function Home() {
             <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <ViewModeDropdown mode={mode} onChange={setMode} />
               <span style={{ width: 1, height: 20, background: "var(--line-strong)", flex: "none" }} />
-              <Chip selected={filterMode === "near"} icon={<PinPlaceIcon stroke="currentColor" />} onClick={() => requireLocation(() => toggleFilter("near"))}>
+              <Chip
+                selected={filterMode === "near"}
+                icon={<PinPlaceIcon stroke="currentColor" />}
+                loading={locatingFor === "near"}
+                onClick={() => requireLocation("near", () => toggleFilter("near"))}
+              >
                 Near me
               </Chip>
               <Chip selected={filterMode === "popular"} icon={<span style={{ fontSize: 11 }}>★</span>} onClick={() => toggleFilter("popular")}>
@@ -489,7 +505,8 @@ function Home() {
           <div style={{ position: "absolute", left: 0, right: 0, bottom: 16, zIndex: 8, display: "flex", justifyContent: "center" }}>
             <Button
               variant="primary"
-              onClick={() => requireLocation(goToSubmitLocation)}
+              onClick={() => requireLocation("fab", goToSubmitLocation)}
+              loading={locatingFor === "fab"}
               icon={
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
                   <path d="M12 5v14M5 12h14"></path>
