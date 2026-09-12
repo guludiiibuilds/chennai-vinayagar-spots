@@ -167,7 +167,7 @@ export default function LocationConfirmSheet({
                 <div style={{ font: "600 19px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>{title}</div>
                 <div style={{ font: "400 12.5px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 3 }}>{subtitle}</div>
               </div>
-              <IconButton variant="soft" label="Close" onClick={onClose} icon={<CloseIcon />} style={{ borderRadius: 10 }} />
+              <IconButton variant="soft" label="Close" onClick={onClose} icon={<CloseIcon />} style={{ width: 32, height: 32, borderRadius: 10 }} />
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 11, marginTop: 14 }}>
