@@ -182,9 +182,10 @@ function Home() {
     // Visible feedback for the gap while beginLocating resolves — a tap
     // that silently does nothing for a second or two (or longer, on a
     // device with no cached fix — see beginLocating's maximumAge comment)
-    // reads as broken, not "working on it".
+    // reads as broken, not "working on it". The tapped control's own text
+    // swaps to say so directly (see its call site) rather than a toast,
+    // which can auto-dismiss well before a slow fetch actually resolves.
     setLocatingFor(key);
-    showToast("Fetching your location…");
     beginLocating((status) => {
       setLocatingFor(null);
       if (status === "granted") {
@@ -440,7 +441,11 @@ function Home() {
                 loading={locatingFor === "near"}
                 onClick={() => requireLocation("near", () => toggleFilter("near"))}
               >
-                Near me
+                {/* Shortened from the FAB's full "Fetching your location…" —
+                    this chip sits in a row with two others that already fit
+                    a 360px-wide phone without wrapping, and the longer
+                    phrase doesn't. */}
+                {locatingFor === "near" ? "Fetching…" : "Near me"}
               </Chip>
               <Chip selected={filterMode === "popular"} icon={<span style={{ fontSize: 11 }}>★</span>} onClick={() => toggleFilter("popular")}>
                 Popular
@@ -532,7 +537,7 @@ function Home() {
                 boxShadow: "var(--shadow-floating)",
               }}
             >
-              Spot a Vinayagar
+              {locatingFor === "fab" ? "Fetching your location…" : "Spot a Vinayagar"}
             </Button>
           </div>
         ) : null}
