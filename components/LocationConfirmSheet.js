@@ -50,7 +50,11 @@ export default function LocationConfirmSheet({
   const [center, setCenter] = useState(initialCenter);
   const [prevCenter, setPrevCenter] = useState(initialCenter);
   const [area, setArea] = useState(initialArea);
-  const [areaLoading, setAreaLoading] = useState(false);
+  // Starts true when a center arrives without its area already known (e.g.
+  // Home linking here with a position it already had) — the area-lookup
+  // effect below fires right away in that case, so this avoids a flash of
+  // "Location set" before it resolves.
+  const [areaLoading, setAreaLoading] = useState(!!initialCenter && !initialArea);
   const arrivedWithArea = useRef(!!initialArea);
   const [existingSpots, setExistingSpots] = useState([]);
   const [duplicateWarning, setDuplicateWarning] = useState(null); // { spot, onContinue }

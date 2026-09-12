@@ -198,6 +198,16 @@ function Home() {
 
   const selectedSpot = selectedId ? spotsWithDist.find((s) => s.id === selectedId) : null;
 
+  // Carries the position Home already has (requireLocation only runs this
+  // once locationStatus is "granted", so userPos is set) into the confirm-
+  // location screen as a starting point — without it, that screen has no
+  // idea a position was already found here and requests a brand new GPS
+  // fix from scratch, which is the slow part users were seeing as a delay.
+  const goToSubmitLocation = () => {
+    const params = userPos ? `?lat=${userPos.lat}&lng=${userPos.lng}` : "";
+    router.push(`/submit/location${params}`);
+  };
+
   const openSpot = (spot) => {
     setMode("map");
     setSelectedId(spot.id);
@@ -444,7 +454,7 @@ function Home() {
           <div style={{ position: "absolute", left: 0, right: 0, bottom: 16, zIndex: 8, display: "flex", justifyContent: "center" }}>
             <Button
               variant="primary"
-              onClick={() => requireLocation(() => router.push("/submit/location"))}
+              onClick={() => requireLocation(goToSubmitLocation)}
               icon={
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round">
                   <path d="M12 5v14M5 12h14"></path>
