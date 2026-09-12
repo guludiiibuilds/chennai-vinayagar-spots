@@ -69,8 +69,7 @@ export default function SpotPanel({ spot, distanceLabel, onBack, onOpenPhoto }) 
         </h2>
 
         {spot.landmark ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6, font: "400 13px var(--font-body)", color: "var(--ink-soft)" }}>
-            <PinPlaceIcon width={12} height={12} />
+          <div style={{ marginTop: 6, font: "400 13px var(--font-body)", color: "var(--ink-soft)" }}>
             Near {spot.landmark}
           </div>
         ) : null}
