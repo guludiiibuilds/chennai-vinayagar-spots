@@ -21,6 +21,7 @@ import { Chip } from "@/components/Chip";
 import { PinPlaceIcon } from "@/components/icons";
 import MobileOnlyPrompt from "@/components/MobileOnlyPrompt";
 import Logo from "@/components/Logo";
+import MapLoadingPlaceholder from "@/components/MapLoadingPlaceholder";
 
 // Matches the submit flow's own desktop check (lib/useIsDesktop's default)
 // so browsing and submitting switch to "desktop" behavior together —
@@ -33,7 +34,7 @@ const NEAR_RADIUS_KM = 2;
 
 const MapCanvas = dynamic(() => import("@/components/MapCanvas"), {
   ssr: false,
-  loading: () => <div style={{ position: "absolute", inset: 0, background: "var(--paper)" }} />,
+  loading: () => <MapLoadingPlaceholder />,
 });
 
 export default function HomePage() {

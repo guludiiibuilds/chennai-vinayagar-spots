@@ -9,10 +9,11 @@ import { CloseIcon, CheckIcon } from "@/components/icons";
 import { Button } from "@/components/Button";
 import { IconButton } from "@/components/IconButton";
 import DuplicateSpotWarning from "@/components/DuplicateSpotWarning";
+import MapLoadingPlaceholder from "@/components/MapLoadingPlaceholder";
 
 const LocationPicker = dynamic(() => import("@/components/LocationPicker"), {
   ssr: false,
-  loading: () => <div style={{ position: "absolute", inset: 0, background: "var(--paper)" }} />,
+  loading: () => <MapLoadingPlaceholder />,
 });
 
 const CHENNAI_CENTER = { lat: 13.0067, lng: 80.257 };
