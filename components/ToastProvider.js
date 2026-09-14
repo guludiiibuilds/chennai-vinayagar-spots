@@ -40,7 +40,7 @@ export default function ToastProvider({ children }) {
         // silently overwritten by the animation's own end-state transform
         // the moment it finishes, leaving the toast pinned to the left
         // half of the screen instead of centered.
-        <div style={{ position: "fixed", left: 0, right: 0, bottom: 24, zIndex: 60, display: "flex", justifyContent: "center", padding: "0 16px" }}>
+        <div style={{ position: "fixed", left: 0, right: 0, bottom: 84, zIndex: 60, display: "flex", justifyContent: "center", padding: "0 16px" }}>
           <div
             role="status"
             style={{
