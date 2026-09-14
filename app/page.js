@@ -294,7 +294,7 @@ function Home() {
           <div className="hp-topbar">
             <Logo size={28} />
             <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>
-              Track Ganesha Chaturthi idols of 2026 ·{" "}
+              Track Ganesh Chaturthi idols of 2026 ·{" "}
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
@@ -422,7 +422,7 @@ function Home() {
               <Logo size={28} />
               {!selectedSpot ? (
                 <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>
-                  Track Ganesha Chaturthi idols of 2026 ·{" "}
+                  Track Ganesh Chaturthi idols of 2026 ·{" "}
                   <button
                     type="button"
                     onClick={() => setMenuOpen(true)}
