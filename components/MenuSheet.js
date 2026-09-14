@@ -56,7 +56,7 @@ export default function MenuSheet({ open, onClose }) {
         {!isDesktop ? <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--line-strong)", margin: "0 auto 18px" }} /> : null}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, position: "relative" }}>
           <div style={{ font: "600 24px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>
-            Chennai Vinayagar Idols 2026
+            Ganesh Chaturthi Idols 2026
           </div>
           <IconButton
             variant="soft"
@@ -67,7 +67,7 @@ export default function MenuSheet({ open, onClose }) {
           />
         </div>
         <div style={{ font: "400 14px/1.55 var(--font-body)", color: "var(--ink-soft)", marginTop: 6 }}>
-          A community-built map of Vinayagar Chaturthi idols across Chennai. No login needed to browse or submit.
+          A community-built map of Vinayagar Chaturthi idols across the nation. No login needed to browse or submit.
         </div>
         <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 16 }}>
           {steps.map((text, i) => (
@@ -107,7 +107,7 @@ export default function MenuSheet({ open, onClose }) {
         </div>
 
         <div style={{ marginTop: 18, font: "400 12px/1.6 var(--font-body)", color: "var(--muted)", textAlign: "center" }}>
-          Built by <a href="https://x.com/gurunivashr?s=11">Guru Nivash</a>, for the Chennai community&nbsp;❤️
+          Built by <a href="https://x.com/gurunivashr?s=11">Guru Nivash</a>, for the nation&apos;s community&nbsp;❤️
         </div>
       </div>
     </div>
