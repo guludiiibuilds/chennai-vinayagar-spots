@@ -334,7 +334,7 @@ function Home() {
             </div>
 
             <div className="hp-map-pane">
-              <MapCanvas spots={filtered} userPos={userPos} onSelect={openSpot} selectedId={selectedId} focusSpot={selectedSpot} />
+              <MapCanvas spots={filtered} userPos={userPos} onSelect={openSpot} selectedId={selectedId} focusSpot={selectedSpot} showLocateButton={false} />
               {loadError ? (
                 <div
                   style={{

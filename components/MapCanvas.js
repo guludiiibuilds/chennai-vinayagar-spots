@@ -112,7 +112,7 @@ function ClusteredMarkers({ spots, selectedId, onSelect }) {
   return null;
 }
 
-function MapControls({ userPos, onSearchClick }) {
+function MapControls({ userPos, onSearchClick, showLocateButton = true }) {
   const map = useMap();
   return (
     <div style={{ position: "absolute", right: 14, top: 14, display: "flex", flexDirection: "column", gap: 8, zIndex: 500 }}>
@@ -124,17 +124,19 @@ function MapControls({ userPos, onSearchClick }) {
           </svg>
         </button>
       ) : null}
-      <button
-        aria-label="Center on my location"
-        onClick={() => userPos && map.setView([userPos.lat, userPos.lng], 15)}
-        style={ctrlBtnStyle}
-      >
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round">
-          <circle cx="12" cy="12" r="3.2"></circle>
-          <circle cx="12" cy="12" r="8"></circle>
-          <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path>
-        </svg>
-      </button>
+      {showLocateButton ? (
+        <button
+          aria-label="Center on my location"
+          onClick={() => userPos && map.setView([userPos.lat, userPos.lng], 15)}
+          style={ctrlBtnStyle}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round">
+            <circle cx="12" cy="12" r="3.2"></circle>
+            <circle cx="12" cy="12" r="8"></circle>
+            <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path>
+          </svg>
+        </button>
+      ) : null}
       <button aria-label="Zoom in" onClick={() => map.zoomIn()} style={{ ...ctrlBtnStyle, font: "700 18px var(--font-display)", color: "var(--ink)" }}>
         +
       </button>
@@ -254,6 +256,7 @@ export default function MapCanvas({
   onSearchClick,
   onMapClick,
   showControls = true,
+  showLocateButton = true,
 }) {
   const mapRef = useRef(null);
   const initialCenter = spots[0]?.lat != null ? [spots[0].lat, spots[0].lng] : CHENNAI_CENTER;
@@ -275,7 +278,7 @@ export default function MapCanvas({
       <AutoInvalidateSize />
       <ClusteredMarkers spots={spots} selectedId={selectedId} onSelect={onSelect} />
       {userPos ? <Marker position={[userPos.lat, userPos.lng]} icon={meIcon} interactive={false} /> : null}
-      {showControls ? <MapControls userPos={userPos} onSearchClick={onSearchClick} /> : null}
+      {showControls ? <MapControls userPos={userPos} onSearchClick={onSearchClick} showLocateButton={showLocateButton} /> : null}
       {focusSpot ? <FlyToSelection target={focusSpot} zoom={focusZoom} verticalFraction={focusVerticalFraction} /> : null}
       {onMapClick ? <MapClickHandler onMapClick={onMapClick} /> : null}
     </MapContainer>
