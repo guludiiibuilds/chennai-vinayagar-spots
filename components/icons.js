@@ -100,6 +100,19 @@ export function PlusIcon({ stroke = "#ffffff", ...props }) {
   );
 }
 
+export function FilterIcon({ stroke = "var(--muted)", ...props }) {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.1" strokeLinecap="round" {...props}>
+      <line x1="4" y1="6" x2="20" y2="6"></line>
+      <line x1="4" y1="12" x2="20" y2="12"></line>
+      <line x1="4" y1="18" x2="20" y2="18"></line>
+      <circle cx="9" cy="6" r="2.2" fill={stroke} stroke="none"></circle>
+      <circle cx="16" cy="12" r="2.2" fill={stroke} stroke="none"></circle>
+      <circle cx="10" cy="18" r="2.2" fill={stroke} stroke="none"></circle>
+    </svg>
+  );
+}
+
 export function PinPlaceIcon({ stroke = "var(--muted)", ...props }) {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth="2.1" strokeLinecap="round" {...props}>

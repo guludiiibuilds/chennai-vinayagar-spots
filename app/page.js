@@ -5,9 +5,10 @@ import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
 import { distanceKm, formatDistance } from "@/lib/geo";
-import { CloseIcon } from "@/components/icons";
+import { CloseIcon, FilterIcon } from "@/components/icons";
 import { SpotListCard } from "@/components/SpotCard";
 import MenuSheet from "@/components/MenuSheet";
+import FilterSheet from "@/components/FilterSheet";
 import SpotSheet from "@/components/SpotSheet";
 import SpotPanel from "@/components/SpotPanel";
 import PhotoViewer from "@/components/PhotoViewer";
@@ -18,7 +19,6 @@ import { EmptyState } from "@/components/EmptyState";
 import { useToast } from "@/components/ToastProvider";
 import { ViewModeDropdown } from "@/components/ViewModeDropdown";
 import { Chip } from "@/components/Chip";
-import { PinPlaceIcon } from "@/components/icons";
 import MobileOnlyPrompt from "@/components/MobileOnlyPrompt";
 import Logo from "@/components/Logo";
 import MapLoadingPlaceholder from "@/components/MapLoadingPlaceholder";
@@ -71,6 +71,7 @@ function Home() {
   const [isDesktop, setIsDesktop] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
   const [mobileOnlyPromptOpen, setMobileOnlyPromptOpen] = useState(false);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [filterMode, setFilterMode] = useState(null); // null | "near" | "popular" — exclusive, tap again to clear
   const toggleFilter = (value) => setFilterMode((m) => (m === value ? null : value));
   const searchInputWrapRef = useRef(null);
@@ -439,26 +440,11 @@ function Home() {
             // No overflowX here: it clips ViewModeDropdown's absolutely-
             // positioned popup out of existence, since overflow-x on
             // anything but "visible" forces overflow-y to clip too — the
-            // whole Map/List menu silently stopped rendering. This row's
-            // contents fit comfortably down to a 360px-wide phone without
-            // needing to scroll.
-            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            // whole Map/List menu silently stopped rendering.
+            <div style={{ marginTop: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
               <ViewModeDropdown mode={mode} onChange={setMode} />
-              <span style={{ width: 1, height: 20, background: "var(--line-strong)", flex: "none" }} />
-              <Chip
-                selected={filterMode === "near"}
-                icon={<PinPlaceIcon stroke="currentColor" />}
-                loading={locatingFor === "near"}
-                onClick={() => requireLocation("near", () => toggleFilter("near"))}
-              >
-                {/* Shortened from the FAB's full "Fetching your location…" —
-                    this chip sits in a row with two others that already fit
-                    a 360px-wide phone without wrapping, and the longer
-                    phrase doesn't. */}
-                {locatingFor === "near" ? "Fetching…" : "Near me"}
-              </Chip>
-              <Chip selected={filterMode === "popular"} icon={<span style={{ fontSize: 11 }}>★</span>} onClick={() => toggleFilter("popular")}>
-                Popular
+              <Chip selected={!!filterMode} icon={<FilterIcon stroke="currentColor" />} onClick={() => setFilterSheetOpen(true)}>
+                Filter
               </Chip>
             </div>
           ) : null}
@@ -553,6 +539,15 @@ function Home() {
         ) : null}
 
         <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />
+
+        <FilterSheet
+          open={filterSheetOpen}
+          onClose={() => setFilterSheetOpen(false)}
+          filterMode={filterMode}
+          locatingFor={locatingFor}
+          onSelectNear={() => requireLocation("near", () => { toggleFilter("near"); setFilterSheetOpen(false); })}
+          onSelectPopular={() => { toggleFilter("popular"); setFilterSheetOpen(false); }}
+        />
 
         {photoViewerOpen && selectedSpot ? (
           <PhotoViewer spot={selectedSpot} onClose={() => setPhotoViewerOpen(false)} />
