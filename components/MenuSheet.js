@@ -40,7 +40,7 @@ export default function MenuSheet({ open, onClose }) {
         onClick={(e) => e.stopPropagation()}
         style={{
           width: "100%",
-          maxWidth: isDesktop ? 440 : undefined,
+          maxWidth: isDesktop ? 560 : undefined,
           background: "var(--card)",
           borderRadius: isDesktop ? "var(--radius-xl)" : "var(--radius-xl) var(--radius-xl) 0 0",
           boxShadow: "var(--shadow-lg)",
