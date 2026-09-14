@@ -21,10 +21,31 @@ const mulish = Mulish({
   display: "swap",
 });
 
+const siteUrl = "https://chennaivinayagar.vercel.app";
+const title = "Ganesh Chaturthi Idols 2026";
+const description =
+  "Find and share Ganesha Chaturthi idols across India — no login needed to browse or submit.";
+
 export const metadata = {
-  title: "Chennai Ganesha Spots",
-  description:
-    "Find and share Ganesha Chaturthi idols across Chennai — no login needed to browse or submit.",
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+  // Open Graph + Twitter Card: what actually renders as the rich preview
+  // when this link is pasted into WhatsApp, Twitter/X, Facebook, etc. —
+  // without these, sharing the link showed an inconsistent (or blank)
+  // platform-default preview instead of this app's own title/description.
+  openGraph: {
+    title,
+    description,
+    url: siteUrl,
+    siteName: title,
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title,
+    description,
+  },
 };
 
 export const viewport = {
