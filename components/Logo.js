@@ -8,7 +8,7 @@
 export default function Logo({ size = 40, showWordmark = true }) {
   const iconSize = Math.round(size * 1.4);
   return (
-    <div style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
       <img
         src="/brand/logo.svg"
         alt={showWordmark ? "" : "Chennai Vinayagar"}
