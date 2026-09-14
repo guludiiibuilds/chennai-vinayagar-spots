@@ -15,11 +15,7 @@ const TABS = [
   { key: "rejected", label: "Rejected" },
 ];
 
-// Pure fetch helper with no setState of its own, so it can be safely
-// awaited both from an Effect (whose own setState calls must stay inside
-// the returned promise's .then/.catch, not synchronous in the Effect body)
-// and from event handlers (login) where synchronous setState is fine.
-async function fetchSpotsByStatus(status) {
+async function fetchSpotsOnce(status) {
   const res = await fetch(`/api/admin/spots?status=${status}`, { cache: "no-store" });
   if (res.status === 401) {
     const err = new Error("Not signed in");
@@ -31,11 +27,41 @@ async function fetchSpotsByStatus(status) {
   return data.spots;
 }
 
-async function fetchStats() {
+// Pure fetch helper with no setState of its own, so it can be safely
+// awaited both from an Effect (whose own setState calls must stay inside
+// the returned promise's .then/.catch, not synchronous in the Effect body)
+// and from event handlers (login) where synchronous setState is fine.
+//
+// This route occasionally fails with a transient 5xx / bad-gateway-style
+// error — the identical request usually succeeds seconds later, so one
+// quiet retry smooths over that instead of surfacing a scary "Bad Gateway"
+// banner for something that clears up on its own. A real "not signed in"
+// isn't transient, so that one skips the retry and fails immediately.
+async function fetchSpotsByStatus(status) {
+  try {
+    return await fetchSpotsOnce(status);
+  } catch (err) {
+    if (err.unauthorized) throw err;
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    return fetchSpotsOnce(status);
+  }
+}
+
+async function fetchStatsOnce() {
   const res = await fetch("/api/admin/stats", { cache: "no-store" });
   if (!res.ok) return null;
   const data = await res.json();
   return data.pageViews;
+}
+
+// Same transient-failure retry as fetchSpotsByStatus above — this one has
+// no error UI at all (the tile just doesn't render), so without a retry a
+// passing blip would make the stat silently vanish instead of showing.
+async function fetchStats() {
+  const first = await fetchStatsOnce();
+  if (first !== null) return first;
+  await new Promise((resolve) => setTimeout(resolve, 700));
+  return fetchStatsOnce();
 }
 
 export default function AdminPage() {
