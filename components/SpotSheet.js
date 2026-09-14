@@ -116,16 +116,19 @@ export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto })
 
           {/* Sticks to the bottom of the scrollport (not the sheet) so it
               only shows while there's more to scroll to, and disappears on
-              its own once the last line comes into view. */}
+              its own once the last line comes into view. Reaches into the
+              content box's own bottom padding (bottom: -14, matching the
+              padding below) so it sits flush against the footer divider
+              instead of leaving a dead gap above it. */}
           <div
             aria-hidden="true"
             style={{
               position: "sticky",
-              bottom: 0,
-              marginTop: -44,
-              height: 44,
+              bottom: -14,
+              marginTop: -28,
+              height: 28,
               pointerEvents: "none",
-              background: "linear-gradient(to bottom, transparent, var(--card))",
+              background: "linear-gradient(to bottom, transparent, var(--card) 75%)",
               opacity: showFade ? 1 : 0,
               transition: "opacity .2s ease",
             }}

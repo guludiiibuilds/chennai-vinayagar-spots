@@ -81,11 +81,11 @@ export default function SpotPanel({ spot, distanceLabel, onBack, onOpenPhoto }) 
           aria-hidden="true"
           style={{
             position: "sticky",
-            bottom: 0,
-            marginTop: -44,
-            height: 44,
+            bottom: -18,
+            marginTop: -28,
+            height: 28,
             pointerEvents: "none",
-            background: "linear-gradient(to bottom, transparent, var(--card))",
+            background: "linear-gradient(to bottom, transparent, var(--card) 75%)",
             opacity: showFade ? 1 : 0,
             transition: "opacity .2s ease",
           }}
