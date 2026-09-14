@@ -4,11 +4,14 @@ import { Fragment } from "react";
 import { renderRichText } from "@/lib/richtext";
 import { googleMapsUrl } from "@/lib/geo";
 import { shareSpot } from "@/lib/share";
+import { useScrollFade } from "@/lib/useScrollFade";
 import { CloseIcon, ShareIcon, NavigateIcon, PhotoIcon, PinPlaceIcon } from "./icons";
 import { Button } from "./Button";
 import { IconButton } from "./IconButton";
 
 export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto }) {
+  const { ref: scrollRef, showFade } = useScrollFade(spot?.id);
+
   if (!spot) return null;
 
   const share = () => shareSpot(spot);
@@ -63,7 +66,7 @@ export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto })
           <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--line-strong)", margin: "0 auto" }} />
         </div>
 
-        <div style={{ flex: 1, overflowY: "auto", padding: "6px 18px 14px" }}>
+        <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "6px 18px 14px" }}>
           <div
             className={spot.photo_url ? "photo-shadow" : undefined}
             onClick={spot.photo_url ? onOpenPhoto : undefined}
@@ -110,6 +113,23 @@ export default function SpotSheet({ spot, distanceLabel, onClose, onOpenPhoto })
               {renderRichText(spot.about)}
             </div>
           ) : null}
+
+          {/* Sticks to the bottom of the scrollport (not the sheet) so it
+              only shows while there's more to scroll to, and disappears on
+              its own once the last line comes into view. */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: "sticky",
+              bottom: 0,
+              marginTop: -44,
+              height: 44,
+              pointerEvents: "none",
+              background: "linear-gradient(to bottom, transparent, var(--card))",
+              opacity: showFade ? 1 : 0,
+              transition: "opacity .2s ease",
+            }}
+          />
         </div>
 
         <div style={{ flex: "none", padding: "12px 14px 16px", borderTop: "1px solid var(--line)", display: "flex", gap: 9, background: "var(--card)" }}>

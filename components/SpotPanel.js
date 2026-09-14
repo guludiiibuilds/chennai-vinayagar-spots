@@ -3,6 +3,7 @@
 import { renderRichText } from "@/lib/richtext";
 import { googleMapsUrl } from "@/lib/geo";
 import { shareSpot } from "@/lib/share";
+import { useScrollFade } from "@/lib/useScrollFade";
 import { BackIcon, ShareIcon, NavigateIcon, PhotoIcon, PinPlaceIcon } from "./icons";
 import { Button } from "./Button";
 import { IconButton } from "./IconButton";
@@ -12,6 +13,8 @@ import { IconButton } from "./IconButton";
 // tablet/desktop it lives inside the fixed-width sidebar column next to an
 // always-visible map, rather than floating over it.
 export default function SpotPanel({ spot, distanceLabel, onBack, onOpenPhoto }) {
+  const { ref: scrollRef, showFade } = useScrollFade(spot?.id);
+
   if (!spot) return null;
 
   const share = () => shareSpot(spot);
@@ -26,7 +29,7 @@ export default function SpotPanel({ spot, distanceLabel, onBack, onOpenPhoto }) 
         Back to list
       </button>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "10px 18px 18px" }}>
+      <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "10px 18px 18px" }}>
         <div
           className={spot.photo_url ? "photo-shadow" : undefined}
           onClick={spot.photo_url ? onOpenPhoto : undefined}
@@ -73,6 +76,20 @@ export default function SpotPanel({ spot, distanceLabel, onBack, onOpenPhoto }) 
             {renderRichText(spot.about)}
           </div>
         ) : null}
+
+        <div
+          aria-hidden="true"
+          style={{
+            position: "sticky",
+            bottom: 0,
+            marginTop: -44,
+            height: 44,
+            pointerEvents: "none",
+            background: "linear-gradient(to bottom, transparent, var(--card))",
+            opacity: showFade ? 1 : 0,
+            transition: "opacity .2s ease",
+          }}
+        />
       </div>
 
       <div style={{ flex: "none", padding: "12px 16px 16px", borderTop: "1px solid var(--line)", display: "flex", gap: 9 }}>
