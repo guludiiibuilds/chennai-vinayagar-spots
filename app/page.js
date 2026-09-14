@@ -471,7 +471,12 @@ function Home() {
               selectedId={selectedId}
               focusSpot={selectedSpot}
               focusVerticalFraction={selectedSpot ? 0.2 : undefined}
-              onSearchClick={selectedSpot ? undefined : () => setSearchActive(true)}
+              // Search hidden on mobile for now — omitting onSearchClick
+              // drops the icon from the map's controls (MapCanvas only
+              // renders it when a handler is passed) without touching the
+              // overlay/query logic below, so it's a one-line change to
+              // bring back later.
+              onSearchClick={undefined}
               onMapClick={selectedSpot ? closeSheet : undefined}
               showControls={!selectedSpot}
             />
