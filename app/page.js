@@ -5,10 +5,9 @@ import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
 import { distanceKm, formatDistance } from "@/lib/geo";
-import { CloseIcon, FilterIcon } from "@/components/icons";
+import { CloseIcon } from "@/components/icons";
 import { SpotListCard } from "@/components/SpotCard";
 import MenuSheet from "@/components/MenuSheet";
-import FilterSheet from "@/components/FilterSheet";
 import SpotSheet from "@/components/SpotSheet";
 import SpotPanel from "@/components/SpotPanel";
 import PhotoViewer from "@/components/PhotoViewer";
@@ -18,7 +17,6 @@ import { SearchBar } from "@/components/SearchBar";
 import { EmptyState } from "@/components/EmptyState";
 import { useToast } from "@/components/ToastProvider";
 import { ViewModeDropdown } from "@/components/ViewModeDropdown";
-import { Chip } from "@/components/Chip";
 import MobileOnlyPrompt from "@/components/MobileOnlyPrompt";
 import Logo from "@/components/Logo";
 import MapLoadingPlaceholder from "@/components/MapLoadingPlaceholder";
@@ -28,9 +26,6 @@ import MapLoadingPlaceholder from "@/components/MapLoadingPlaceholder";
 // tablets stay on the full mobile experience (single-column, map/list
 // toggle, and a working submit flow) right up to that same width.
 const DESKTOP_BREAKPOINT = 1024;
-
-// "Near me" filter radius — tight enough to stay meaningful in a dense city.
-const NEAR_RADIUS_KM = 2;
 
 const MapCanvas = dynamic(() => import("@/components/MapCanvas"), {
   ssr: false,
@@ -62,18 +57,15 @@ function Home() {
   // only the user changing their browser's site settings fixes that.
   const [locationStatus, setLocationStatus] = useState("unknown"); // "unknown" | "granted" | "blocked"
   // Which requireLocation-gated control is currently waiting on a position
-  // — not just a plain boolean, so tapping the FAB doesn't also spin the
-  // unrelated "Near me" chip (and vice versa).
-  const [locatingFor, setLocatingFor] = useState(null); // null | "fab" | "near"
+  // — not just a plain boolean, so one such control spinning doesn't also
+  // spin an unrelated one, if/when there's more than the FAB again.
+  const [locatingFor, setLocatingFor] = useState(null); // null | "fab"
   const showToast = useToast();
   const [selectedId, setSelectedId] = useState(null);
   const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
   const [mobileOnlyPromptOpen, setMobileOnlyPromptOpen] = useState(false);
-  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  const [filterMode, setFilterMode] = useState(null); // null | "near" | "popular" — exclusive, tap again to clear
-  const toggleFilter = (value) => setFilterMode((m) => (m === value ? null : value));
   const searchInputWrapRef = useRef(null);
 
   useEffect(() => {
@@ -113,8 +105,8 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Browsing (map/list) never blocks on location — distance labels and
-  // "Near me" just stay unavailable until it's granted. beginLocating is
+  // Browsing (map/list) never blocks on location — distance labels just
+  // stay unavailable until it's granted. beginLocating is
   // the one place that actually calls the geolocation API; a permission
   // error's code 1 (PERMISSION_DENIED) means the browser won't prompt
   // again on its own, so that's the only case marked "blocked" rather
@@ -141,12 +133,12 @@ function Home() {
       },
       // enableHighAccuracy forces a GPS-only fix — on Android especially, a
       // cold GPS lock (first request in a session, or indoors) routinely
-      // takes longer than a short timeout, so the first tap on the FAB/
-      // "Near me" would fail and only a retry (once the GPS chip had warmed
-      // up in the background) would succeed. A network-based fix resolves
-      // in a second or two and is plenty precise for a 2km "near me" radius
-      // or seeding the draggable map pin — nothing here needs GPS-grade
-      // accuracy. maximumAge matters just as much: it defaults to 0, which
+      // takes longer than a short timeout, so the first tap on the FAB
+      // would fail and only a retry (once the GPS chip had warmed up in
+      // the background) would succeed. A network-based fix resolves in a
+      // second or two and is plenty precise for seeding the draggable map
+      // pin — nothing here needs GPS-grade accuracy. maximumAge matters
+      // just as much: it defaults to 0, which
       // forces a brand new fix every single call even though the OS
       // (Android's fused location provider in particular) very likely
       // already has one cached from minutes ago.
@@ -164,8 +156,9 @@ function Home() {
     );
   };
 
-  // Gate for any action that needs a real position (the FAB, "Near me").
-  // Runs it immediately if location is already known to be granted;
+  // Gate for any action that needs a real position (currently just the
+  // FAB, but written to support more than one). Runs it immediately if
+  // location is already known to be granted;
   // otherwise it always genuinely asks the browser first — never just
   // shows a "not enabled" message off a stale guess — and only reports a
   // problem if that request actually fails. This matters because the
@@ -193,8 +186,7 @@ function Home() {
     beginLocating((status) => {
       if (status === "granted") {
         // Only clear the loading state here for an action that stays on
-        // this screen (e.g. "Near me"). router.push doesn't swap the
-        // route synchronously, so clearing it for a navigating action
+        // this screen. router.push doesn't swap the
         // (the FAB) would flash the control back to its resting label for
         // a frame before Confirm Location actually replaces this screen —
         // exactly the "main screen flashes first" glitch this avoids.
@@ -251,16 +243,10 @@ function Home() {
     const q = query.trim().toLowerCase();
     let list = spotsWithDist;
     if (q) list = list.filter((s) => s.name.toLowerCase().includes(q) || s.area.toLowerCase().includes(q));
-    if (filterMode === "near") list = list.filter((s) => s.distKm != null && s.distKm <= NEAR_RADIUS_KM);
-    if (filterMode === "popular") list = list.filter((s) => s.is_popular);
     return list;
-  }, [spotsWithDist, query, filterMode]);
+  }, [spotsWithDist, query]);
 
-  const emptyStateProps = filterMode === "near"
-    ? { icon: "📍", title: `No spots within ${NEAR_RADIUS_KM}km yet`, description: "Clear the filter to see every spot." }
-    : filterMode === "popular"
-    ? { icon: "★", title: "No popular spots yet", description: "Check back soon, or clear the filter." }
-    : { icon: "🔍", title: "No spots match that search yet", description: "Know one? Add it below." };
+  const emptyStateProps = { icon: "🔍", title: "No spots match that search yet", description: "Know one? Add it below." };
 
   // List views specifically show nearest-first; the map doesn't care about
   // array order since pins are placed by lat/lng, not list position.
@@ -441,11 +427,8 @@ function Home() {
             // positioned popup out of existence, since overflow-x on
             // anything but "visible" forces overflow-y to clip too — the
             // whole Map/List menu silently stopped rendering.
-            <div style={{ marginTop: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10 }}>
               <ViewModeDropdown mode={mode} onChange={setMode} />
-              <Chip selected={!!filterMode} icon={<FilterIcon stroke="currentColor" />} onClick={() => setFilterSheetOpen(true)}>
-                Filter
-              </Chip>
             </div>
           ) : null}
         </header>
@@ -539,15 +522,6 @@ function Home() {
         ) : null}
 
         <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />
-
-        <FilterSheet
-          open={filterSheetOpen}
-          onClose={() => setFilterSheetOpen(false)}
-          filterMode={filterMode}
-          locatingFor={locatingFor}
-          onSelectNear={() => requireLocation("near", () => { toggleFilter("near"); setFilterSheetOpen(false); })}
-          onSelectPopular={() => { toggleFilter("popular"); setFilterSheetOpen(false); }}
-        />
 
         {photoViewerOpen && selectedSpot ? (
           <PhotoViewer spot={selectedSpot} onClose={() => setPhotoViewerOpen(false)} />
