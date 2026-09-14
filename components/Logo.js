@@ -27,7 +27,7 @@ export default function Logo({ size = 40, showWordmark = true }) {
         <span
           style={{
             fontFamily: "'Baloo 2', ui-rounded, 'SF Pro Rounded', 'Segoe UI', sans-serif",
-            fontSize: 22,
+            fontSize: 24,
             lineHeight: 1.15,
             letterSpacing: "-0.01em",
             fontWeight: 700,
