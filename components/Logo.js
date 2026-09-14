@@ -6,9 +6,10 @@
 // well inset within its own square canvas — at 1:1 with the text it
 // visibly reads as smaller); the wordmark's own font-size is derived from
 // it at a smaller ratio since "Ganesh Chaturthi Idols" is a full phrase,
-// not the short compact mark this ratio originally fit. Solid blue rather
-// than the app's orange accent — the header wordmark is deliberately kept
-// out of the accent color, unlike every other orange element in the app.
+// not the short compact mark this ratio originally fit. Solid ink (the
+// same navy the "Chn" half of the old wordmark used) rather than the
+// app's orange accent — the header wordmark is deliberately kept out of
+// the accent color, unlike every other orange element in the app.
 export default function Logo({ size = 40, showWordmark = true }) {
   const iconSize = Math.round(size * 1.4);
   const wordmarkSize = Math.round(size * 0.65);
@@ -30,7 +31,7 @@ export default function Logo({ size = 40, showWordmark = true }) {
             letterSpacing: "-0.01em",
             fontWeight: 700,
             whiteSpace: "nowrap",
-            color: "var(--blue-500)",
+            color: "var(--ink)",
           }}
         >
           Ganesh Chaturthi Idols
