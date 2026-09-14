@@ -3,6 +3,7 @@
 import { CloseIcon, ExternalLinkIcon } from "./icons";
 import { Button } from "./Button";
 import { IconButton } from "./IconButton";
+import { useIsDesktop } from "@/lib/useIsDesktop";
 
 const FEEDBACK_FORM_URL = "https://forms.gle/sYnnzH4h9FL3hXJu5";
 
@@ -13,6 +14,12 @@ const steps = [
 ];
 
 export default function MenuSheet({ open, onClose }) {
+  // A sheet sliding up from the bottom reads as a mobile pattern — on a
+  // wide desktop viewport there's no "bottom of the screen" it's anchored
+  // to, so it just floats oddly. A centered popup (same treatment as
+  // MobileOnlyPrompt) is the desktop-native equivalent of the same content.
+  const isDesktop = useIsDesktop(1024);
+
   if (!open) return null;
 
   return (
@@ -24,15 +31,18 @@ export default function MenuSheet({ open, onClose }) {
         zIndex: 40,
         background: "rgba(0,0,0,.4)",
         display: "flex",
-        alignItems: "flex-end",
+        alignItems: isDesktop ? "center" : "flex-end",
+        justifyContent: isDesktop ? "center" : undefined,
+        padding: isDesktop ? 24 : undefined,
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
           width: "100%",
+          maxWidth: isDesktop ? 440 : undefined,
           background: "var(--card)",
-          borderRadius: "var(--radius-xl) var(--radius-xl) 0 0",
+          borderRadius: isDesktop ? "var(--radius-xl)" : "var(--radius-xl) var(--radius-xl) 0 0",
           boxShadow: "var(--shadow-lg)",
           padding: "22px 20px 16px",
           animation: "fadeUp .22s ease both",
@@ -41,7 +51,9 @@ export default function MenuSheet({ open, onClose }) {
           position: "relative",
         }}
       >
-        <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--line-strong)", margin: "0 auto 18px" }} />
+        {/* Swipe-to-dismiss affordance — only means something on a sheet
+            anchored to the bottom edge, so it's skipped on desktop. */}
+        {!isDesktop ? <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--line-strong)", margin: "0 auto 18px" }} /> : null}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, position: "relative" }}>
           <div style={{ font: "600 24px/1.2 var(--font-display)", letterSpacing: "-.374px", color: "var(--ink)" }}>
             Chennai Vinayagar Idols 2026
