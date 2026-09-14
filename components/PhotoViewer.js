@@ -12,15 +12,21 @@ export default function PhotoViewer({ spot, onClose }) {
         inset: 0,
         zIndex: 45,
         background: "#000000",
-        display: "grid",
-        placeItems: "center",
         animation: "fadeUp .2s ease both",
       }}
     >
+      {/* Absolutely positioned against the same box as its parent, rather
+          than a percentage-sized grid/flex item — a percentage height on a
+          grid item inside an auto-sized row doesn't reliably resolve
+          against the container (it falls back to the image's own intrinsic
+          aspect ratio instead), which let a tall photo render at its full
+          native size and overflow top-anchored past the bottom instead of
+          being centered and scaled down. object-fit still does the
+          scale-to-fit + centering work, just against an unambiguous box. */}
       <img
         src={spot.photo_url}
         alt={spot.name}
-        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
       />
       <button
         onClick={onClose}
