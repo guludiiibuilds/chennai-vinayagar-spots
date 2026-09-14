@@ -1,6 +1,6 @@
 import React from "react";
 
-export function SearchBar({ placeholder = "Search for a Vinayagar or area", value, onChange, onFilterClick }) {
+export function SearchBar({ placeholder = "Search for a Ganesha or area", value, onChange, onFilterClick }) {
   return (
     <div style={{
       display: "flex", alignItems: "center", gap: 10, background: "var(--color-surface-elevated)",

@@ -8,7 +8,7 @@ import { useIsDesktop } from "@/lib/useIsDesktop";
 const FEEDBACK_FORM_URL = "https://forms.gle/sYnnzH4h9FL3hXJu5";
 
 const steps = [
-  "Spot a Vinayagar near you and submit a photo, name and location.",
+  "Spot a Ganesha near you and submit a photo, name and location.",
   "A local volunteer checks it, usually within an hour. Until then, please explore other spots.",
   "Once approved, it appears on the map for everyone to visit.",
 ];
@@ -67,7 +67,7 @@ export default function MenuSheet({ open, onClose }) {
           />
         </div>
         <div style={{ font: "400 14px/1.55 var(--font-body)", color: "var(--ink-soft)", marginTop: 6 }}>
-          A community-built map of Vinayagar Chaturthi idols across the nation. No login needed to browse or submit.
+          A community-built map of Ganesha Chaturthi idols across the nation. No login needed to browse or submit.
         </div>
         <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 16 }}>
           {steps.map((text, i) => (
@@ -94,7 +94,7 @@ export default function MenuSheet({ open, onClose }) {
 
         <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
           <Button variant="primary" onClick={onClose} style={{ height: 50 }}>
-            Start Vinayagar Hopping
+            Start Ganesha Hopping
           </Button>
           <Button
             variant="outline"

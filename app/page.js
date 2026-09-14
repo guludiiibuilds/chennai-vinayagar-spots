@@ -258,7 +258,7 @@ function Home() {
   // space behind once spots do show up again.
   const isEmpty = !loading && filtered.length === 0;
   useEffect(() => {
-    if (isEmpty) showToast("No Vinayagar idols nearby yet.");
+    if (isEmpty) showToast("No Ganesha idols nearby yet.");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEmpty]);
 
@@ -294,7 +294,7 @@ function Home() {
           <div className="hp-topbar">
             <Logo size={28} />
             <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>
-              Track Vinayagar Chaturthi idols of 2026 ·{" "}
+              Track Ganesha Chaturthi idols of 2026 ·{" "}
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}
@@ -340,7 +340,7 @@ function Home() {
                     }
                     style={{ width: "100%" }}
                   >
-                    Spot a Vinayagar
+                    Spot a Ganesha
                   </Button>
                 </div>
               ) : null}
@@ -422,7 +422,7 @@ function Home() {
               <Logo size={28} />
               {!selectedSpot ? (
                 <div style={{ font: "700 11px/1.4 var(--font-body)", color: "var(--muted)", marginTop: 4, letterSpacing: "0.06em" }}>
-                  Track Vinayagar Chaturthi idols of 2026 ·{" "}
+                  Track Ganesha Chaturthi idols of 2026 ·{" "}
                   <button
                     type="button"
                     onClick={() => setMenuOpen(true)}
@@ -523,7 +523,7 @@ function Home() {
                 boxShadow: "var(--shadow-floating)",
               }}
             >
-              {locatingFor === "fab" ? "Fetching your location…" : "Spot a Vinayagar"}
+              {locatingFor === "fab" ? "Fetching your location…" : "Spot a Ganesha"}
             </Button>
           </div>
         ) : null}

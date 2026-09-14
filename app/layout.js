@@ -5,7 +5,7 @@ import "./globals.css";
 import ToastProvider from "@/components/ToastProvider";
 
 // Baloo 2 (rounded, celebratory) carries headings/buttons/badges; Mulish
-// carries body/forms/metadata — the Chennai Vinayagar DS type pairing.
+// carries body/forms/metadata — the Chennai Ganesha DS type pairing.
 const baloo = Baloo_2({
   subsets: ["latin"],
   weight: ["500", "600", "700", "800"],
@@ -22,9 +22,9 @@ const mulish = Mulish({
 });
 
 export const metadata = {
-  title: "Chennai Vinayagar Spots",
+  title: "Chennai Ganesha Spots",
   description:
-    "Find and share Vinayagar Chaturthi idols across Chennai — no login needed to browse or submit.",
+    "Find and share Ganesha Chaturthi idols across Chennai — no login needed to browse or submit.",
 };
 
 export const viewport = {

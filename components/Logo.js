@@ -5,16 +5,18 @@
 // iconSize below, larger than the text because the artwork itself sits
 // well inset within its own square canvas — at 1:1 with the text it
 // visibly reads as smaller); the wordmark's own font-size is derived from
-// it at a smaller ratio since "Ganesh Chaturthi Idol Tracking" is a full
-// phrase, not the short compact mark this ratio originally fit.
+// it at a smaller ratio since "Ganesh Chaturthi Idols" is a full phrase,
+// not the short compact mark this ratio originally fit. Solid blue rather
+// than the app's orange accent — the header wordmark is deliberately kept
+// out of the accent color, unlike every other orange element in the app.
 export default function Logo({ size = 40, showWordmark = true }) {
   const iconSize = Math.round(size * 1.4);
-  const wordmarkSize = Math.round(size * 0.55);
+  const wordmarkSize = Math.round(size * 0.65);
   return (
     <div style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
       <img
         src="/brand/logo.svg"
-        alt={showWordmark ? "" : "Ganesh Chaturthi Idol Tracking"}
+        alt={showWordmark ? "" : "Ganesh Chaturthi Idols"}
         width={iconSize}
         height={iconSize}
         style={{ display: "block", flex: "none" }}
@@ -28,9 +30,10 @@ export default function Logo({ size = 40, showWordmark = true }) {
             letterSpacing: "-0.01em",
             fontWeight: 700,
             whiteSpace: "nowrap",
+            color: "var(--blue-500)",
           }}
         >
-          <span style={{ color: "var(--ink)" }}>Ganesh Chaturthi </span><span style={{ color: "var(--accent)" }}>Idol Tracking</span>
+          Ganesh Chaturthi Idols
         </span>
       ) : null}
     </div>
