@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchApprovedSpots } from "@/lib/spots";
+import { logPageView } from "@/lib/stats";
 import { distanceKm, formatDistance } from "@/lib/geo";
 import { CloseIcon } from "@/components/icons";
 import { SpotListCard } from "@/components/SpotCard";
@@ -102,6 +103,12 @@ function Home() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // One row per Home load, purely for the total-visits stat shown in
+  // /admin — best-effort, never blocks or affects anything on this page.
+  useEffect(() => {
+    logPageView();
   }, []);
 
   // Browsing (map/list) never blocks on location — distance labels just

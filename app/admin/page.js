@@ -31,6 +31,13 @@ async function fetchSpotsByStatus(status) {
   return data.spots;
 }
 
+async function fetchStats() {
+  const res = await fetch("/api/admin/stats", { cache: "no-store" });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.pageViews;
+}
+
 export default function AdminPage() {
   const [authed, setAuthed] = useState(null); // null = checking
   const [password, setPassword] = useState("");
@@ -42,6 +49,7 @@ export default function AdminPage() {
   const [spots, setSpots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
+  const [pageViews, setPageViews] = useState(null);
 
   // Reset the loading/error state for the newly selected tab during render
   // itself (React's documented pattern for "adjusting state when a prop
@@ -74,6 +82,13 @@ export default function AdminPage() {
     };
   }, [tab]);
 
+  // Fires once whenever a session becomes authenticated — whether from a
+  // fresh login below or an already-valid cookie on page load (the tab
+  // effect above is what flips `authed` to true in that second case).
+  useEffect(() => {
+    if (authed) fetchStats().then(setPageViews);
+  }, [authed]);
+
   const login = async (e) => {
     e.preventDefault();
     setLoggingIn(true);
@@ -105,6 +120,7 @@ export default function AdminPage() {
     await fetch("/api/admin/logout", { method: "POST" });
     setAuthed(false);
     setSpots([]);
+    setPageViews(null);
   };
 
   const updateSpotLocal = (id, patch) => {
@@ -231,6 +247,23 @@ export default function AdminPage() {
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {pageViews !== null ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+                lineHeight: 1.2,
+                padding: "4px 12px",
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--line-strong)",
+                background: "var(--paper)",
+              }}
+            >
+              <span style={{ font: "700 15px var(--font-display)", color: "var(--ink)" }}>{pageViews.toLocaleString()}</span>
+              <span style={{ font: "400 10.5px var(--font-body)", color: "var(--muted)" }}>total visits</span>
+            </div>
+          ) : null}
           <div style={{ display: "flex", gap: 6 }}>
             {TABS.map((t) => (
               <Chip key={t.key} selected={tab === t.key} onClick={() => setTab(t.key)}>
