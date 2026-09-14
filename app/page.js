@@ -14,7 +14,6 @@ import PhotoViewer from "@/components/PhotoViewer";
 import { Button } from "@/components/Button";
 import { IconButton } from "@/components/IconButton";
 import { SearchBar } from "@/components/SearchBar";
-import { EmptyState } from "@/components/EmptyState";
 import { useToast } from "@/components/ToastProvider";
 import { ViewModeDropdown } from "@/components/ViewModeDropdown";
 import MobileOnlyPrompt from "@/components/MobileOnlyPrompt";
@@ -246,7 +245,15 @@ function Home() {
     return list;
   }, [spotsWithDist, query]);
 
-  const emptyStateProps = { icon: "🔍", title: "No spots match that search yet", description: "Know one? Add it below." };
+  // Fires once whenever the visible set drops to zero — a search with no
+  // matches, or genuinely no spots yet — rather than a big centered block
+  // sitting on screen; a toast says it just as clearly without leaving dead
+  // space behind once spots do show up again.
+  const isEmpty = !loading && filtered.length === 0;
+  useEffect(() => {
+    if (isEmpty) showToast("No Vinayagar idols nearby yet.");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEmpty]);
 
   // List views specifically show nearest-first; the map doesn't care about
   // array order since pins are placed by lat/lng, not list position.
@@ -311,7 +318,6 @@ function Home() {
                   {nearestFirst.map((s) => (
                     <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
                   ))}
-                  {!loading && filtered.length === 0 ? <EmptyState {...emptyStateProps} /> : null}
                 </div>
               )}
 
@@ -469,16 +475,6 @@ function Home() {
               onMapClick={selectedSpot ? closeSheet : undefined}
               showControls={!selectedSpot}
             />
-            {/* The map has no rows of its own to show a "no matches" message
-                in, unlike list mode — without this, a search or filter with
-                zero results just looks like the map silently broke. */}
-            {!loading && filtered.length === 0 && !selectedSpot ? (
-              <div style={{ position: "absolute", left: 14, right: 14, top: "50%", transform: "translateY(-50%)", zIndex: 8 }}>
-                <div style={{ background: "var(--card)", borderRadius: "var(--radius-lg)", border: "1px solid var(--line-strong)", boxShadow: "var(--shadow-elevated)" }}>
-                  <EmptyState {...emptyStateProps} />
-                </div>
-              </div>
-            ) : null}
             {selectedSpot ? (
               <SpotSheet
                 spot={selectedSpot}
@@ -493,7 +489,6 @@ function Home() {
             {nearestFirst.map((s) => (
               <SpotListCard key={s.id} spot={s} distanceLabel={formatDistance(s.distKm)} onOpen={openSpot} />
             ))}
-            {!loading && filtered.length === 0 ? <EmptyState {...emptyStateProps} /> : null}
           </div>
         )}
 
