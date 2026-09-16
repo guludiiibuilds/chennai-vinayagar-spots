@@ -5,6 +5,7 @@ import { googleMapsUrl } from "@/lib/geo";
 import { uploadSpotPhoto } from "@/lib/spots";
 import { compressImage } from "@/lib/image";
 import { extractLatLng, isShortGoogleMapsLink, looksLikeGoogleMapsLink } from "@/lib/googleMapsLink";
+import { parseCsv, toCsv } from "@/lib/csv";
 import { useToast } from "@/components/ToastProvider";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
@@ -51,6 +52,29 @@ async function fetchSpotsByStatus(status) {
   }
 }
 
+// Shared by AddSpotForm and BulkImportForm below: turns a pasted Google
+// Maps link into coordinates, resolving a short maps.app.goo.gl share
+// link server-side first if that's what was pasted. Returns null for
+// anything that isn't recognized or couldn't be resolved.
+async function resolveGoogleMapsLocation(text) {
+  const trimmed = (text || "").trim();
+  if (!trimmed) return null;
+  const direct = extractLatLng(trimmed);
+  if (direct) return direct;
+  if (!isShortGoogleMapsLink(trimmed)) return null;
+  try {
+    const res = await fetch("/api/admin/resolve-maps-link", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: trimmed }),
+    });
+    const data = await res.json().catch(() => ({}));
+    return res.ok ? extractLatLng(data.resolvedUrl) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchStatsOnce() {
   const res = await fetch("/api/admin/stats", { cache: "no-store" });
   if (!res.ok) return null;
@@ -82,6 +106,7 @@ export default function AdminPage() {
   const [loadError, setLoadError] = useState("");
   const [pageViews, setPageViews] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showBulkImport, setShowBulkImport] = useState(false);
 
   // Reset the loading/error state for the newly selected tab during render
   // itself (React's documented pattern for "adjusting state when a prop
@@ -191,6 +216,19 @@ export default function AdminPage() {
     showToast(`Added "${spot.name}"`);
     if (tab === "approved") {
       setSpots((prev) => [spot, ...prev]);
+    } else {
+      setTab("approved");
+    }
+  };
+
+  // Called once at the end of a whole CSV import (not per-row) — a
+  // callback fired from inside the row-by-row import loop would close over
+  // whatever `tab` was when the loop started, which goes stale the moment
+  // this component re-renders mid-import.
+  const handleBulkImported = (createdSpots) => {
+    if (createdSpots.length === 0) return;
+    if (tab === "approved") {
+      setSpots((prev) => [...createdSpots, ...prev]);
     } else {
       setTab("approved");
     }
@@ -313,8 +351,27 @@ export default function AdminPage() {
               </Chip>
             ))}
           </div>
-          <Button variant="primary" size="sm" onClick={() => setShowAddForm((v) => !v)} style={{ height: 36 }}>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              setShowAddForm((v) => !v);
+              setShowBulkImport(false);
+            }}
+            style={{ height: 36 }}
+          >
             {showAddForm ? "Cancel" : "+ Add spot"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setShowBulkImport((v) => !v);
+              setShowAddForm(false);
+            }}
+            style={{ height: 36 }}
+          >
+            {showBulkImport ? "Cancel" : "Bulk import"}
           </Button>
           <Button variant="outline" size="sm" onClick={logout} style={{ height: 36 }}>
             Log out
@@ -324,6 +381,7 @@ export default function AdminPage() {
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "22px 20px 60px" }}>
         {showAddForm ? <AddSpotForm onCreated={handleCreated} onCancel={() => setShowAddForm(false)} /> : null}
+        {showBulkImport ? <BulkImportForm onImported={handleBulkImported} onCancel={() => setShowBulkImport(false)} /> : null}
 
         {loadError ? (
           <div style={{ padding: "12px 16px", borderRadius: "var(--radius-md)", background: "var(--card)", border: "1px solid var(--line-strong)", borderLeft: "3px solid var(--pin)", color: "var(--ink-soft)", font: "400 13px/1.4 var(--font-body)", marginBottom: 16 }}>
@@ -380,32 +438,10 @@ function AddSpotForm({ onCreated, onCancel }) {
       setLocStatus("");
       return;
     }
-    const direct = extractLatLng(text);
-    if (direct) {
-      setLoc(direct);
-      setLocStatus("found");
-      return;
-    }
-    if (!isShortGoogleMapsLink(text)) {
-      setLoc(null);
-      setLocStatus(looksLikeGoogleMapsLink(text) ? "not-found" : "");
-      return;
-    }
-    setLocStatus("checking");
-    try {
-      const res = await fetch("/api/admin/resolve-maps-link", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: text }),
-      });
-      const data = await res.json().catch(() => ({}));
-      const found = res.ok ? extractLatLng(data.resolvedUrl) : null;
-      setLoc(found);
-      setLocStatus(found ? "found" : "not-found");
-    } catch {
-      setLoc(null);
-      setLocStatus("not-found");
-    }
+    if (isShortGoogleMapsLink(text)) setLocStatus("checking");
+    const found = await resolveGoogleMapsLocation(text);
+    setLoc(found);
+    setLocStatus(found ? "found" : looksLikeGoogleMapsLink(text) ? "not-found" : "");
   };
 
   const onPhotoChange = async (e) => {
@@ -493,6 +529,152 @@ function AddSpotForm({ onCreated, onCancel }) {
       <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
         <ActionButton onClick={save} disabled={!canSave} tone="approve">{saving ? "Adding…" : "Add spot"}</ActionButton>
         <ActionButton onClick={onCancel} disabled={saving}>Cancel</ActionButton>
+      </div>
+    </div>
+  );
+}
+
+const IMPORT_HEADERS = ["Name", "Area", "About", "Maps Link", "Popular"];
+const IMPORT_TEMPLATE_ROW = {
+  Name: "Kapaleeshwarar Street Idol",
+  Area: "Mylapore",
+  About: "A 14-foot idol set inside a gopuram-shaped structure.",
+  "Maps Link": "https://maps.app.goo.gl/example",
+  Popular: "yes",
+};
+
+// CSV headers are matched case-insensitively, with a couple of aliases per
+// column so a sheet exported from wherever the admin already tracks
+// spots doesn't have to be renamed to match our exact template first.
+function pick(row, ...keys) {
+  for (const key of keys) {
+    const value = row[key];
+    if (value) return value;
+  }
+  return "";
+}
+
+function downloadCsvTemplate() {
+  const csv = toCsv([IMPORT_TEMPLATE_ROW], IMPORT_HEADERS);
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "spots-template.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Bulk version of AddSpotForm — every row is created already approved, the
+// same as a single admin-added spot. Runs strictly one row at a time
+// (rather than in parallel) so a short-link resolution doesn't fire a
+// burst of simultaneous outbound requests, and so progress can be shown
+// as it goes rather than all-or-nothing at the end.
+function BulkImportForm({ onImported, onCancel }) {
+  const [rows, setRows] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState(null);
+  const showToast = useToast();
+
+  const onFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFileName(file.name);
+    setResults(null);
+    setProgress(0);
+    const text = await file.text();
+    setRows(parseCsv(text));
+  };
+
+  const runImport = async () => {
+    if (!rows || rows.length === 0) return;
+    setImporting(true);
+    const outcomes = [];
+    for (const row of rows) {
+      const name = pick(row, "name").trim();
+      if (!name) {
+        outcomes.push({ name: "(blank row)", ok: false, message: "Missing name — skipped" });
+        setProgress(outcomes.length);
+        continue;
+      }
+      const mapsLink = pick(row, "maps link", "google maps link", "link", "maps").trim();
+      const loc = await resolveGoogleMapsLocation(mapsLink);
+      if (!loc && !mapsLink) {
+        outcomes.push({ name, ok: false, message: "No location — skipped" });
+        setProgress(outcomes.length);
+        continue;
+      }
+      try {
+        const res = await fetch("/api/admin/spots", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            area: pick(row, "area"),
+            about: pick(row, "about", "description"),
+            lat: loc?.lat ?? null,
+            lng: loc?.lng ?? null,
+            maps_link: mapsLink,
+            is_popular: /^(y|yes|true|1)$/i.test(pick(row, "popular").trim()),
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || "Failed");
+        outcomes.push({
+          name,
+          ok: true,
+          message: loc ? "Added" : "Added (no map pin — link had no coordinates)",
+          spot: data.spot,
+        });
+      } catch (err) {
+        outcomes.push({ name, ok: false, message: err.message || "Failed" });
+      }
+      setProgress(outcomes.length);
+    }
+    setResults(outcomes);
+    setImporting(false);
+    const createdSpots = outcomes.filter((o) => o.ok && o.spot).map((o) => o.spot);
+    if (createdSpots.length > 0) {
+      showToast(`Added ${createdSpots.length} of ${rows.length} spots`);
+      onImported(createdSpots);
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, background: "var(--card)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-card)", padding: 18, marginBottom: 20 }}>
+      <div style={{ font: "600 16px var(--font-display)", color: "var(--ink)" }}>Bulk import from CSV</div>
+      <div style={{ font: "400 13px/1.5 var(--font-body)", color: "var(--muted)" }}>
+        Columns: Name (required), Area, About, Maps Link, Popular.{" "}
+        <button onClick={downloadCsvTemplate} style={{ font: "600 13px var(--font-body)", color: "var(--accent)", textDecoration: "underline" }}>
+          Download a template
+        </button>
+      </div>
+
+      <input type="file" accept=".csv,text/csv" onChange={onFileChange} style={{ font: "400 13px var(--font-body)" }} />
+
+      {rows ? (
+        <div style={{ font: "400 13px var(--font-body)", color: "var(--ink-soft)" }}>
+          {fileName}: {rows.length} row{rows.length === 1 ? "" : "s"} found.
+        </div>
+      ) : null}
+
+      {results ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 220, overflowY: "auto", border: "1px solid var(--line)", borderRadius: "var(--radius-md)", padding: 10 }}>
+          {results.map((r, i) => (
+            <div key={i} style={{ font: "400 12.5px var(--font-body)", color: r.ok ? "var(--green)" : "var(--pin-active)" }}>
+              {r.ok ? "✓" : "✕"} {r.name} — {r.message}
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      <div style={{ display: "flex", gap: 8, marginTop: 4, alignItems: "center" }}>
+        <ActionButton onClick={runImport} disabled={!rows || rows.length === 0 || importing} tone="approve">
+          {importing ? `Importing… ${progress}/${rows?.length ?? 0}` : "Import spots"}
+        </ActionButton>
+        <ActionButton onClick={onCancel} disabled={importing}>Close</ActionButton>
       </div>
     </div>
   );
