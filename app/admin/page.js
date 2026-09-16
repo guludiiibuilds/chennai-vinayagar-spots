@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { googleMapsUrl } from "@/lib/geo";
+import { uploadSpotPhoto } from "@/lib/spots";
+import { compressImage } from "@/lib/image";
+import { extractLatLng, isShortGoogleMapsLink, looksLikeGoogleMapsLink } from "@/lib/googleMapsLink";
+import { useToast } from "@/components/ToastProvider";
 import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { TextField } from "@/components/TextField";
@@ -65,6 +69,7 @@ async function fetchStats() {
 }
 
 export default function AdminPage() {
+  const showToast = useToast();
   const [authed, setAuthed] = useState(null); // null = checking
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -76,6 +81,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [pageViews, setPageViews] = useState(null);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   // Reset the loading/error state for the newly selected tab during render
   // itself (React's documented pattern for "adjusting state when a prop
@@ -177,6 +183,16 @@ export default function AdminPage() {
       setSpots((prev) => prev.filter((s) => s.id !== spot.id));
     } else if (data.spot) {
       updateSpotLocal(spot.id, data.spot);
+    }
+  };
+
+  const handleCreated = (spot) => {
+    setShowAddForm(false);
+    showToast(`Added "${spot.name}"`);
+    if (tab === "approved") {
+      setSpots((prev) => [spot, ...prev]);
+    } else {
+      setTab("approved");
     }
   };
 
@@ -297,6 +313,9 @@ export default function AdminPage() {
               </Chip>
             ))}
           </div>
+          <Button variant="primary" size="sm" onClick={() => setShowAddForm((v) => !v)} style={{ height: 36 }}>
+            {showAddForm ? "Cancel" : "+ Add spot"}
+          </Button>
           <Button variant="outline" size="sm" onClick={logout} style={{ height: 36 }}>
             Log out
           </Button>
@@ -304,6 +323,8 @@ export default function AdminPage() {
       </div>
 
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "22px 20px 60px" }}>
+        {showAddForm ? <AddSpotForm onCreated={handleCreated} onCancel={() => setShowAddForm(false)} /> : null}
+
         {loadError ? (
           <div style={{ padding: "12px 16px", borderRadius: "var(--radius-md)", background: "var(--card)", border: "1px solid var(--line-strong)", borderLeft: "3px solid var(--pin)", color: "var(--ink-soft)", font: "400 13px/1.4 var(--font-body)", marginBottom: 16 }}>
             {loadError}
@@ -330,6 +351,148 @@ export default function AdminPage() {
             ))}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+const emptyDraft = { name: "", area: "", about: "", mapsLink: "", isPopular: false };
+
+// Admin-only "add a spot directly" path — the spot is created already
+// approved (see the POST handler), skipping the public submit-then-review
+// queue entirely. Location is entered by pasting a Google Maps link rather
+// than dragging a pin, since that's what an admin typically already has in
+// hand (a link shared from the Maps app) rather than standing at the spot.
+function AddSpotForm({ onCreated, onCancel }) {
+  const [draft, setDraft] = useState(emptyDraft);
+  const [loc, setLoc] = useState(null); // { lat, lng } resolved from mapsLink
+  const [locStatus, setLocStatus] = useState(""); // "", "checking", "found", "not-found"
+  const [photoFile, setPhotoFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const showToast = useToast();
+
+  const set = (patch) => setDraft((prev) => ({ ...prev, ...patch }));
+
+  const resolveLocation = async () => {
+    const text = draft.mapsLink.trim();
+    if (!text) {
+      setLoc(null);
+      setLocStatus("");
+      return;
+    }
+    const direct = extractLatLng(text);
+    if (direct) {
+      setLoc(direct);
+      setLocStatus("found");
+      return;
+    }
+    if (!isShortGoogleMapsLink(text)) {
+      setLoc(null);
+      setLocStatus(looksLikeGoogleMapsLink(text) ? "not-found" : "");
+      return;
+    }
+    setLocStatus("checking");
+    try {
+      const res = await fetch("/api/admin/resolve-maps-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: text }),
+      });
+      const data = await res.json().catch(() => ({}));
+      const found = res.ok ? extractLatLng(data.resolvedUrl) : null;
+      setLoc(found);
+      setLocStatus(found ? "found" : "not-found");
+    } catch {
+      setLoc(null);
+      setLocStatus("not-found");
+    }
+  };
+
+  const onPhotoChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPhotoFile(await compressImage(file));
+  };
+
+  const canSave = draft.name.trim() && (loc || draft.mapsLink.trim()) && !saving;
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const photoUrl = photoFile ? await uploadSpotPhoto(photoFile) : null;
+      const res = await fetch("/api/admin/spots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: draft.name.trim(),
+          area: draft.area.trim(),
+          about: draft.about.trim(),
+          lat: loc?.lat ?? null,
+          lng: loc?.lng ?? null,
+          maps_link: draft.mapsLink.trim(),
+          photo_url: photoUrl,
+          is_popular: draft.isPopular,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Failed to add spot");
+      setDraft(emptyDraft);
+      setLoc(null);
+      setLocStatus("");
+      setPhotoFile(null);
+      onCreated(data.spot);
+    } catch (err) {
+      showToast(err.message || "Something went wrong");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, background: "var(--card)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-card)", padding: 18, marginBottom: 20 }}>
+      <div style={{ font: "600 16px var(--font-display)", color: "var(--ink)" }}>Add a spot directly</div>
+
+      <div style={{ display: "flex", gap: 10 }}>
+        <Field label="Name" value={draft.name} onChange={(v) => set({ name: v })} flex={2} />
+        <Field label="Area" value={draft.area} onChange={(v) => set({ area: v })} flex={1} />
+      </div>
+
+      <TextField label="About (optional)" value={draft.about} onChange={(e) => set({ about: e.target.value })} multiline />
+
+      <div>
+        <TextField
+          label="Google Maps link"
+          value={draft.mapsLink}
+          onChange={(e) => {
+            set({ mapsLink: e.target.value });
+            setLoc(null);
+            setLocStatus("");
+          }}
+          onBlur={resolveLocation}
+          placeholder="Paste a share link, e.g. https://maps.app.goo.gl/…"
+        />
+        <div style={{ font: "400 12px var(--font-body)", marginTop: 6, color: locStatus === "found" ? "var(--green)" : locStatus === "not-found" ? "var(--pin-active)" : "var(--muted)" }}>
+          {locStatus === "checking" ? "Reading link…" : null}
+          {locStatus === "found" && loc ? `Location found: ${loc.lat.toFixed(4)}, ${loc.lng.toFixed(4)}` : null}
+          {locStatus === "not-found" ? "Couldn't read coordinates from that link — it'll still be saved as an external \"View location\" link." : null}
+          {!locStatus ? "Paste a link from Maps' Share button; it's read automatically when you tab away." : null}
+        </div>
+      </div>
+
+      <div>
+        <div style={{ font: "700 13px/1.3 var(--font-body)", letterSpacing: "0.02em", color: "var(--ink-soft)", marginBottom: 9 }}>Photo (optional)</div>
+        <input type="file" accept="image/*" onChange={onPhotoChange} style={{ font: "400 13px var(--font-body)" }} />
+      </div>
+
+      <div>
+        <Chip selected={draft.isPopular} icon={<span>★</span>} onClick={() => set({ isPopular: !draft.isPopular })}>
+          Popular
+        </Chip>
+      </div>
+
+      <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+        <ActionButton onClick={save} disabled={!canSave} tone="approve">{saving ? "Adding…" : "Add spot"}</ActionButton>
+        <ActionButton onClick={onCancel} disabled={saving}>Cancel</ActionButton>
       </div>
     </div>
   );

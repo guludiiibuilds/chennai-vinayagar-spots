@@ -1,6 +1,6 @@
 import React from "react";
 
-export function TextField({ label, placeholder, value, onChange, helper, error, multiline }) {
+export function TextField({ label, placeholder, value, onChange, onBlur, helper, error, multiline }) {
   const Tag = multiline ? "textarea" : "input";
   return (
     <label style={{ display: "flex", flexDirection: "column", gap: 6, fontFamily: "var(--font-body)" }}>
@@ -13,7 +13,7 @@ export function TextField({ label, placeholder, value, onChange, helper, error, 
           outline: "none", fontFamily: "inherit", resize: multiline ? "vertical" : "none",
         }}
         onFocus={e => e.target.style.boxShadow = "var(--shadow-focus)"}
-        onBlur={e => e.target.style.boxShadow = "none"}
+        onBlur={e => { e.target.style.boxShadow = "none"; onBlur?.(e); }}
       />
       {(helper || error) && <span style={{ fontSize: "var(--text-caption-size)", color: error ? "var(--color-error)" : "var(--color-text-muted)" }}>{error || helper}</span>}
     </label>
