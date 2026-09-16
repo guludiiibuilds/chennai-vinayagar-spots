@@ -534,12 +534,13 @@ function AddSpotForm({ onCreated, onCancel }) {
   );
 }
 
-const IMPORT_HEADERS = ["Name", "Area", "About", "Maps Link", "Popular"];
+const IMPORT_HEADERS = ["Name", "Area", "About", "Maps Link", "Photo Filename", "Popular"];
 const IMPORT_TEMPLATE_ROW = {
   Name: "Kapaleeshwarar Street Idol",
   Area: "Mylapore",
   About: "A 14-foot idol set inside a gopuram-shaped structure.",
   "Maps Link": "https://maps.app.goo.gl/example",
+  "Photo Filename": "kapaleeshwarar.jpg",
   Popular: "yes",
 };
 
@@ -573,6 +574,7 @@ function downloadCsvTemplate() {
 function BulkImportForm({ onImported, onCancel }) {
   const [rows, setRows] = useState(null);
   const [fileName, setFileName] = useState("");
+  const [photoFiles, setPhotoFiles] = useState(new Map()); // lowercased filename -> File
   const [importing, setImporting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState(null);
@@ -586,6 +588,11 @@ function BulkImportForm({ onImported, onCancel }) {
     setProgress(0);
     const text = await file.text();
     setRows(parseCsv(text));
+  };
+
+  const onPhotosChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    setPhotoFiles(new Map(files.map((f) => [f.name.toLowerCase(), f])));
   };
 
   const runImport = async () => {
@@ -606,6 +613,26 @@ function BulkImportForm({ onImported, onCancel }) {
         setProgress(outcomes.length);
         continue;
       }
+
+      // Best-effort: a filename that doesn't match any selected photo just
+      // means the spot is created without one, not a failed row — the
+      // photo is a nice-to-have, the location is not.
+      let photoUrl = null;
+      let photoNote = "";
+      const photoFilename = pick(row, "photo filename", "photo", "image", "image filename").trim();
+      if (photoFilename) {
+        const match = photoFiles.get(photoFilename.toLowerCase());
+        if (match) {
+          try {
+            photoUrl = await uploadSpotPhoto(await compressImage(match));
+          } catch {
+            photoNote = " (photo upload failed)";
+          }
+        } else {
+          photoNote = ` (photo "${photoFilename}" not found among selected files)`;
+        }
+      }
+
       try {
         const res = await fetch("/api/admin/spots", {
           method: "POST",
@@ -617,6 +644,7 @@ function BulkImportForm({ onImported, onCancel }) {
             lat: loc?.lat ?? null,
             lng: loc?.lng ?? null,
             maps_link: mapsLink,
+            photo_url: photoUrl,
             is_popular: /^(y|yes|true|1)$/i.test(pick(row, "popular").trim()),
           }),
         });
@@ -625,7 +653,7 @@ function BulkImportForm({ onImported, onCancel }) {
         outcomes.push({
           name,
           ok: true,
-          message: loc ? "Added" : "Added (no map pin — link had no coordinates)",
+          message: (loc ? "Added" : "Added (no map pin — link had no coordinates)") + photoNote,
           spot: data.spot,
         });
       } catch (err) {
@@ -646,19 +674,31 @@ function BulkImportForm({ onImported, onCancel }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 12, background: "var(--card)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-card)", padding: 18, marginBottom: 20 }}>
       <div style={{ font: "600 16px var(--font-display)", color: "var(--ink)" }}>Bulk import from CSV</div>
       <div style={{ font: "400 13px/1.5 var(--font-body)", color: "var(--muted)" }}>
-        Columns: Name (required), Area, About, Maps Link, Popular.{" "}
+        Columns: Name (required), Area, About, Maps Link, Photo Filename, Popular.{" "}
         <button onClick={downloadCsvTemplate} style={{ font: "600 13px var(--font-body)", color: "var(--accent)", textDecoration: "underline" }}>
           Download a template
         </button>
       </div>
 
-      <input type="file" accept=".csv,text/csv" onChange={onFileChange} style={{ font: "400 13px var(--font-body)" }} />
+      <div>
+        <div style={{ font: "700 13px/1.3 var(--font-body)", letterSpacing: "0.02em", color: "var(--ink-soft)", marginBottom: 6 }}>CSV file</div>
+        <input type="file" accept=".csv,text/csv" onChange={onFileChange} style={{ font: "400 13px var(--font-body)" }} />
+        {rows ? (
+          <div style={{ font: "400 13px var(--font-body)", color: "var(--ink-soft)", marginTop: 6 }}>
+            {fileName}: {rows.length} row{rows.length === 1 ? "" : "s"} found.
+          </div>
+        ) : null}
+      </div>
 
-      {rows ? (
-        <div style={{ font: "400 13px var(--font-body)", color: "var(--ink-soft)" }}>
-          {fileName}: {rows.length} row{rows.length === 1 ? "" : "s"} found.
+      <div>
+        <div style={{ font: "700 13px/1.3 var(--font-body)", letterSpacing: "0.02em", color: "var(--ink-soft)", marginBottom: 6 }}>
+          Photos <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional — select all at once, matched to rows by the Photo Filename column)</span>
         </div>
-      ) : null}
+        <input type="file" accept="image/*" multiple onChange={onPhotosChange} style={{ font: "400 13px var(--font-body)" }} />
+        {photoFiles.size > 0 ? (
+          <div style={{ font: "400 13px var(--font-body)", color: "var(--ink-soft)", marginTop: 6 }}>{photoFiles.size} photo{photoFiles.size === 1 ? "" : "s"} selected.</div>
+        ) : null}
+      </div>
 
       {results ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 220, overflowY: "auto", border: "1px solid var(--line)", borderRadius: "var(--radius-md)", padding: 10 }}>
